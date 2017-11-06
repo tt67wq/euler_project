@@ -6,26 +6,42 @@ defmodule ArrangedProbability do
   is a box containing eighty-five blue discs and thirty-five red discs.
   By finding the first arrangement to contain over 1012 = 1,000,000,000,000 discs in total, 
   determine the number of blue discs that the box would contain.
+
+  计算2x(x-1) = y(y-1) 其中xs蓝色数量，y是周长
+  得出方程 2x^2-y^2-2x+y = 0
+  根据http://www.alpertron.com/CUAD.HTM
+  算出递归公式
+
+  Xn+1 = P Xn + Q Yn + K
+  Yn+1 = R Xn + S Yn + L
+
+  P = 3
+  Q = 2
+  K = -2
+  R = 4
+  S = 3
+  L = -3
+
+  Xn+1 = 3Xn + 2Yn - 2
+  Yn+1 = 4Xn + 3Yn - 3
+
+  x1 = 1
+  y1 = 1
   """
-  # @limit1 1000000000000
-  @limit 1000
+  @limit 1000000000000
 
   require Logger
 
+  def iter(x, y), do: {3 * x + 2 * y - 2, 4 * x + 3 * y - 3}
+
   def solution() do
-    sl(2, 1, 1, 2, 3, [])
+    sl(1, 1)
   end
 
-  defp sl(x, y, _, _, _, acc) when x > @limit, do: acc
-  defp sl(x, _, 0, _, _, acc), do: sl(x+1, 1, x, x+1, x+2, acc)
-  defp sl(x, y, t, p, l, acc) do
-    # Logger.info("#{x}, #{y}")
-    cond do
-      1 + 2 * p / t ==  l ->
-	Logger.info("#{x}, #{y}")
-	sl(x, y + 1, t - 1, x * (y + 1), l+1, [{x,y}|acc])
-      :else -> sl(x, y + 1, t - 1, x * (y + 1), l+1, acc)
-    end
+  defp sl(x, y) when y > @limit, do: {x, y}
+  defp sl(x, y) do
+    {x1, y1} = iter(x, y)
+    sl(x1, y1)
   end
 
 
