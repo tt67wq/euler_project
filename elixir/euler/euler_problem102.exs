@@ -10,74 +10,76 @@ defmodule TriangleContainment do
     |> Enum.filter(fn x -> x != "" end)
     |> Enum.map(fn x -> x |> String.split(",") end)
     |> Enum.map(fn x -> x |> slist2ilist end)
-    |> Enum.filter(fn x -> not (x |> contain_origin?) end)
-    # |> length
+    |> Enum.filter(fn x -> x |> contain_origin? end)
   end
 
   def slist2ilist(list), do: list |> Enum.map(fn x -> x |> String.to_integer() end)
 
-  def get_k([x1, _], [x2, _]) when x1 == x2, do: nil
-  def get_k([x1, y1], [x2, y2]), do: (y2 - y1) / (x2 - x1)
+  def get_k({x1, _}, {x2, _}) when x1 == x2, do: nil
+  def get_k({x1, y1}, {x2, y2}), do: (y2 - y1) / (x2 - x1)
 
-  defp get_y_cross(x, y, k), do: y - k * x
-  defp get_x_cross(k, yc), do: 0 - (yc / k)
+  defp get_b(x, y, k), do: y - k * x
 
-  def get_cross([x1, y1], [x2, y2]) do
-    k = get_k([x1, y1], [x2, y2])
-    # Logger.info(k)
-    case k do
-      0.0 ->
-	Logger.info("#{inspect [x1, y1]}, #{inspect [x2, y2]}")
-	[{nil, 0}, {0, y1}]
-      nil ->
-	Logger.info("#{inspect [x1, y1]}, #{inspect [x2, y2]}")
-	[{x1, 0}, {0, nil}]
-      _ ->
-	b = get_y_cross(x1, y1, k)
-	[get_x_cross(k, b), b]
-    end
-  end
-
-  
-  def get_quadrant(nil, yc) do
+  def get_side({x1, y1}, {x2, y2}) do
+    a = x2 - x1
+    b = y2 - y1
     cond do
-      yc > 0 -> ["c", "d"]
-      yc < 0 -> ["a", "b"]
-      :else -> ["a", "b", "c", "d"]
-    end
-  end
-
-  def get_quadrant(xc, nil) do
-    cond do
-      xc > 0 -> ["b", "c"]
-      xc < 0 -> ["a", "d"]
-      :else -> ["a", "b", "c", "d"]
-    end
-  end
-
-  def get_quadrant(xc, yc) do
-    cond do
-      xc > 0 and yc > 0 -> ["c"]
-      xc > 0 and yc < 0 -> ["b"]
-      xc < 0 and yc > 0 -> ["d"]
-      xc < 0 and yc < 0 -> ["a"]
-      :else -> ["a", "b", "c", "d"]
-    end
-  end
-
-  def get_quadrant_of_point(x, y) do
-    cond do
-      x > 0 and y > 0 -> "a"
-      x > 0 and y < 0 -> "d"
-      x < 0 and y > 0 -> "b"
-      x < 0 and y < 0 -> "c"
+      a > 0 and b > 0 ->
+	k = get_k({x1, y1}, {x2, y2})
+	b = get_b(x1, y1, k)
+	cond do
+	  b > 0 -> :right
+	  b < 0 -> :left
+	end
+      a > 0 and b < 0 ->
+	k = get_k({x1, y1}, {x2, y2})
+	b = get_b(x1, y1, k)
+	cond do
+	  b > 0 -> :right
+	  b < 0 -> :left
+	end
+      a < 0 and b > 0 ->
+	k = get_k({x1, y1}, {x2, y2})
+	b = get_b(x1, y1, k)
+	cond do
+	  b > 0 -> :left
+	  b < 0 -> :right
+	end
+      a < 0 and b < 0 ->
+	k = get_k({x1, y1}, {x2, y2})
+	b = get_b(x1, y1, k)
+	cond do
+	  b > 0 -> :left
+	  b < 0 -> :right
+	end
+      a == 0 and b > 0 ->
+	cond do
+	  x1 > 0 -> :left
+	  x1 < 0 -> :right
+	end
+      a == 0 and b < 0 ->
+	cond do
+	  x1 > 0 -> :right
+	  x1 < 0 -> :left
+	end
+      a > 0 and b == 0 ->
+	cond do
+	  y1 > 0 -> :right
+	  y1 < 0 -> :left
+	end
+      a < 0 and b == 0 ->
+	cond do
+	  y1 > 0 -> :left
+	  y1 < 0 -> :right
+	end
+      :else -> Logger.info("#{inspect {x1, y1}}, #{inspect {x2, y2}}")
     end
   end
 
   def contain_origin?([x1, y1, x2, y2, x3, y3]) do
-    [xc, yc] = get_cross([x1, y1], [x2, y2])
-    Enum.member?(get_quadrant(xc, yc), get_quadrant_of_point(x3, y3))
-    # Logger.info("#{inspect [x1, y1, x2, y2, x3, y3]}, #{xc}, #{yc}: #{contain}")
-    # contain
+    side1 = get_side({x1, y1}, {x2, y2})
+    side2 = get_side({x2, y2}, {x3, y3})
+    side3 = get_side({x3, y3}, {x1, y1})
+    MapSet.new([side1, side2, side3]) |> MapSet.size() == 1
   end
 end
