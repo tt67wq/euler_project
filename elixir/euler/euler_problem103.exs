@@ -3,6 +3,8 @@ defmodule Optimum do
   https://projecteuler.net/problem=103
   """
 
+  require Logger
+
   @doc """
   ## Example
 
@@ -27,19 +29,47 @@ defmodule Optimum do
     end
   end
 
-  def solution() do
-    for x1 <- 19..25,
-      x2 <- 30..36,
-      x3 <- 36..42,
-      x4 <- 39..45,
-      x5 <- 39..47,
-      x6 <- 39..48,
-      x7 <- 43..49,
-      x7 > x6 and x6 > x5 and x5 > x4 and x4 > x3 and x3 > x2 and x2 > x1 do
-	[x1, x2, x3, x4, x5, x6, x7]
+  def add_wide(list), do: aw(list, [])
+  defp aw([], acc), do: acc |> Enum.reverse
+  defp aw([h|t], acc), do: aw(t, [[h-2, h-1, h, h+1, h+2]|acc])
+
+  def wide_adjust(list, wide), do: wa(list, wide, [])
+  defp wa([], [], acc), do: acc |> Enum.reverse
+  defp wa([h|t], [h1|t1], acc) do
+    cond do
+      h == List.first(h1) -> wa(t, t1, [h1 |> Enum.map(fn x -> x - 2 end)|acc])
+	h == List.last(h1) -> wa(t, t1, [h1 |> Enum.map(fn x -> x + 2 end)|acc])
+      :else -> wa(t, t1, [h1|acc])
+    end
+  end
+
+  
+  def sl([x1, x2, x3, x4, x5, x6, x7]=w) do
+    a = for y1 <- x1,
+      y2 <- x2,
+      y3 <- x3,
+      y4 <- x4,
+      y5 <- x5,
+      y6 <- x6,
+      y7 <- x7,
+      y7 > y6 and y6 > y5 and y5 > y4 and y4 > y3 and y3 > y2 do
+	[y1, y2, y3, y4, y5, y6, y7]
     end
     |> Enum.filter(fn x -> x |> special? end)
-    |> Enum.sort_by(fn x -> x |> Enum.sum() end)
+    |> Enum.sort_by(fn x -> x |> Enum.sum end)
     |> List.first()
+    nw = wide_adjust(a, w)
+    Logger.info("#{inspect nw |> Enum.map(fn x -> x |> List.to_tuple end)}")
+    cond do
+      nw == w -> a
+      :else -> sl(nw)
+    end
+  end
+  
+  def solution() do
+    base = [22, 33, 39, 42, 44, 45, 46]
+    wide = base |> add_wide
+    # Logger.info("#{inspect wide |> Enum.map(fn x -> x |> List.to_tuple end)}")
+    wide |> sl()
   end
 end
