@@ -146,12 +146,8 @@ defmodule Prime do
   """
   @spec factorization(integer) :: map
   def factorization(n), do: fac(n, 2, [])
-  defp fac(n, index, acc) when index * index > n and n > 1 do
-    # Logger.info("final: #{n}, #{index}")
-    list2map([n | acc])
-  end
+  defp fac(n, index, acc) when index * index > n and n > 1, do: list2map([n | acc])
   defp fac(n, index, acc) do
-    # Logger.info("#{n}, #{index}")
     case rem(n, index) == 0 do
       true -> fac(div(n, index), index, [index | acc])
       _ -> fac(n, index + 1, acc)
@@ -166,5 +162,15 @@ defmodule Prime do
       :error -> list2map(t, Map.update(acc, h, 1, &(&1 + 1)))
     end
   end
+
+  @doc """
+  获取num的因数个数
+  """
+  def get_fac_num(num) do
+    num |> factorization
+    |> Map.values
+    |> Enum.reduce(1, fn x, acc -> acc * (x + 1) end)
+  end
+
 
 end

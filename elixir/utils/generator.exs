@@ -26,4 +26,26 @@ defmodule Generator do
   defp arg(lst) when length(lst) == 1, do: [lst]
   defp arg([h|t]), do: arrange(t) |> Enum.reduce([], fn x, acc -> insert(h, x) ++ acc end)
   defp insert(n, lst), do: 0..length(lst) |> Enum.map(fn x -> List.insert_at(lst, x, n) end)
+
+  @doc """
+  将list分割成2份可能性
+  ## Example
+
+      iex> list_split([1, 2, 3])
+      [[[1, 2], [3]], [[1, 3], [2]], [[2, 3], [1]]]
+
+  """
+  def list_cut(list), do: lc(list, 1, [])
+  defp lc(list, count, acc) when count * 2 > length(list), do: acc
+  defp lc(list, count, acc) do
+    nacc = acc ++ choose(list, count)
+    |> Enum.map(fn x -> [x, list_sub(list, x)]
+    |> Enum.sort end)
+    |> MapSet.new()
+    |> MapSet.to_list
+    lc(list, count+1, nacc)
+  end
+  defp list_sub(list1, list2), do: list1 |> Enum.filter(fn x -> not Enum.member?(list2, x) end)
+
+
 end
