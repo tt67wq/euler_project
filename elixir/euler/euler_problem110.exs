@@ -43,9 +43,7 @@ defmodule DiophantineReciprocalsII do
   def population_iter(population) do
     np = pi(population, [])
     np |> Enum.filter(fn x -> x |> survive?() end)
-    |> Enum.sort_by(fn x -> x |> get_n() end)
-    |> Enum.take(4000)
-    |> Enum.sort_by(fn x -> x |> get_num() end)
+    |> Enum.sort_by(fn x -> get_n(x) + get_num(x) end)
     |> Enum.take(1000)
   end
   defp pi([], acc), do: acc
