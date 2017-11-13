@@ -47,5 +47,14 @@ defmodule Generator do
   end
   defp list_sub(list1, list2), do: list1 |> Enum.filter(fn x -> not Enum.member?(list2, x) end)
 
+  @doc """
+  二维数组中任选一个元素，组成新的集合
+  ## Example
 
+      iex> combine([[1, 2], [3, 4]])
+      [[1, 3], [2, 3], [1, 4], [2, 4]]
+
+  """
+  def combine([h]), do: h |> Enum.map(fn x -> [x] end)
+  def combine([h|t]), do: h |> Enum.reduce([], fn y, acc -> acc ++ (combine(t) |> Enum.map(fn x -> [y|x] end)) end)
 end

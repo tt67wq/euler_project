@@ -172,5 +172,4 @@ defmodule Prime do
     |> Enum.reduce(1, fn x, acc -> acc * (x + 1) end)
   end
 
-
 end
