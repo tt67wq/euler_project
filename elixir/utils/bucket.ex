@@ -64,5 +64,4 @@ defmodule Buckets do
       _ -> v
     end
   end
-  
 end

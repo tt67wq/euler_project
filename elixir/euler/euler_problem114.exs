@@ -3,8 +3,6 @@ defmodule CountingBlockCombinationsI do
   https://projecteuler.net/problem=114
   """
   require Logger
-  @limit 7
-
   use GenServer
 
   ### GenServer API
@@ -52,53 +50,37 @@ defmodule CountingBlockCombinationsI do
     value
   end
 
-  def factorial(n), do: fac(n, 1)
-  defp fac(0, acc), do: acc
-  defp fac(n, acc), do: fac(n-1, acc * n)
+  def add2list(list, _, 0), do: list
+  def add2list(list, k, n), do: add2list([k|list], k, n-1)
 
-  def choose(n, x), do: div(factorial(n), factorial(x) * factorial(n-x))
-
-  def generate_list(a, b), do: (1..a |> Enum.map(fn _ -> 0 end)) ++ (1..b |> Enum.map(fn _ -> 1 end))
-
-  def pow(a, b), do: :math.pow(a, b) |> round()
-
-  def bucket(0, _), do: 1
-  def bucket(_, 1), do: 1
-  def bucket(n, m), do: bucket(n, 0, m, 0)
-  defp bucket(n, k, _m, acc) when k > n, do: acc
-  defp bucket(n, k, m, acc), do: bucket(n, k+1, m, cache_bucket(n-k, m-1) + acc)
-
-  def cache_bucket(a, b) do
-    v = get(:bucket, {a, b})
+  def cache_combine(x) do
+    v = get(:c, x)
     case v do
-      nil -> set_and_get(:bucket, {a, b}, bucket(a, b))
+      nil -> set_and_get(:c, x, combine(x))
       _ -> v
     end
   end
 
-  def place_red_block_in_line(0, _), do: 1
-  def place_red_block_in_line(@limit, 1), do: 1
-  def place_red_block_in_line(l, n) when n * l > @limit, do: 0
-  def place_red_block_in_line(l, 1), do: @limit - l + 1
-  def place_red_block_in_line(l, n) do
-    bs = @limit - l * n + n
-    rest = bs - (n * 2 - 1)
-    cache_bucket(rest, n * 2)
-  end
 
-  def add(a, b), do: a + b
+  # def combine(n) when n <= 0, do: [[]]
+  # def combine(1), do: [[0]]
+  # def combine(2), do: [[0, 0]]
+  # def combine(3), do: [[0, 0, 0], [1, 1, 1]]
+  # def combine(4), do: [[0, 0, 0, 0], [0, 1, 1, 1], [1, 1, 1, 0], [1, 1, 1, 1]]
+  # def combine(5), do: (combine(4) |> Enum.map(fn x -> [0|x] end)) ++ [[1,1,1,0,0],[1,1,1,1,0],[1,1,1,1,1]]
+  # def combine(n), do: (cache_combine(n-1) |> Enum.map(fn x -> [0|x] end)) ++ combine(n, 3, [])
+  # defp combine(n, index, acc) when index > n, do: acc
+  # defp combine(n, n, acc), do: [1..n |> Enum.map(fn _ -> 1 end)|acc]
+  # defp combine(n, index, acc), do: combine(n, index+1, (cache_combine(n-index-1) |> Enum.map(fn x -> add2list([0|x], 1, index) end)) ++ acc)
 
-  def solution() do
-    start_link()
-    sl(3, 1, place_red_block_in_line(3, 1), [])
-    |> Enum.sum()
-    |> add(1)
-  end
+  def combine(n) when n <= 2, do: 1
+  def combine(3), do: 2
+  def combine(4), do: 4
+  def combine(5), do: 7
+  def combine(n), do: cache_combine(n-1) + combine(n, 3, 0)
+  defp combine(n, index, acc) when index > n, do: acc
+  defp combine(n, n, acc), do: acc + 1
+  defp combine(n, index, acc), do: combine(n, index+1, cache_combine(n-index-1) + acc)
 
-  defp sl(_l, 1, 0, acc), do: acc
-  defp sl(l, _, 0, acc), do: sl(l+1, 1, place_red_block_in_line(l+1, 1), acc)
-  defp sl(l, c, n, acc) do
-    Logger.info("l: #{l}, c: #{c}, n: #{n}")
-    sl(l, c+1, place_red_block_in_line(l, c+1), [n|acc])
-  end
+  def solution(), do: combine(50)
 end
