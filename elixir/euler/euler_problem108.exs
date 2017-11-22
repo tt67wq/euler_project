@@ -62,11 +62,6 @@ defmodule DiophantineReciprocals do
 
   @doc """
   将list分割成2份可能性
-  ## Example
-
-      iex> list_split([1, 2, 3])
-      [[[1, 2], [3]], [[1, 3], [2]], [[2, 3], [1]]]
-
   """
   def list_cut(list), do: lc(list, 1, [])
   defp lc(list, count, acc) when count * 2 > length(list), do: acc
