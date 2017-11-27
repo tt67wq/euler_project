@@ -50,11 +50,14 @@ defmodule EfficientExponentiation do
     value
   end
 
-  def level(0), do: [{1, [1]}]
+  def level(0), do: [{1, [1], [1]}]
   def level(n) do
     bl = cache_level(n-1)
     level(bl, [])
   end
+
+  defp level([], acc), do: acc |> MapSet.new() |> MapSet.to_list() |> Enum.sort_by(fn {x,_, _} -> x end)
+  defp level([{v, trace, ab}|t], acc), do: level(t, ([v|ab] |> Enum.map(fn x -> {x + v, [x|trace], [v|ab]} end) |> Enum.filter(fn {x, _, _} -> x < 200 end)) ++ acc)
 
   def cache_level(n) do
     v = get(:level, n)
@@ -65,8 +68,6 @@ defmodule EfficientExponentiation do
 
   end
 
-  defp level([], acc), do: acc |> MapSet.new() |> MapSet.to_list() |> Enum.sort_by(fn {x, _} -> x end)
-  defp level([{v, trace}|t], acc), do: level(t, ([v|trace] |> Enum.map(fn x -> {x + v, [x|trace]} end)) ++ acc)
 
   def solution() do
     start_link()
@@ -76,7 +77,7 @@ defmodule EfficientExponentiation do
   defp sl(_index, acc, bcc) when length(acc) == 200, do: bcc
   defp sl(index, acc, bcc) do
     ls = cache_level(index)
-    first_apns = ls |> Enum.map(fn {x, _} -> x end)
+    first_apns = ls |> Enum.map(fn {x,_, _} -> x end)
     |> Enum.sort() |> Enum.dedup()
     |> Enum.filter(fn x -> not Enum.member?(acc, x) end)
     |> Enum.filter(fn x -> x <= 200 end)
