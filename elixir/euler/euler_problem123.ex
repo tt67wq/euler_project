@@ -1,6 +1,6 @@
-defmodule Prime do
+defmodule PrimeSquareRemainders do
   @moduledoc """
-  Documentation for Prime.
+  https://projecteuler.net/problem=123
   """
 
   require Logger
@@ -93,61 +93,17 @@ defmodule Prime do
     end
   end
 
-  @doc """
-  求前N个质数的和
-  """
-  @spec sum_primes(Integer) :: Integer
-  def sum_primes(0), do: 0
-  def sum_primes(n), do: sp(n, 3, 1, 2)
-  defp sp(n, _index, count, acc) when count == n, do: acc
-  defp sp(n, index, count, acc) do
+  def solution() do
+    start_link()
+    sl(1, 2, 2)
+  end
+  defp sl(index, _p, mx) when mx > 10000000000, do: index - 1
+  defp sl(index, p, mx) when Integer.is_even(index), do: sl(index+1, next_prime(p), mx)
+  defp sl(index, p, mx) do
+    nmx = rem(2 * index * p, p * p)
     cond do
-      cache_prime?(index) -> sp(n, index+2, count+1, acc + index)
-      :else -> sp(n, index+2, count, acc)
+      nmx > mx -> sl(index+1, next_prime(p), nmx)
+      :else -> sl(index+1, next_prime(p), mx)
     end
   end
-
-  @doc """
-  缓存过的质数和求值
-  """
-  @spec cache_sum_primes(Integer) :: Integer
-  def cache_sum_primes(n) do
-    cached_value = get(:sum_prime, n)
-    case cached_value do
-      nil -> set_and_get(:sum_prime, n, sum_primes(n))
-      _ -> cached_value
-    end
-  end
-
-  @doc """
-  质因数分解
-  """
-  @spec factorization(integer) :: map
-  def factorization(n), do: fac(n, 2, [])
-  defp fac(n, index, acc) when index * index > n and n > 1, do: list2map([n | acc])
-  defp fac(n, index, acc) do
-    case rem(n, index) == 0 do
-      true -> fac(div(n, index), index, [index | acc])
-      _ -> fac(n, index + 1, acc)
-    end
-  end
-
-  def list2map(lst), do: list2map(lst, %{})
-  defp list2map([], acc), do: acc
-  defp list2map([h|t], acc) do
-    case Map.fetch(acc, h) do
-      {:ok, c} -> list2map(t, Map.update(acc, h, c, &(&1 + 1)))
-      :error -> list2map(t, Map.update(acc, h, 1, &(&1 + 1)))
-    end
-  end
-
-  @doc """
-  获取num的因数个数
-  """
-  def get_fac_num(num) do
-    num |> factorization
-    |> Map.values
-    |> Enum.reduce(1, fn x, acc -> acc * (x + 1) end)
-  end
-
 end
