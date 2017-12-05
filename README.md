@@ -12,3 +12,7 @@ Euler key: 1128166_qIMRdTxaOhnAkPgThS407cNq3d1E9MrH
 QQ: 807643203
 
 Wechat: tt67wq
+
+----
+
+util目录下有各种经典数据结构和算法的实现方法，有Elixir也有C的，大部分都是从书上或者网上抄抄的
