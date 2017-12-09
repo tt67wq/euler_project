@@ -66,26 +66,25 @@ void Pop(Stack S) {
     S->TopOfStack--;
 }
 
-int isOpenSymbol(char *ch) {
-  if (*ch == '{' || *ch == '[' || *ch == '(' || (*ch == '/' && *ch++ == '*'))
+int isOpenSymbol(char ch) {
+  if (ch == '{' || ch == '[' || ch == '(')
     return TRUE;
   return FALSE;
 }
 
-int isCloseSymbol(char *ch) {
-  if (*ch == '}' || *ch == ']' || *ch == ')' || (*ch == '*' && *ch++ == '/'))
+int isCloseSymbol(char ch) {
+  if (ch == '}' || ch == ']' || ch == ')')
     return TRUE;
   return FALSE;
 }
 
 int main() {
   Stack S;
-  char *ch;
+  char ch;
   S = CreateStack(10);
 
 
-  while((ch=getchar())!='#'){
-    /* printf("%s\n", ch); */
+  while((ch=getchar())!='\n'){
     if (isOpenSymbol(ch)) {
       puts("push one");
       Push(ch, S);

@@ -1,7 +1,7 @@
 /* 栈的数组实现 */
 struct StackRecord;
 typedef struct StackRecord *Stack;
-typedef char* ElementType;
+typedef char ElementType;
 
 int IsEmpty(Stack S);
 int IsFull(Stack S);
