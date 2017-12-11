@@ -76,6 +76,37 @@ SearchTree Insert(ElementType X, SearchTree T) {
   return T;
 }
 
+SearchTree Delete(ElementType X, SearchTree T) {
+  Position TmpCell;
+  if (T == NULL) {
+    printf("Element Not Found\n");
+    exit(EXIT_FAILURE);
+  } else if (T->Compare(X, T->Element) == -1)
+    T->Left = Delete(X, T->Left);
+  else if (T->Compare(X, T->Element) == 1)
+    T->Right = Delete(X, T->Right);
+  else
+  // found element to delete
+  {
+    if (T->Left && T->Right) /* two children */
+    {
+      /* replace the smallest in right subtree */
+      TmpCell = FindMin(T->Right);
+      T->Element = TmpCell->Element;
+      T->Right = Delete(T->Element, T->Right);
+    } else {
+      /* One or zero Child */
+      TmpCell = T;
+      if (T->Left == NULL)
+        T = T->Right;
+      else if (T->Right == NULL)
+        T = T->Left;
+      free(TmpCell);
+    }
+  }
+  return T;
+}
+
 int main() {
   SearchTree T;
   T = CreateTree();
