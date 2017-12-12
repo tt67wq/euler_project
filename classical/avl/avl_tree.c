@@ -108,3 +108,108 @@ AvlTree singleLeftRotation(AvlTree T) {
 
   return LT;
 }
+
+// RR型平衡调整，又称单向左旋平衡处理
+AvlTree singleRightRotation(AvlTree T) {
+  /* 必须要右子树 */
+  AvlTree RT;
+  RT = T->Right;
+  T->Right = RT->Left;
+  RT->Left = T;
+  T->Height = max(GetHeight(T->Left), GetHeight(T->Right)) + 1;
+  RT->Height = max(T->Right, GetHeight(RT->Left)) + 1;
+
+  return RT;
+}
+
+// LR型平衡调整，又称双向旋转（先左后右）平衡处理
+AvlTree doubleLeftRightRotation(AvlTree T) {
+  T->Left = singleRightRotation(T->Left);
+  return singleLeftRotation(T);
+}
+
+// RL型平衡调整，又称双向旋转（向右后左）平衡处理
+AvlTree doubleRightLeftRotation(AvlTree T) {
+  T->Right = singleLeftRotation(T->Right);
+  return singleRightRotation(T);
+}
+
+AvlTree Insert(ElementType X, AvlTree T) {
+  if (!T)
+    T = MakeEmpty(T);
+  else if (X < T->Element) {
+    T->Left = Insert(X, T->Left);
+    if (GetHeight(T->Left) - GetHeight(T->Right) == 2) /* 如果需要左旋 */
+      if (X < T->Left->Element)
+        T = singleLeftRotation(T);
+      else
+        T = doubleLeftRightRotation(T);
+  } else if (X > T->Element) {
+    T->Right = Insert(X, T->Right);
+    if (GetHeight(T->Right) - GetHeight(T->Left) == 2)
+      if (X > T->Right->Element)
+        T = singleRightRotation(T);
+      else
+        T = doubleRightLeftRotation(T);
+  } else {
+    // 已经在树中
+  }
+  T->Height = max(GetHeight(T->Left), GetHeight(T->Right)) + 1;
+  return T;
+}
+
+AvlTree Delete(ElementType X, AvlTree T) {
+  if (!T) {
+    printf("empty tree\n");
+    return T;
+  }
+  if (X < T->Element) {
+    // 待删除的节点在左子树中
+    T->Left = Delete(X, T->Left);
+    if (GetHeight(T->Right) - GetHeight(T->Left) == 2) {
+      /* 失去平衡 */
+      if (GetHeight(T->Right->Left) > GetHeight(T->Right->Right))
+        T = doubleRightLeftRotation(T);
+      else
+        T = singleRightRotation(T);
+    } else 
+      // 未失衡
+  } else if (X > T->Element) {
+    // 待删除的节点在右子树中
+    T->Right = Delete(X, T->Right);
+    if (GetHeight(T->Left) - GetHeight(T->Right) == 2) {
+      /* 失去平衡 */
+      if (GetHeight(T->Left->Left) < GetHeight(T->Left->Right))
+        T = doubleLeftRightRotation(T);
+      else
+        T = singleLeftRotation(T);
+    } else
+      /* 未失衡 */
+  } else {
+    // 该节点为待删除的点
+    if (T->Left && T->Right) {
+      //左右子树都非空
+      if (GetHeight(T->Left) > GetHeight(T->Right)) {
+        /* 左子树比右子树高 */
+        /* 找出左子树中的最大节点，将最大节点的值赋给T，删除该最大节点 */
+        Position P;
+        P = FindMax(T->Left);
+        T->Element = P->Element;
+        T->Left = Delete(P->Element, T->Left);
+      } else {
+        /* 左子树不比右子树高 */
+        /* 找出右子树中的最小节点，将最小节点的值赋给T，删除该最小节点 */
+        Position P;
+        P = FindMin(T->Right);
+        T->Element = P->Element;
+        T->Right = Delete(P->Element, T->Right);
+      }
+    } else {
+      //有一个子树为空
+      AvlTree Tmp = T;
+      T = T->Left ? T->Left : T->Right;
+      free(Tmp);
+    }
+  }
+  return T;
+}
