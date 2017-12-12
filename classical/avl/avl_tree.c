@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define TBL_SIZE(a) ((sizeof(a)) / (sizeof(a[0])))
+
 static int Height(Position P) {
   if (P == NULL)
     return -1;
@@ -21,6 +23,13 @@ AvlTree MakeEmpty(AvlTree T) {
   T->Right = NULL;
   T->Element = 0;
   return T;
+}
+
+int isEmpty(AvlTree T) {
+  if (!T)
+    return 1;
+  else
+    return 0;
 }
 
 int GetHeight(AvlTree T) {
@@ -104,7 +113,7 @@ AvlTree singleLeftRotation(AvlTree T) {
   T->Left = LT->Right;
   LT->Right = T;
   T->Height = max(GetHeight(T->Left), GetHeight(T->Right)) + 1;
-  LT->Height = max(T->Left, GetHeight(LT->Right)) + 1;
+  LT->Height = max(GetHeight(T->Left), GetHeight(LT->Right)) + 1;
 
   return LT;
 }
@@ -117,7 +126,7 @@ AvlTree singleRightRotation(AvlTree T) {
   T->Right = RT->Left;
   RT->Left = T;
   T->Height = max(GetHeight(T->Left), GetHeight(T->Right)) + 1;
-  RT->Height = max(T->Right, GetHeight(RT->Left)) + 1;
+  RT->Height = max(GetHeight(T->Right), GetHeight(RT->Left)) + 1;
 
   return RT;
 }
@@ -135,9 +144,13 @@ AvlTree doubleRightLeftRotation(AvlTree T) {
 }
 
 AvlTree Insert(ElementType X, AvlTree T) {
-  if (!T)
+  if (isEmpty(T)) {
     T = MakeEmpty(T);
-  else if (X < T->Element) {
+    T->Element = X;
+    T->Height = 0;
+    T->Left = T->Right = NULL;
+  } else if (X < T->Element) {
+    /* printf("插入左边\n"); */
     T->Left = Insert(X, T->Left);
     if (GetHeight(T->Left) - GetHeight(T->Right) == 2) /* 如果需要左旋 */
       if (X < T->Left->Element)
@@ -145,6 +158,7 @@ AvlTree Insert(ElementType X, AvlTree T) {
       else
         T = doubleLeftRightRotation(T);
   } else if (X > T->Element) {
+    /* printf("插入右边\n"); */
     T->Right = Insert(X, T->Right);
     if (GetHeight(T->Right) - GetHeight(T->Left) == 2)
       if (X > T->Right->Element)
@@ -159,7 +173,7 @@ AvlTree Insert(ElementType X, AvlTree T) {
 }
 
 AvlTree Delete(ElementType X, AvlTree T) {
-  if (!T) {
+  if (isEmpty(T)) {
     printf("empty tree\n");
     return T;
   }
@@ -172,8 +186,8 @@ AvlTree Delete(ElementType X, AvlTree T) {
         T = doubleRightLeftRotation(T);
       else
         T = singleRightRotation(T);
-    } else 
-      // 未失衡
+    }
+    // 未失衡
   } else if (X > T->Element) {
     // 待删除的节点在右子树中
     T->Right = Delete(X, T->Right);
@@ -183,8 +197,8 @@ AvlTree Delete(ElementType X, AvlTree T) {
         T = doubleLeftRightRotation(T);
       else
         T = singleLeftRotation(T);
-    } else
-      /* 未失衡 */
+    }
+    /* 未失衡 */
   } else {
     // 该节点为待删除的点
     if (T->Left && T->Right) {
@@ -212,4 +226,27 @@ AvlTree Delete(ElementType X, AvlTree T) {
     }
   }
   return T;
+}
+
+int main() {
+  static int arr[] = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
+  AvlTree T;
+  int i, l;
+
+  T = MakeEmpty(T);
+  l = TBL_SIZE(arr);
+
+  for (i = 0; i < l; i++) {
+    printf("插入元素%d\n", arr[i]);
+    T = Insert(arr[i], T);
+  }
+  printf("中序遍历: ----------------------------- \n");
+  InorderTraversal(T);
+  printf("前序遍历: ----------------------------- \n");
+  PreorderTraversal(T);
+  printf("后序遍历: ----------------------------- \n");
+  PostorderTraversal(T);
+  printf("叶子递归: ----------------------------- \n");
+  GetOrderPrintLeaves(T);
+  exit(EXIT_SUCCESS);
 }
