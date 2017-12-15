@@ -15,6 +15,30 @@ SplayTree MakeEmpty(SplayTree T) {
   return T;
 }
 
+void PreorderSplayTree(SplayTree T) {
+  while (T) {
+    printf("%d\n", T->Element);
+    PreorderSplayTree(T->Left);
+    PreorderSplayTree(T->Right);
+  }
+}
+
+void InorderSplayTree(SplayTree T) {
+  while (T) {
+    InorderSplayTree(T->Left);
+    printf("%d\n", T->Element);
+    InorderSplayTree(T->Right);
+  }
+}
+
+void PostorderSplayTree(SplayTree T) {
+  while (T) {
+    PostorderSplayTree(T->Left);
+    PostorderSplayTree(T->Right);
+    printf("%d\n", T->Element);
+  }
+}
+
 SplayTree zigRotate(SplayTree T) {
   SplayTree Tmp;
   Tmp = T->Left;
@@ -88,4 +112,37 @@ Position Find(ElementType X, SplayTree T) {
   if (T->Element == X)
     return T;
   return NULL;
+}
+
+Position FindMin(SplayTree T) {
+  if (!T)
+    return NULL;
+  else if (!T->Left)
+    return T;
+  else
+    return FindMin(T->Left);
+}
+
+Position FindMax(SplayTree T) {
+  if (!T)
+    return NULL;
+  else if (!T->Right)
+    return T;
+  else
+    return FindMax(T->Right);
+}
+
+SplayTree Insert(ElementType X, SplayTree T) {
+  if (!T) {
+    T = MakeEmpty(T);
+    T->Element = X;
+    return;
+  } else if (X < T->Element) {
+    T->Left = Insert(X, T->Left);
+  } else if (X > T->Element) {
+    T->Right = Insert(X, T->Right);
+  } else {
+    // already in tree
+  }
+  return T;
 }
