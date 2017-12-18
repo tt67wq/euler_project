@@ -36,6 +36,25 @@ HashTable Initialize(int TableSize) {
   return H;
 }
 
+void DestroyTable(HashTable H) {
+  int i;
+  position h, p, q;
+  for (i = 0; i < H->TableSize; i++) {
+    h = H->TheLists[i];
+    p = h->Next;
+    while (p) {
+      q = p->Next;
+      if (!q) {
+        free(p);
+        p = NULL;
+      } else {
+        free(p);
+        q = p;
+      }
+    }
+  }
+}
+
 int isPrime(int Num) {
   int i;
   int flag = FALSE;
@@ -90,5 +109,22 @@ void Insert(ElementType X, HashTable H) {
       NewCell->Element = X;
       L->Next = NewCell;
     }
+  }
+}
+
+int Delete(ElementType X, HashTable H) {
+  Position pos, h, L;
+  L = H->TheLists[Hash(X, H->TableSize)];
+  h = L->Next;
+  while (h != NULL && h->Next && h->Next->Element != X)
+    pos = pos->Next;
+  if (h == NULL) {
+    printf("cannot find that key!");
+    return FALSE;
+  } else {
+    pos = h->Next;
+    h->Next = pos->Next;
+    free(pos);
+    return TRUE;
   }
 }

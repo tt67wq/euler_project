@@ -1,29 +1,30 @@
-/* 分离链接法hash */
-struct ListNode;
+/* hash开放定址法实现 */
+typedef unsigned int Index;
+typedef Index Position;
 typedef int ElementType;
-typedef struct ListNode *Position;
+
 struct HashTbl;
 typedef struct HashTbl *HashTable;
-typedef Position List;
 
 #define MinTableSize 10
-#define TRUE 1;
-#define FALSE 0;
 
 HashTable Initialize(int TableSize);
 void DestroyTable(HashTable H);
 Position Find(ElementType X, HashTable H);
 void Insert(ElementType X, HashTable H);
-int Delete(ElementType X, HashTable H);
-ElementType Retrieve(Position P);
-int Hash(ElementType X, int TableSize);
+ElementType Retrieve(Position P, HashTable H);
+HashTable Rehash(HashTable H);
 
-struct ListNode {
+enum KindOfEntry { Legitimate, Empty, Deleted };
+
+struct HashEntry {
   ElementType Element;
-  Position Next;
+  enum KindOfEntry Info;
 };
+
+typedef struct HashEntry Cell;
 
 struct HashTbl {
   int TableSize;
-  List *TheLists;
-}
+  Cell *TheCells;
+};
