@@ -70,3 +70,31 @@ Position Find(ElementType X, HashTable H) {
   }
   return CurrentPos;
 }
+
+void Insert(ElementType X, HashTable H) {
+  Position Pos;
+  Pos = Find(X, H);
+  if (H->TheCells[Pos].Info != Legitimate) {
+    /* ok to insert here */
+    H->TheCells[Pos].Info = Legitimate;
+    H->TheCells[Pos].Element = X;
+  }
+}
+
+HashTable Rehash(HashTable H) {
+  int i, OldSize;
+  Cell *OldCells;
+
+  OldCells = H->TheCells;
+  OldSize = H->TableSize;
+
+  /* get a new,empty table */
+  H = Initialize(2 * OldSize);
+
+  /* scan through old table, reinserting into new */
+  for (i = 0; i < OldSize; i++)
+    if (OldCells[i].Info == Legitimate)
+      Insert(OldCells[i].Element, H);
+  free(OldCells);
+  return H;
+}
