@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
 
 #define item_cmp(a, b) ((a) > (b)) /* 最小堆 */
 
@@ -43,7 +44,7 @@ static void swap(ElementType *data, int a, int b) {
  */
 static void fixup(d_heap_pt heap, int k) {
   int degree = heap->degree;
-  while (k > 0 && item_cmp(heap->data[(k - 1) / degree, heap->data[k]])) {
+  while (k > 0 && item_cmp(heap->data[(k - 1) / degree], heap->data[k])) {
     swap(heap->data, k, (k - 1) / degree);
     k = (k - 1) / degree;
   }
@@ -103,4 +104,62 @@ void d_heap_print(d_heap_pt heap) {
     return;
   for (i = 0; i < heap->size; i++)
     printf("%d ", heap->data[i]);
+}
+
+int d_heap_push(d_heap_pt heap, ElementType x) {
+  if (heap == NULL)
+    return 0;
+  if (heap->current == heap->size)
+    return 0;
+  heap->data[heap->current] = x;
+  fixup(heap, heap->current++);
+  return 1;
+}
+
+ElementType d_heap_pop(d_heap_pt heap) {
+  swap(heap->data, 0, heap->current - 1);
+  fixdown(heap, 0, heap->current - 2);
+  return heap->data[--heap->current];
+}
+
+ElementType d_heap_top(d_heap_pt heap) { return heap->data[0]; }
+int d_heap_empty(d_heap_pt heap) { return heap->current == 0; }
+
+int main(int argc, char *argv[]) {
+  int a[] = {10, 20, 30, 50, 40, 70, 100, 130, 150, 60, 80, 170, 90, 110, 90};
+  int i, len = LENGTH(a);
+  d_heap_pt heap = NULL;
+  heap = initialize(LENGTH(a) + 10, 3);
+
+  printf("\n== 空堆检查: %d", d_heap_empty(heap));
+  printf("\n== 插入数据: ");
+  for (i = 0; i < len; i++) {
+    printf("%d ", a[i]);
+    d_heap_push(heap, a[i]);
+  }
+  printf("\n== 空堆检查: %d", d_heap_empty(heap));
+
+  printf("\n== 最 小 堆: ");
+  d_heap_print(heap);
+
+  i = 15;
+  d_heap_push(heap, i);
+  printf("\n== 添加元素: %d", i);
+  printf("\n== 最 小 堆: ");
+  d_heap_print(heap);
+
+  printf("\n== 堆顶元素: %d\n", d_heap_top(heap));
+
+  i = d_heap_pop(heap);
+  printf("\n== 删除元素: %d", i);
+  printf("\n== 最 小 堆: ");
+  d_heap_print(heap);
+  printf("\n");
+  i = d_heap_pop(heap);
+  printf("\n== 删除元素: %d", i);
+  printf("\n== 最 小 堆: ");
+  d_heap_print(heap);
+  printf("\n");
+  d_heap_free(heap);
+  return 0;
 }
