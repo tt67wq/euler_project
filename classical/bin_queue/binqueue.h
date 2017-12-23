@@ -10,4 +10,10 @@ typedef struct BinNode *Position;
 typedef Position BinTree;
 typedef struct Collection *BinQueue;
 
+BinTree CombineTrees(BinTree t1, BinTree t2);
+BinQueue Merge(BinQueue q1, BinQueue q2);
+int IsEmpty(BinQueue q);
+BinQueue Initialize();
+ElementType DeleteMin(BinQueue q);
+
 #endif
