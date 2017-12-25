@@ -2,6 +2,7 @@
 #define _BINQUEUE_H_
 #define MaxTrees 100
 #define Capacity 1000
+#define INT_MIN 0
 
 struct BinNode;
 struct Collection;
