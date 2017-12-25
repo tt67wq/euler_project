@@ -31,16 +31,18 @@ void *checked_malloc(int len) {
   return p;
 }
 
-struct BinNode {
-  ElementType Element;
-  Position LeftChild;
-  Position NextSibling;
-};
-
-struct Collection {
-  int CurrentSize;
-  BinTree TheTrees[MaxTrees];
-};
+BinQueue Insert(ElementType x, BinQueue q) {
+  BinTree t;
+  BinQueue tq;
+  tq = Initialize();
+  t = checked_malloc(sizeof(struct BinNode));
+  t->Element = x;
+  t->LeftChild = NULL;
+  t->NextSibling = NULL;
+  tq->CurrentSize = 1;
+  tq->TheTrees[0] = t;
+  return Merge(q, tq);
+}
 
 /* 合并两个树 */
 BinTree CombineTrees(BinTree t1, BinTree t2) {
@@ -138,4 +140,24 @@ ElementType DeleteMin(BinQueue Q) {
   Q->CurrentSize -= DeletedQueue->CurrentSize + 1;
   Merge(Q, DeletedQueue);
   return MinItem;
+}
+
+void PrintTree(BinTree t) {
+  if (t) {
+    printf("%d\n", t->Element);
+    PrintTree(t->LeftChild);
+    PrintTree(t->NextSibling);
+  }
+}
+
+/* 打印队列 */
+void PrintQueue(BinQueue Q) {
+  int i;
+  for (i = 0; i < Q->CurrentSize; i++) {
+    printf("当前为队列的第%d个树\n", i + 1);
+    if (Q->TheTrees[i])
+      PrintTree(Q->TheTrees[i]);
+    else
+      printf("空树\n");
+  }
 }

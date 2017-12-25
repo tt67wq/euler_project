@@ -16,5 +16,18 @@ BinQueue Merge(BinQueue q1, BinQueue q2);
 int IsEmpty(BinQueue q);
 BinQueue Initialize();
 ElementType DeleteMin(BinQueue q);
+BinQueue Insert(ElementType x, BinQueue q);
+void PrintQueue(BinQueue Q);
+
+struct BinNode {
+  ElementType Element;
+  Position LeftChild;
+  Position NextSibling;
+};
+
+struct Collection {
+  int CurrentSize;
+  BinTree TheTrees[MaxTrees];
+};
 
 #endif
