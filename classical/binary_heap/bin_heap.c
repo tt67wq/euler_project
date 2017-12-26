@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MinPQSize 20;
-#define MinData 0;
+#define MinPQSize 20
+#define MinData 0
 
 PriorityQueue Initialize(int MaxElements) {
   PriorityQueue H;
@@ -84,3 +84,36 @@ ElementType DeleteMin(PriorityQueue H) {
 
 int IsEmpty(PriorityQueue H) { return H->Size == 0; }
 int IsFull(PriorityQueue H) { return H->Size == H->Capacity; }
+
+void percDown(ElementType A[], int i, int N) {
+  int child;
+  ElementType tmp;
+
+  for (tmp = A[i]; LeftChild(i) < N; i = child) {
+    child = LeftChild(i);
+    if (child != N - 1 && A[child + 1] > A[child])
+      child++;
+    if (tmp < A[child])
+      A[i] = A[child];
+    else
+      break;
+  }
+  A[i] = tmp;
+}
+
+void swap(int *a, int *b) {
+  int tmp = *b;
+  *b = *a;
+  *a = tmp;
+}
+
+/* 堆排序 */
+void HeapSort(ElementType A[], int N) {
+  int i;
+  for (i = N / 2; i >= 0; i--)
+    percDown(A, i, N);
+  for (i = N - 1; i > 0; i--) {
+    swap(&A[0], &A[i]);
+    percDown(A, 0, i);
+  }
+}
