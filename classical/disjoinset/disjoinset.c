@@ -14,6 +14,7 @@
  *
  * =====================================================================================
  */
+/* http://blog.csdn.net/changyuanchn/article/details/16810535 */
 #include "disjoinset.h"
 #include <assert.h>
 #include <stdio.h>
