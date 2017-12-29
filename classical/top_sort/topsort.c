@@ -15,19 +15,12 @@
  * =====================================================================================
  */
 #include "topsort.h"
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
 #define TRUE 1
 #define FALSE 0
-
-void *checked_malloc(int len) {
-  void *p = malloc(len);
-  assert(p);
-  return p;
-}
 
 int toplogical_sort(PrToLGraph G) {
   int i, j;

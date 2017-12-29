@@ -17,4 +17,6 @@ typedef struct _LGraph {
   PrToVNode *vexs;
 } LGraph, *PrToLGraph;
 
+int toplogical_sort(PrToLGraph G);
+
 #endif
