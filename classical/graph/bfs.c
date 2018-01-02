@@ -52,7 +52,7 @@ void insert_to_adj(GRAPH *G, NODE *x, int key) {
   PTR_NODE *temp;
   temp = (PTR_NODE *)malloc(sizeof(PTR_NODE));
   temp->next = G->adj[key];
-  temp->ptr = G->length;
+  temp->ptr = x;
   G->adj[key] = temp;
 }
 
@@ -80,7 +80,7 @@ NODE *dequeue(NODEQUEUE *Q) {
   /* 返回Q->arr[Q->start]，同时将这个数组给删除。同时，Q->count减1。 */
   NODE *temp;
   if (Q->start == Q->end)
-    return;
+    return NULL;
   else {
     temp = Q->arr_temp[Q->start++];
     if (Q->start == Q->length)

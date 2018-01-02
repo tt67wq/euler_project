@@ -1,5 +1,5 @@
-#ifndef _Graph_
-#define _Graph_
+#ifndef _BFS_
+#define _BFS_
 #include <limits.h>
 #define MAXSIZE 100
 #define WHITE 1
@@ -38,7 +38,7 @@ NODE *arr_V[MAXSIZE];
 void BFS(GRAPH *G, NODE *S);
 void init_graph(GRAPH *G, int len);
 void insert_to_adj(GRAPH *G, NODE *x, int key);
-void init_queue(NODEQUEUE *Q, NODE *x);
+void init_queue(NODEQUEUE *Q, GRAPH *G);
 NODE *create_and_init_node(int key);
 NODE *dequeue(NODEQUEUE *Q);
 
