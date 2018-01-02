@@ -96,7 +96,7 @@ LGraph *create_example_lgraph() {
     if (pG->vexs[p1]->first_edge == NULL) {
       pG->vexs[p1]->first_edge = node1;
     } else {
-      printf("链接最后一个点\n");
+      printf("链接后一个点\n");
       link_last(pG->vexs[p1]->first_edge, node1);
     }
   }
