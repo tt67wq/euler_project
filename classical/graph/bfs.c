@@ -14,7 +14,6 @@
  *
  * =====================================================================================
  */
-/* http://blog.csdn.net/code_mlym/article/details/52435044 */
 #include "bfs.h"
 #include <stdio.h>
 #include <stdlib.h>
