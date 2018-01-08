@@ -109,7 +109,7 @@ void DispGraph(AdjMatrix *G) {
 
 void DFS(AdjMatrix *G, int v) {
   EdgeNode *p;
-  printf("在%d点进行深度搜索\n", v);
+  printf("在%d点进行深度搜索\n", v+1);
   printf("->%c", G->adjlist[v].vertex);
   visited[v] = 1;
   p = G->adjlist[v].edgenext;
