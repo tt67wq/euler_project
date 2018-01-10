@@ -47,3 +47,51 @@ TopDownSplayTree left_left_single_rotate(TopDownSplayTree root) {
   root->right = tmp;
   return root;
 }
+
+TopDownSplayTree right_right_single_rotate(TopDownSplayTree root) {
+  TopDownSplayTree tmp;
+
+  tmp = root;
+  root = root->right;
+  root->right = root->left;
+  root->left = tmp;
+  return root;
+}
+
+TopDownSplayTree topdown_splay(int value, TopDownSplayTree middle) {
+  Node plusTree;
+  PNode leftTreeMax;
+  PNode rightTreeMin;
+
+  leftTreeMax = &plusTree;
+  rightTreeMin = &plusTree;
+
+  while (value != middle->value) {
+    if (middle->value < value) {
+      if (middle->right == NULL)
+        break;
+      else if (middle->right->value < value && middle->right->right)
+        middle = right_right_single_rotate(middle);
+      leftTreeMax->right = middle;
+      leftTreeMax = middle;
+      middle = middle->right;
+      leftTreeMax->right = NULL;
+    }
+  }
+  if (middle->value > value) {
+    if (middle->left == NULL)
+      break;
+    else if (middle->left->value > value && middle->left->left)
+      middle = left_left_single_rotate(middle);
+    rightTreeMin->left = middle;
+    rightTreeMin = middle;
+    middle = middle->left;
+    rightTreeMin->left = NULL;
+  }
+  leftTreeMax->right = middle->left;
+  rightTreeMin->left = middle->right;
+  middle->left = plusTree.right;
+  middle->right = plusTree.left;
+
+  return middle;
+}
