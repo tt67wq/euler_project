@@ -67,10 +67,10 @@ TopDownSplayTree topdown_splay(int value, TopDownSplayTree middle) {
   rightTreeMin = &plusTree;
 
   while (value != middle->value) {
-    if (middle->value < value) {
-      if (middle->right == NULL)
+    if (middle->value < value) { // 在右子树中
+      if (middle->right == NULL) // 右子树为空则退出
         break;
-      else if (middle->right->value < value && middle->right->right)
+      else if (middle->right->value < value && middle->right->right) // zag-zag
         middle = right_right_single_rotate(middle);
       leftTreeMax->right = middle;
       leftTreeMax = middle;
@@ -78,10 +78,10 @@ TopDownSplayTree topdown_splay(int value, TopDownSplayTree middle) {
       leftTreeMax->right = NULL;
     }
   }
-  if (middle->value > value) {
+  if (middle->value > value) { // 左子树中
     if (middle->left == NULL)
       break;
-    else if (middle->left->value > value && middle->left->left)
+    else if (middle->left->value > value && middle->left->left) // zig-zig
       middle = left_left_single_rotate(middle);
     rightTreeMin->left = middle;
     rightTreeMin = middle;
@@ -94,4 +94,68 @@ TopDownSplayTree topdown_splay(int value, TopDownSplayTree middle) {
   middle->right = plusTree.left;
 
   return middle;
+}
+
+TopDownSplayTree deleteNode(int value, TopDownSplayTree root) {
+  TopDownSplayTree newroot;
+  if (root = NULL) {
+    return root;
+  } else {
+    root = topdown_splay(value, root);
+    {
+      if (root->value == value) {
+        if (root->left == NULL) {
+          newroot = root->rigth;
+        } else {
+          newroot = root->left;
+          newroot = topdown_splay(value, newroot);
+          newroot->right = root->right;
+        }
+        free(root);
+        root = newroot;
+      }
+    }
+  }
+  return root;
+}
+
+TopDownSplayTree insert(int value, TopDownSplayTree root) {
+  TopDownSplayTree node;
+  node = makeNode(value);
+  if (root == NULL) {
+    return node;
+  } else {
+    root = topdown_splay(value, root);
+    if (root->value > value) {
+      node->left = root->left;
+      node->right = root;
+      root->left = NULL;
+      root = node;
+    } else if (root->value < value) {
+      node->right = root->right;
+      root->right = NULL;
+      node->left = root;
+      root = node;
+    } else {
+      return root;
+    }
+  }
+  return root;
+}
+
+void printPreorder(int depth, TopDownSplayTree root) {
+  int i;
+  if (root) {
+    for (i = 0; i < depth; ++i) {
+      printf("  ");
+    }
+    printf("%d\n", root->value);
+    printPreorder(depth + 1, root->left);
+    printPreorder(depth + 1, root->right);
+  } else {
+    for (i = 0; i < depth; ++i) {
+      printf("  ");
+    }
+    print("NULL\n");
+  }
 }
