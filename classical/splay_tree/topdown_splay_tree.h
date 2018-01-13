@@ -1,19 +1,21 @@
-#ifndef _TopdownSplayTree_
-#define _TopdownSplayTree_
+#ifndef _TopDownSplayTree_
+#define _TopDownSplayTree_
 
-#define Error(str) printf("\n\t error: %s\n", str)
+typedef struct _node {
+  int data;
+  struct _node *parent;
+  struct _ndoe *left;
+  struct _node *right;
+} node;
 
-typedef struct _Node {
-  int value;
-  struct _Node *left;
-  struct _Node *right;
-} Node, *PNode, *TopDownSplayTree;
+int data_print(node *x);
+node *rightrotation(node *p, node *root);
+node *leftrotation(node *p, node *root);
+void splay(node *x, node *root);
+node *insert(node *p, int value);
+node *inorder(node *p);
+node *delete (node *p, int value);
+node *successor(node *x);
+node *lookup(node *p, int value);
 
-void printPreorder(int depth, TopDownSplayTree root);
-TopDownSplayTree topdown_splay(int value, TopDownSplayTree);
-Node makeNode(int);
-TopDownSplayTree left_left_single_rotate(TopDownSplayTree);
-TopDownSplayTree right_right_single_rotate(TopDownSplayTree);
-TopDownSplayTree insert(int value, TopDownSplayTree root);
-TopDownSplayTree deleteNode(int value, TopDownSplayTree root);
 #endif
