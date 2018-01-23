@@ -3,7 +3,7 @@
  *
  *       Filename:  karastuba.c
  *
- *    Description:  大数相乘，karastuba算法简单描述
+ *    Description:  大数相乘，karastuba算法简单描述，分治法的典型应用
  *
  *        Version:  1.0
  *        Created:  2018-01-20
