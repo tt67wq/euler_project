@@ -19,6 +19,9 @@
  * DOTCOM，每个字符代表一个0~9之间的数字，请找出一组字符和数字的对应关系，使等式成立。
  */
 
+/* 参考解法 */
+/* http://www.voidcn.com/article/p-mmzxlpdk-kd.html */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
