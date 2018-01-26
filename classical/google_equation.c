@@ -22,6 +22,9 @@
 /* 参考解法 */
 /* http://www.voidcn.com/article/p-mmzxlpdk-kd.html */
 
+/* 函数指针参考资料 */
+/* http://www.cnblogs.com/windlaughing/archive/2013/04/10/3012012.html */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +38,7 @@
 typedef struct _ci {
 	char key;
 	int value;
-        int is_leading;
+	int is_leading;
 } CharItem;
 
 typedef struct _cv {
@@ -43,40 +46,28 @@ typedef struct _cv {
 	int used;
 } CharValue;
 
+typedef void (*p_func)(CharItem *);
 
 int is_valid_value(CharItem *, CharValue *);
 int make_int_value(CharItem ci[SIZE], char *);
 void on_charlist_ready(CharItem ci[SIZE]);
+void search_result(CharItem ci[SIZE], CharValue *, int index, p_func);
 
 int main() {
-  CharItem ci[SIZE] = {
-	  {'W', -1, TRUE},
-	  {'D', -1, TRUE},
-	  {'O', -1, FALSE},
-	  {'T', -1, FALSE},
-	  {'G', -1, TRUE},
-	  {'L', -1, FALSE},
-	  {'E', -1, FALSE},
-	  {'C', -1, FALSE},
-	  {'M', -1, FALSE}
-  };
+	CharItem ci[SIZE] = {{'W', -1, TRUE},  {'D', -1, TRUE},  {'O', -1, FALSE},
+			     {'T', -1, FALSE}, {'G', -1, TRUE},  {'L', -1, FALSE},
+			     {'E', -1, FALSE}, {'C', -1, FALSE}, {'M', -1, FALSE}};
 
-  CharValue cv[SIZE+1] = {
-	  {0, FALSE},
-	  {1, FALSE},
-	  {2, FALSE},
-	  {3, FALSE},
-	  {4, FALSE},
-	  {5, FALSE},
-	  {6, FALSE},
-	  {7, FALSE},
-	  {8, FALSE},
-	  {9, FALSE}
-  };
-  return 1;
+	CharValue cv[SIZE + 1] = {{0, FALSE}, {1, FALSE}, {2, FALSE}, {3, FALSE},
+				  {4, FALSE}, {5, FALSE}, {6, FALSE}, {7, FALSE},
+				  {8, FALSE}, {9, FALSE}};
+
+	search_result(ci, cv, 0, on_charlist_ready);
+	return 1;
 }
 
 int is_valid_value(CharItem *ci, CharValue *cv) {
+	/* printf("检测中!\n"); */
 	if (cv->value == 0) {
 		if (USE_MY_ISVALUE) {
 			if (ci->key == 'W' || ci->key == 'G' || ci->key == 'D')
@@ -88,12 +79,12 @@ int is_valid_value(CharItem *ci, CharValue *cv) {
 	return !cv->used;
 }
 
-int make_int_value(CharItem ci[SIZE], char *str){
+int make_int_value(CharItem *ci, char *str) {
 	int i, j, res = 0;
 	int l = strlen(str);
-	for (i = l; i >= 0; --i) {
-		for (j=0;j<SIZE;j++){
-			if(ci[j].key==str[i]){
+	for (i = 0; i < l; ++i) {
+		for (j = 0; j < SIZE; j++) {
+			if (ci[j].key == str[i]) {
 				res *= 10;
 				res += ci[j].value;
 			}
@@ -102,15 +93,33 @@ int make_int_value(CharItem ci[SIZE], char *str){
 	return res;
 }
 
-
-void on_charlist_ready(CharItem *ci){
+void on_charlist_ready(CharItem *ci) {
 	char *minuend = "WWWDOT";
 	char *subtrahead = "GOOGLE";
 	char *diff = "DOTCOM";
-        int m, s, d;
-        m = make_int_value(ci, minuend);
-        s = make_int_value(ci, subtrahead);
-        d = make_int_value(ci, diff);
-	if((m-s)==d)
+	int m, s, d;
+	m = make_int_value(ci, minuend);
+	s = make_int_value(ci, subtrahead);
+	d = make_int_value(ci, diff);
+	if ((m - s) == d)
 		printf("%d - %d = %d\n", m, s, d);
+}
+
+void search_result(CharItem *ci, CharValue *cv, int index, p_func callback) {
+	int max_char_count, max_number_count;
+	max_char_count = 9;
+	max_number_count = 10;
+
+	if (index == max_char_count) {
+		callback(ci);
+	}
+
+	for (int i = 0; i < max_number_count; ++i) {
+		if (is_valid_value(&ci[index], &cv[i])) {
+			cv[i].used = TRUE;
+			ci[index].value = cv[i].value;
+			search_result(ci, cv, index + 1, callback);
+			cv[i].used = FALSE;
+		}
+	}
 }
