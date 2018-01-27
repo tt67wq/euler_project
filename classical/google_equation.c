@@ -68,15 +68,15 @@ int main() {
 
 int is_valid_value(CharItem *ci, CharValue *cv) {
 	/* printf("检测中!\n"); */
-	if (cv->value == 0) {
+	if (cv->value == 0) { // 如果值为0
 		if (USE_MY_ISVALUE) {
-			if (ci->key == 'W' || ci->key == 'G' || ci->key == 'D')
+			if (ci->key == 'W' || ci->key == 'G' || ci->key == 'D') // 0不能是是开头数字
 				return FALSE;
 		} else {
-			return !ci->is_leading;
+			return !ci->is_leading; // true
 		}
 	}
-	return !cv->used;
+	return !cv->used; // 用过的数字返回false
 }
 
 int make_int_value(CharItem *ci, char *str) {
@@ -111,7 +111,7 @@ void search_result(CharItem *ci, CharValue *cv, int index, p_func callback) {
 	max_number_count = 10;
 
 	if (index == max_char_count) {
-		callback(ci);
+		callback(ci); // 检测是否满足方程
 	}
 
 	for (int i = 0; i < max_number_count; ++i) {
@@ -119,7 +119,7 @@ void search_result(CharItem *ci, CharValue *cv, int index, p_func callback) {
 			cv[i].used = TRUE;
 			ci[index].value = cv[i].value;
 			search_result(ci, cv, index + 1, callback);
-			cv[i].used = FALSE;
+			cv[i].used = FALSE; // 如果没满足，将used还原
 		}
 	}
 }
