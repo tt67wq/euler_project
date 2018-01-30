@@ -15,7 +15,8 @@
  * =====================================================================================
  */
 
-/* https://zyziyun.github.io/2017/03/02/%E9%98%BF%E6%8B%89%E4%BC%AF%E6%95%B0%E5%AD%97%E4%B8%8E%E4%B8%AD%E6%96%87%E6%95%B0%E5%AD%97%E8%BD%AC%E6%8D%A2%E7%AE%97%E6%B3%95/ */
+/* https://zyziyun.github.io/2017/03/02/%E9%98%BF%E6%8B%89%E4%BC%AF%E6%95%B0%E5%AD%97%E4%B8%8E%E4%B8%AD%E6%96%87%E6%95%B0%E5%AD%97%E8%BD%AC%E6%8D%A2%E7%AE%97%E6%B3%95/
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,58 +26,87 @@
 #define TRUE 1
 #define FALSE 0
 
-char * Number2Chinese(int num, char **chnNumChar, char **chnUnitSection);
-char * Section2Chinese(int);
+char *const chnNumChar[] = {"零", "一", "二", "三", "四",
+                            "五", "六", "七", "八", "九"};
+char *const chnUnitSection[] = {"", "万", "亿", "万亿"};
+char *const chnUnitChar[] = {"", "十", "百", "千"};
+
+char *Number2Chinese(int num);
+char *Section2Chinese(int);
+char *join(char *s1, char *s2);
 
 int main(int ac, char *av[]) {
 	int num;
-	const char *chnNumChar[10] = {"零", "一", "二", "三", "四",
-				      "五", "六", "七", "八", "九"};
-
-	const char *chnUnitSection[] = {"", "万", "亿", "万亿"};
-	const char *chnUnitChar[] = {"", "十", "百", "千"};
 
 	/* check args */
 	if (ac != 2) {
 		fprintf(stderr, "usage: num2chinese num\n");
 		exit(1);
 	}
-        num = atoi(av[1]);
-        printf("%d\n", num);
+	num = atoi(av[1]);
+	printf("输入数字: %d\n", num);
+	printf("转换后\n");
+	printf("%s\n", Number2Chinese(num));
 	return 1;
 }
 
-char *Number2Chinese(int num, char **chnNumChar, char **chnUnitSection) {
-	char *chnStr;
+char *Number2Chinese(int num) {
+	char *chnStr = "";
 	int unitPos = 0;
-	char *strIns;
+	char *strIns = "";
 	int needZero = FALSE;
 	int section;
 
 	while (num > 0) {
 		section = num % 10000;
 		if (needZero) {
-			strcat(chnStr, chnNumChar[0]);
+			chnStr = join(chnNumChar[0], chnStr);
 		}
 		strIns = Section2Chinese(section);
-		strcat(strIns,
-		       (section != 0) ? chnUnitSection[unitPos] : chnUnitSection[0]);
-                chnStr = strcat(strIns, chnStr);
-		needZero = (section < 1000)  && (section > 0);
-                num = num / 10000;
-                ++unitPos;
-        }
+		strIns = join(strIns,
+			      (section != 0) ? chnUnitSection[unitPos] : chnUnitSection[0]);
+		chnStr = join(strIns, chnStr);
+		needZero = (section < 1000) && (section > 0);
+		num = num / 10000;
+		++unitPos;
+	}
 	return chnStr;
 }
 
-char * Section2Chinese(int num){
-	char *chnStr;
-	char *strIns;
-	int unitPos;
-        int zero = TRUE;
+char *Section2Chinese(int section) {
+	char *chnStr = "";
+	char *strIns = "";
+	int unitPos = 0;
+	int zero = TRUE;
 	int v;
 
-        while (section > 0) {
+	while (section > 0) {
 		v = section % 10;
-        }
+		if (v == 0) {
+			if ((section == 0) || !zero) {
+				zero = TRUE;
+				chnStr = join(chnNumChar[v], chnStr);
+			}
+		} else {
+			zero = FALSE;
+			strIns = chnNumChar[v];
+			strIns = join(strIns, chnUnitChar[unitPos]);
+			chnStr = join(strIns, chnStr);
+		}
+		unitPos++;
+		section = section / 10;
+	}
+	return chnStr;
+}
+
+char *join(char *s1, char *s2) {
+	char *result = malloc(strlen(s1) + strlen(s2) + 1);
+	// in real code you would check for errors in malloc here
+	if (result == NULL)
+		exit(1);
+
+	strcpy(result, s1);
+	strcat(result, s2);
+
+	return result;
 }
