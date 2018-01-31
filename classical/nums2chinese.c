@@ -14,7 +14,7 @@
  *
  * =====================================================================================
  */
-
+/* 算法的乐趣里面的例子，我把代码补充完整 */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,8 +43,7 @@ int main(int ac, char *av[]) {
 	}
 	num = atoi(av[1]);
 	printf("输入数字: %d\n", num);
-	printf("转换后\n");
-	printf("%s\n", Number2Chinese(num));
+	printf("转换结果: %s\n", Number2Chinese(num));
 	return 1;
 }
 
@@ -57,10 +56,12 @@ char *Number2Chinese(int num) {
 
 	while (num > 0) {
 		section = num % 10000;
+		printf("section: %d\n", section);
 		if (needZero) {
 			chnStr = join(chnNumChar[0], chnStr);
 		}
 		strIns = Section2Chinese(section);
+		printf("section to chinese: %s\n", strIns);
 		strIns = join(strIns,
 			      (section != 0) ? chnUnitSection[unitPos] : chnUnitSection[0]);
 		chnStr = join(strIns, chnStr);
@@ -71,6 +72,7 @@ char *Number2Chinese(int num) {
 	return chnStr;
 }
 
+// 块 转成汉字
 char *Section2Chinese(int section) {
 	char *chnStr = "";
 	char *strIns = "";
