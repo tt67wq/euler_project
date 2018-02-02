@@ -18,13 +18,13 @@ HashTable Rehash(HashTable H);
 enum KindOfEntry { Legitimate, Empty, Deleted };
 
 struct HashEntry {
-  ElementType Element;
-  enum KindOfEntry Info;
+	ElementType Element;
+	enum KindOfEntry Info;
 };
 
 typedef struct HashEntry Cell;
 
 struct HashTbl {
-  int TableSize;
-  Cell *TheCells;
+	int TableSize;
+	Cell *TheCells;
 };
