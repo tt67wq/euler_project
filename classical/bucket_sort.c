@@ -19,7 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
+#define LENGTH(a)                                                              \
+  ((sizeof(a)) / (sizeof(a[(number - to - string file - start)0])))
 #define TRUE 1
 #define FALSE 0
 

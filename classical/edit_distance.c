@@ -35,63 +35,58 @@
 int min(int a, int b);
 int EditDistance(char *ps, char *pt);
 
-
 int main() {
-	char *ps, *pt;
-	int distance;
+        char *ps, *pt;
+        int distance;
 
-	ps = "ALGORITHM";
-	pt = "ALTRUISTIC";
+        ps = "ALGORITHM";
+        pt = "ALTRUISTIC";
 
         printf("ps: %s, pt: %s\n", ps, pt);
         distance = EditDistance(ps, pt);
-	printf("min distance is %d\n", distance);
-	return 1;
+        printf("min distance is %d\n", distance);
+        return 1;
 }
 
-
 int EditDistance(char *ps, char *pt) {
-	int srcLength = strlen(ps);
-	int targetLength = strlen(pt);
-	int i, j;
+        int srcLength = strlen(ps);
+        int targetLength = strlen(pt);
+        int i, j;
         printf("src length: %d, target length: %d\n", srcLength, targetLength);
         int dp[srcLength + 1][targetLength + 1];
 
         memset(dp, 0, sizeof(dp));
 
-
         for (i = 0; i <= srcLength; ++i) {
-		dp[i][0] = i;
-	}
+                dp[i][0] = i;
+        }
 
-	for (j = 0; j <= targetLength; ++j) {
-		dp[0][j] = j;
-	}
+        for (j = 0; j <= targetLength; ++j) {
+                dp[0][j] = j;
+        }
 
         for (i = 1; i <= srcLength; ++i) {
-		for (j = 1; j <= targetLength; ++j) {
-
-			if (ps[i - 1] == pt[j - 1]) {
-				dp[i][j] = dp[i - 1][j - 1];
-			} else {
-				dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1]);
-			}
-
+                for (j = 1; j <= targetLength; ++j) {
+                        if (ps[i - 1] == pt[j - 1]) {
+                                dp[i][j] = dp[i - 1][j - 1];
+                        } else {
+                                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1]);
+                        }
                 }
-	}
+        }
 
         /* for (i = 0; i <= srcLength; ++i) { */
-	/* 	for (j = 0; j <= targetLength; ++j) { */
-	/* 		printf("dp[%d][%d] = %d\n", i, j, dp[i][j]); */
+        /* 	for (j = 0; j <= targetLength; ++j) { */
+        /* 		printf("dp[%d][%d] = %d\n", i, j, dp[i][j]); */
         /*         } */
-	/* } */
+        /* } */
 
         return dp[srcLength][targetLength];
 }
 
 int min(int a, int b) {
-	if (a > b)
-		return b;
-	else
-		return a;
+        if (a > b)
+                return b;
+        else
+                return a;
 }
