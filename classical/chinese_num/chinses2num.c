@@ -51,7 +51,7 @@ ChineseName nameHash(char *);
 int main() {
         char *chn[9] = {"九", "万", "六", "千", "四", "百", "八", "十", "七"};
         printf("%lu\n", LENGTH(chn));
-        printf("九百八十七   转换后结果为: %d\n",
+        printf("九万六千四百八十七   转换后结果为: %d\n",
                chinese2num(chn, LENGTH(chn)));
         return 0;
 }
