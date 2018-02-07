@@ -10,6 +10,7 @@ defmodule WaterSplit do
   require Logger
   @doc """
   倒一次水, 所有的结果
+  笨办法，一个个枚举
   """
   def pull_once(0, 0, 8), do: [[0, 5, 3], [3, 0, 5]]
   def pull_once(0, 5, 3), do: [[3, 2, 3], [3, 5, 0]]
@@ -28,6 +29,9 @@ defmodule WaterSplit do
   def pull_once(3, 1, 4), do: [[0, 4, 4], [0, 1, 7], [3, 0, 5], [3, 5, 0]]
 
 
+  @doc """
+  检查是否在链条里面，避免形成死循环
+  """
   def in_queue?(queue, state), do: iq(queue, state)
   defp iq([h|_t], state) when h == state, do: true
   defp iq([_|t], state), do: iq(t, state)
@@ -49,7 +53,14 @@ defmodule WaterSplit do
   def sl_chains(queues), do: queues |> Enum.reduce([], fn x, acc -> sl_chain(x) ++ acc end)
 
   defp equal?(a, b), do: a == b
-  defp all_finish?(queues), do: queues |> Enum.filter(fn [x|_] -> x == [0, 4, 4] end) |> length() |> equal?(length(queues))
+
+  @doc """
+  检查是否全部完成了
+  """
+  defp all_finish?(queues) do
+    queues |> Enum.filter(fn [x|_] -> x == [0, 4, 4] end)
+    |> length() |> equal?(length(queues))
+  end
   
   def solution() do
     queues = sl_chain([[0, 0, 8]])
