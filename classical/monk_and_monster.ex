@@ -11,6 +11,11 @@ defmodule MonkAndMonster do
   """
   @doc """
   状态转换
+  过河的情况无非5种
+  1个和尚过河， 2个和尚过河
+  1个妖怪过河， 2个妖怪过河
+  1个和尚加一个妖怪过河
+  过滤掉非法的状态机和和尚被吃掉的情况
   """
   def state_iter([lh, lm, rh, rm, 0]) do
     [
