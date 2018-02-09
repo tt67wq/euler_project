@@ -28,7 +28,7 @@ defmodule ArrangedProbability do
   x1 = 1
   y1 = 1
   """
-  @limit 1000000000000
+  @limit 1_000_000_000_000
 
   require Logger
 
@@ -39,11 +39,9 @@ defmodule ArrangedProbability do
   end
 
   defp sl(x, y) when y > @limit, do: {x, y}
+
   defp sl(x, y) do
     {x1, y1} = iter(x, y)
     sl(x1, y1)
   end
-
-
-
 end
