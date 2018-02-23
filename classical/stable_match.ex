@@ -22,8 +22,8 @@ defmodule StableMatch do
   生成基本测试数据
   """
   def generate_base_data() do
-    men_names = ["a", "b", "c", "d", "e", "f"]
-    women_names = ["A", "B", "C", "D", "E", "F"]
+    men_names = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    women_names = ["A", "B", "C", "D", "E", "F", "G", "H"]
     men_map = %{}
     women_map = %{}
 
@@ -73,7 +73,7 @@ defmodule StableMatch do
   defp compare([_ | t], hus, men_name), do: compare(t, hus, men_name)
 
   def iter(women, men) do
-    ["a", "b", "c", "d", "e", "f"]
+    ["a", "b", "c", "d", "e", "f", "g", "h"]
     |> Enum.map(fn x -> {x, Map.fetch!(men, x)} end)
     |> Enum.filter(fn {_, {cp, _}} -> cp == "" end)
     |> Enum.map(fn {m, {_, [h | _]}} -> {m, h} end)
