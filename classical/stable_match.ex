@@ -1,6 +1,5 @@
 defmodule StableMatch do
   @moduledoc """
-  http://blog.csdn.net/cscmaker/article/details/8291131
   有N男N女，每个人都按照他对异性的喜欢程度排名。现在需要写出一个算法安排这N个男的、N个女的结婚，要求两个人的婚姻应该是稳定的。
   何为稳定？
   有两对夫妻M1 F2，M2 F1。
