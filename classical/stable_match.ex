@@ -1,10 +1,12 @@
 defmodule StableMatch do
   @moduledoc """
-  有N男N女，每个人都按照他对异性的喜欢程度排名。现在需要写出一个算法安排这N个男的、N个女的结婚，要求两个人的婚姻应该是稳定的。
-  何为稳定？
-  有两对夫妻M1 F2，M2 F1。
-  M1心目中更喜欢F1，但是他和F2结婚了，M2心目中更喜欢F2，但是命运却让他和F1结婚了，显然这样的婚姻是不稳定的，
-  随时都可能发生M1和F1私奔或者M2和F2私奔的情况。所以在做出匹配选择的时候（也就是结婚的时候），我们需要做出稳定的选择，以防这种情况的发生。
+  有N男N女，每个人都按照他对异性
+  的喜欢程度排名。现在需要写出一个算法安排这N个男的、N个女的结婚，要求
+  两个人的婚姻应该是稳定的。何为稳定？有两对夫妻M1 F2，M2 F1。M1心目中
+  更喜欢F1，但是他和F2结婚了，M2心目中更喜欢F2，但是命运却让他和F1结婚
+  了，显然这样的婚姻是不稳定的，随时都可能发生M1和F1私奔或者M2和F2私奔
+  的情况。所以在做出匹配选择的时候（也就是结婚的时候），我们需要做出稳
+  定的选择，以防这种情况的发生。
 
   算法步骤描述：
 
@@ -37,13 +39,16 @@ defmodule StableMatch do
     {men, women}
   end
 
+  @doc """
+  男人对女人展开追求
+  """
   def choose(women, men, women_name, men_name) do
     {hus, range} = Map.fetch!(women, women_name)
     {_, range1} = Map.fetch!(men, men_name)
 
     case hus do
       "" ->
-        # 单身
+        # 单身的情况
         women = Map.put(women, women_name, {men_name, range})
         men = Map.put(men, men_name, {women_name, range1})
         {women, men}
@@ -53,13 +58,14 @@ defmodule StableMatch do
 
         case compare(range, hus, men_name) do
           :better ->
-            # update data
+            # 如果追求者比现任好，则更换现任
             women = Map.put(women, women_name, {men_name, range})
             men = Map.put(men, men_name, {women_name, range1})
             men = Map.put(men, hus, {"", range2 |> Enum.filter(fn x -> x != women_name end)})
             {women, men}
 
           :worse ->
+            # 不如现任
             men = Map.put(men, men_name, {"", range1 |> Enum.filter(fn x -> x != women_name end)})
 
             {women, men}
@@ -67,10 +73,14 @@ defmodule StableMatch do
     end
   end
 
+  # 比较两个男人在队列中的位置
   defp compare([hus | _t], hus, _men_name), do: :worse
   defp compare([men_name | _t], _, men_name), do: :better
   defp compare([_ | t], hus, men_name), do: compare(t, hus, men_name)
 
+  @doc """
+  所有单身狗对名单上的女人展开追求
+  """
   def iter(women, men) do
     ["a", "b", "c", "d", "e", "f", "g", "h"]
     |> Enum.map(fn x -> {x, Map.fetch!(men, x)} end)
@@ -81,13 +91,16 @@ defmodule StableMatch do
 
   def solution() do
     {men, women} = generate_base_data()
-    Logger.info("men: #{inspect(men)}")
-    Logger.info("women: #{inspect(women)}")
+    Logger.info("初始数据：")
+    Logger.info(fn -> inspect(women, pretty: true, limit: 30000) end)
+    Logger.info(fn -> inspect(men, pretty: true, limit: 30000) end)
+    Logger.info("匹配结果：")
     sl(women, men)
   end
 
   defp sl(women, men) do
     {a, b} = iter(women, men)
+
     cond do
       a == women and b == men -> {a, b}
       :else -> sl(a, b)
