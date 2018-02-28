@@ -20,7 +20,7 @@ defmodule AbcHits do
   """
 
   require Logger
-  @limit 10000
+  @limit 120000
 
   def gcd(a, 0), do: a
   def gcd(a, b), do: gcd(b, rem(a, b))
@@ -42,60 +42,42 @@ defmodule AbcHits do
   def rad(1), do: 1
   def rad(num), do: factorization(num) |> Enum.uniq() |> Enum.reduce(1, fn x, acc -> x * acc end)
 
-  def abchit_group(num, one_facs) do
-    for x <- [1 | one_facs], x < num, gcd(x, num - x) == 1 do
-      [x, num - x, num]
-    end
-    |> Enum.map(fn x -> x |> Enum.sort() end)
-    |> Enum.map(fn [a, b, c] -> {a, b, c} end)
-    |> Enum.uniq()
-    |> Enum.filter(fn {a, b, c} -> rad(a) * rad(b) * rad(c) < num end)
+  def all_rad(), do: 1..@limit |> Enum.map(fn x -> rad(x) end) |> Enum.uniq()
+  def all_rad_map(), do: 1..@limit |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, rad(x)) end)
+
+  def revert_all_rad_map() do
+    1..@limit
+    |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, rad(x), [x], fn y -> [x | y] end) end)
   end
 
-  # def get_all_candidates(), do: get_all(2, []) |> Enum.sort()
+  def rad_less(rads, re_rad_map, num) do
+    # Logger.info(inspect(rads))
+    rads |> Enum.filter(fn x -> x <= num end)
+    |> Enum.reduce([], fn x, acc -> Map.fetch!(re_rad_map, x) ++ acc end)
+  end
 
-  # defp get_all(num, acc) do
-  #   facs = factorization(num)
+  def all_a(c, rad_map, re_rad_map, rads) do
+    Logger.info("testing #{c}")
+    top = div(c, 2 * Map.fetch!(rad_map, c))
 
-  #   cond do
-  #     Enum.member?(acc, num) ->
-  #       get_all(num + 1, acc)
+    rad_less(rads, re_rad_map, top)
+    |> Enum.filter(fn x -> x < c end)
+    |> Enum.filter(fn x -> x < c - x end)
+    |> Enum.filter(fn x -> gcd(x, c) == 1 end)
 
-  #     length(facs) == 1 ->
-  #       bcc = func(1, num, [])
+  end
 
-  #       cond do
-  #         length(bcc) > 0 -> get_all(num + 1, bcc ++ acc)
-  #         :else -> acc
-  #       end
+  def solution() do
+    rad_map = all_rad_map()
+    re_rad_map = revert_all_rad_map()
+    rads = all_rad()
 
-  #     :else ->
-  #       get_all(num + 1, acc)
-  #   end
-  # end
-
-  # defp func(p, num, acc) do
-  #   a = round(:math.pow(num, p))
-
-  #   cond do
-  #     a > @limit -> acc
-  #     :else -> func(p + 1, num, [a | acc])
-  #   end
-  # end
-
-  # def solution() do
-  #   one_facs = get_all_candidates()
-
-  #   data =
-  #     5..@limit
-  #     |> Enum.map(fn x -> abchit_group(x, one_facs) end)
-  #     |> Enum.filter(fn x -> length(x) != 0 end)
-
-  #   Logger.info(fn -> inspect(data, pretty: true, limit: 30000) end)
-
-  #   data
-  #   |> Enum.map(fn x -> Enum.map(x, fn {_, _, y} -> y end) end)
-  #   |> Enum.map(fn x -> Enum.sum(x) end)
-  #   |> Enum.sum()
-  # end
+    for c <- 2..@limit,
+        a <- all_a(c, rad_map, re_rad_map, rads),
+        Map.fetch!(rad_map, a) * Map.fetch!(rad_map, c - a) * Map.fetch!(rad_map, c) < c do
+      {a, c - a, c}
+    end
+    |> Enum.map(fn {_, _, x} -> x end)
+    |> Enum.sum()
+  end
 end
