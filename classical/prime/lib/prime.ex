@@ -48,6 +48,7 @@ defmodule Prime do
   质数检查
   """
   @spec prime?(Integer) :: boolean
+  def prime?(1), do: false
   def prime?(2), do: true
   def prime?(3), do: true
   def prime?(x) do
