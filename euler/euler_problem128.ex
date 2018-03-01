@@ -157,7 +157,6 @@ defmodule Hexagonal do
 
   def around(n, xym) do
     {x, y} = pos_xy(n)
-
     [
       Map.fetch!(xym, {x, y + 2}),
       Map.fetch!(xym, {x - 1, y + 1}),
