@@ -17,9 +17,9 @@ ElementType FrontAndDequeue(Queue Q);
 #define MinQueueSize 5
 
 struct QueueRecord {
-  int Capacity;
-  int Front;
-  int Rear;
-  int Size;
-  ElementType *Array;
+        int Capacity;
+        int Front;
+        int Rear;
+        int Size;
+        ElementType *Array;
 }
