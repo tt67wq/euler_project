@@ -1,5 +1,4 @@
 defmodule CocktailSort do
-
   @moduledoc """
   鸡尾酒排序是冒泡排序的轻微变形。不同的地方在于，鸡尾酒排序是从低到高然后从高到低来回排序，而冒泡排序则仅从低到高去比较序列里的每个元素。
   他可比冒泡排序的效率稍微好一点，原因是冒泡排序只从一个方向进行比对(由低到高)，每次循环只移动一个项目。
@@ -20,30 +19,36 @@ defmodule CocktailSort do
   @spec sort(list) :: list
   def sort(l), do: sort(l, [], [], :>)
   def sort(@empty, left, right, _), do: left ++ right
+
   def sort(l, left, right, :>) do
     x = pop(l, :>)
-    sort(List.delete(l, x), left, [x|right], :>)
+    sort(List.delete(l, x), left, [x | right], :>)
   end
+
   def sort(l, left, right, :<) do
     x = pop(l, :<)
     sort(List.delete(l, x), left ++ [x], right, :<)
   end
 
   defp pop([a], _), do: a
-  defp pop([a|[b|tail]], :>) do
+
+  defp pop([a | [b | tail]], :>) do
     cond do
       a > b ->
-        pop([a|tail], :>)
+        pop([a | tail], :>)
+
       true ->
-        pop([b|tail], :>)
+        pop([b | tail], :>)
     end
   end
-  defp pop([a|[b|tail]], :<) do
+
+  defp pop([a | [b | tail]], :<) do
     cond do
       a < b ->
-        pop([a|tail], :<)
+        pop([a | tail], :<)
+
       true ->
-        pop([b|tail], :<)
+        pop([b | tail], :<)
     end
   end
 end
