@@ -1,10 +1,10 @@
 defmodule Eratoschenes do
-  alias Eratoschenes.Cache
-  require Integer
-
   @moduledoc """
   Documentation for Eratoschenes.
   """
+
+  alias Eratoschenes.Cache
+  require Integer
 
   @spec prime?(Integer) :: boolean
   def prime?(1), do: false
@@ -75,4 +75,38 @@ defmodule Eratoschenes do
 
   defp filtrate(index, _p, n, data) when index > n, do: data
   defp filtrate(index, p, n, data), do: filtrate(index + p, p, n, Map.put(data, index, false))
+
+  @doc """
+  质因数分解
+  """
+  @spec factorization(integer) :: map
+  def factorization(n), do: fac(n, 2, [])
+  defp fac(n, index, acc) when index * index > n and n > 1, do: list2map([n | acc])
+
+  defp fac(n, index, acc) do
+    case rem(n, index) == 0 do
+      true -> fac(div(n, index), index, [index | acc])
+      _ -> fac(n, next_prime(index), acc)
+    end
+  end
+
+  def list2map(lst), do: list2map(lst, %{})
+  defp list2map([], acc), do: acc
+
+  defp list2map([h | t], acc) do
+    case Map.fetch(acc, h) do
+      {:ok, c} -> list2map(t, Map.update(acc, h, c, &(&1 + 1)))
+      :error -> list2map(t, Map.update(acc, h, 1, &(&1 + 1)))
+    end
+  end
+
+  @doc """
+  获取num的因数个数
+  """
+  def get_fac_num(num) do
+    num
+    |> factorization
+    |> Map.values()
+    |> Enum.reduce(1, fn x, acc -> acc * (x + 1) end)
+  end
 end
