@@ -1,13 +1,13 @@
 defmodule LargeRepunitFactors do
   @moduledoc """
   https://projecteuler.net/problem=132
-  https://en.wikipedia.org/wiki/Repunit
   """
 
   use GenServer
   require Integer
   require Logger
 
+  @limit 40
   ### GenServer API
   def init(state), do: {:ok, state}
 
@@ -110,84 +110,49 @@ defmodule LargeRepunitFactors do
     end
   end
 
-  @doc """
-  质因数分解
-  """
-  @spec factorization(integer) :: map
-  def factorization(n), do: fac(n, 2, [])
-  defp fac(n, index, acc) when index * index > n and n > 1, do: [n | acc]
+  def pow(_, 0), do: 1
+  def pow(x, n) when Integer.is_odd(n), do: x * pow(x, n - 1)
 
-  defp fac(n, index, acc) do
-    case rem(n, index) == 0 do
-      true -> fac(div(n, index), index, [index | acc])
-      _ -> fac(n, next_prime(index), acc)
+  def pow(x, n) do
+    result = pow(x, div(n, 2))
+    result * result
+  end
+
+  # 同余定理
+  def pow_mod(m, 1, k), do: Integer.mod(m, k)
+  def pow_mod(m, 2, k), do: Integer.mod(m * m, k)
+  def pow_mod(m, n, k) do
+    t = Integer.mod(m, k)
+
+    cond do
+      t == 0 ->
+        0
+
+      :else ->
+        cond do
+          Integer.is_even(n) ->
+            pow_mod(m, 2, k) |> pow_mod(div(n, 2), k)
+
+          :else ->
+            ((pow_mod(m, 2, k) |> pow_mod(div(n - 1, 2), k)) * t) |> Integer.mod(k)
+        end
     end
   end
 
-  def cache_factorization(n) do
-    v = get(:fac, n)
-    case v do
-      nil -> set_and_get(:fac, n, factorization(n))
-      _ -> v
-    end
-  end
-
-  # 暂时实验
-  def r(n), do: r(n, 1, 1)
-  defp r(n, index, acc) when index == n, do: acc
-  defp r(n, index, acc), do: r(n, index + 1, acc * 10 + 1)
-
-  def pow(m, n), do: :math.pow(m, n) |> round()
-
-  def combine_of_2_and_5() do
-    for x <- 0..10,
-        y <- 0..10 do
-      pow(2, x) * pow(5, y)
-    end
-    |> Enum.sort()
-  end
-
-  def fac_r(n), do: r(n) |> factorization()
-
-  def all_facs(n), do: 2..div(n + 1, 2) |> Enum.filter(fn x -> rem(n, x) == 0 end)
-
-  defp get_new_facs(m, n), do: div(r(m), r(n)) |> cache_factorization()
-
-  def get_new_facs(n) do
-    fs = all_facs(n) |> Enum.reverse()
-
-    case length(fs) do
-      0 ->
-        get_new_facs(n, 1)
-
-      1 ->
-        [h] = fs
-        get_new_facs(n, div(n, h))
-
-      _ ->
-        [h1, h2 | _t] = fs
-
-        get_new_facs(n, h1)
-        |> Enum.filter(fn x -> Enum.member?(get_new_facs(n, h2), x) end)
-    end
-  end
 
   def solution() do
     start_link()
-    nums = combine_of_2_and_5()
-    sl(nums, [])
+    sl(2, [], 0) |> Enum.sum()
+  end
+  defp sl(_, acc, @limit), do: acc
+  defp sl(p, acc, c) do
+    m = pow_mod(10, pow(10, 9), 9 * p)
+    case m do
+      1 ->
+	Logger.info("#{p}")
+	sl(next_prime(p), [p|acc], c+1)
+      _ -> sl(next_prime(p), acc, c)
+    end
   end
 
-  defp sl([1 | t], acc), do: sl(t, acc)
-  defp sl([2 | t], acc), do: sl(t, [11 | acc])
-  defp sl([5 | t], acc), do: sl(t, [41, 271 | acc])
-
-  defp sl(_, acc) when length(acc) > 40, do: acc
-
-  defp sl([h | t], acc) do
-    Logger.info(h)
-    new_facs = get_new_facs(h)
-    Logger.info("#{inspect(new_facs)}")
-    sl(t, acc ++ new_facs)
-  end
 end
