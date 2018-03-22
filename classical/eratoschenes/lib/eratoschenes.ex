@@ -62,7 +62,7 @@ defmodule Eratoschenes do
   获得小于n的所有素数
   """
   def get_primes_before(n) do
-    data = 1..n |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, true) end)
+    data = 2..n |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, true) end)
     root = :math.sqrt(n) |> round()
 
     2..root
