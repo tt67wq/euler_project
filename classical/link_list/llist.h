@@ -20,6 +20,6 @@ ElementType Retrieve(Position P);
 /* endif _List_H */
 
 struct Node {
-  ElementType Element;
-  Position Next;
+        ElementType Element;
+        Position Next;
 };

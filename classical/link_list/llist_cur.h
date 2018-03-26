@@ -21,8 +21,8 @@ ElementType Retrieve(Position P);
 /* endif */
 
 struct Node {
-  ElementType Element;
-  Position Next;
+        ElementType Element;
+        Position Next;
 };
 
 struct Node CursorSpace[10];
