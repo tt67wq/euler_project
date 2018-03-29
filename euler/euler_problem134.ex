@@ -1,6 +1,7 @@
 defmodule PrimePairConnection do
   @moduledoc """
   https://projecteuler.net/problem=134
+  尚不能完全理解中国剩余定理的解法，还需要进一步研究初等数论
   """
   @limit 30
   use GenServer
