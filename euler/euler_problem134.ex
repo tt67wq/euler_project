@@ -2,7 +2,7 @@ defmodule PrimePairConnection do
   @moduledoc """
   https://projecteuler.net/problem=134
   """
-  @limit 1_000000
+  @limit 30
   use GenServer
   require Integer
   require Logger
@@ -125,36 +125,6 @@ defmodule PrimePairConnection do
     end
   end
 
-  def pow(_, 0), do: 1
-  def pow(x, n) when Integer.is_odd(n), do: x * pow(x, n - 1)
-
-  def pow(x, n) do
-    result = pow(x, div(n, 2))
-    result * result
-  end
-
-  # 同余定理
-  def pow_mod(m, 1, k), do: Integer.mod(m, k)
-  def pow_mod(m, 2, k), do: Integer.mod(m * m, k)
-
-  def pow_mod(m, n, k) do
-    t = Integer.mod(m, k)
-
-    cond do
-      t == 0 ->
-        0
-
-      :else ->
-        cond do
-          Integer.is_even(n) ->
-            pow_mod(m, 2, k) |> pow_mod(div(n, 2), k)
-
-          :else ->
-            ((pow_mod(m, 2, k) |> pow_mod(div(n - 1, 2), k)) * t) |> Integer.mod(k)
-        end
-    end
-  end
-
   def num_length(num), do: nl(num, 1)
   defp nl(0, acc), do: acc
   defp nl(num, acc), do: nl(div(num, 10), acc * 10)
@@ -184,6 +154,7 @@ defmodule PrimePairConnection do
     {x, _, _} = extend_gcd(a, h2)
     y = rem(x * d, h2)
 
+    # Logger.info("#{x}, #{y}")
     s =
       cond do
         y < 0 ->
@@ -193,7 +164,7 @@ defmodule PrimePairConnection do
           y * a + h1
       end
 
-    # Logger.info("#{s}")
+    Logger.info("#{s}")
     sl([h2 | t], [s | acc])
   end
 end
