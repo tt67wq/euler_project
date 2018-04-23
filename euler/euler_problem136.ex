@@ -1,8 +1,10 @@
-defmodule SameDifferences do
+defmodule SingletonDifference do
   @moduledoc """
-  https://projecteuler.net/problem=135
+  https://projecteuler.net/problem=136
   """
-  @limit 1_000_000
+  require Logger
+
+  @limit 100
   def iter(v), do: iter(v, 1, %{})
 
   defp iter(v, _, acc) when v > @limit, do: acc
@@ -12,6 +14,7 @@ defmodule SameDifferences do
   defp iter(v, u, acc) do
     case rem(v + u, 4) do
       0 ->
+        # Logger.info("#{v}, #{u}, #{u * v}")
         iter(v, u + 1, Map.update(acc, u * v, 1, fn x -> x + 1 end))
 
       _ ->
@@ -20,7 +23,7 @@ defmodule SameDifferences do
   end
 
   def solution() do
-    sl(iter(1), 1155, 0)
+    sl(iter(1), 1, 0)
   end
 
   defp sl(_, index, acc) when index > @limit, do: acc
@@ -31,7 +34,7 @@ defmodule SameDifferences do
     case c do
       {:ok, v} ->
         case v do
-          10 -> sl(m, index + 1, acc + 1)
+          1 -> sl(m, index + 1, acc + 1)
           _ -> sl(m, index + 1, acc)
         end
 
