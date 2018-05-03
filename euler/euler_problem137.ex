@@ -18,7 +18,7 @@ defmodule FibonacciGoldenNuggets do
     c = m * m + n * n
 
     cond do
-      length(acc) > 15 ->
+      length(acc) > 8 ->
         acc
 
       a < b ->
