@@ -28,7 +28,8 @@ defmodule BtreeBfs do
   end
 
   def generate_rand_tree(size) do
-    1..size |> Enum.shuffle()
+    1..size
+    |> Enum.shuffle()
     |> Enum.map(fn x -> {x, x} end)
     |> Tree.new()
   end
