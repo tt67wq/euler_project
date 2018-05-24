@@ -119,12 +119,73 @@ defmodule Euler146 do
     end
   end
 
+  def ck_mod(p), do: 0..(p - 1) |> Enum.filter(fn x -> ck(x, p) end)
+
+  defp ck(r, p) do
+    res =
+      [1, 3, 7, 9, 13, 27]
+      |> Enum.map(fn x -> r * r + rem(x, p) end)
+      |> Enum.filter(fn x -> rem(x, p) > 0 end)
+
+    length(res) == 6
+  end
+
   def timestamp(), do: :os.system_time(:micro_seconds)
 
   def solution() do
-    start_link()
     t1 = timestamp()
+    start_link()
+
+    pMap =
+      1..5000
+      |> Enum.filter(fn x -> cache_prime?(x) end)
+      |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, ck_mod(x)) end)
+
+    primes = Map.keys(pMap) |> Enum.sort()
+
+    # res = primes |> Enum.filter(fn x -> Map.fetch!(pMap, x) == [0] end)
+
+    res =
+      sl(10, pMap, primes, [])
+      |> Enum.filter(fn x ->
+        [x * x + 1, x * x + 3, x * x + 7, x * x + 9, x * x + 13, x * x + 27]
+        |> all_prime()
+      end)
+      |> Enum.filter(fn x -> not cache_prime?(x * x + 19) end)
+      |> Enum.filter(fn x -> not cache_prime?(x * x + 21) end)
+      |> Enum.sum()
 
     Logger.info("timeuse: #{timestamp() - t1} ms")
+    res
+  end
+
+  defp sl(index, _, _, acc) when index > @limit, do: acc
+
+  defp sl(index, pMap, primes, acc) do
+    pass =
+      primes
+      |> Enum.filter(fn x -> x < index * index end)
+      |> Enum.map(fn x -> {x, rem(index, x)} end)
+      |> check(pMap)
+
+    case pass do
+      true ->
+        Logger.info("#{index}: #{pass}")
+        sl(index + 10, pMap, primes, [index | acc])
+
+      false ->
+        sl(index + 10, pMap, primes, acc)
+    end
+  end
+
+  defp check([], _), do: true
+
+  defp check([{p, r} | t], pMap) do
+    vals = Map.fetch!(pMap, p)
+
+    cond do
+      Enum.member?(vals, r) -> check(t, pMap)
+      :else -> false
+    end
   end
 end
