@@ -147,10 +147,6 @@ defmodule Euler146 do
 
     res =
       sl(10, pMap, primes, [])
-      |> Enum.filter(fn x ->
-        [x * x + 1, x * x + 3, x * x + 7, x * x + 9, x * x + 13, x * x + 27]
-        |> all_prime()
-      end)
       |> Enum.filter(fn x -> not cache_prime?(x * x + 19) end)
       |> Enum.filter(fn x -> not cache_prime?(x * x + 21) end)
       |> Enum.sum()
@@ -170,8 +166,22 @@ defmodule Euler146 do
 
     case pass do
       true ->
-        Logger.info("#{index}: #{pass}")
-        sl(index + 10, pMap, primes, [index | acc])
+        cond do
+          [
+            index * index + 1,
+            index * index + 3,
+            index * index + 7,
+            index * index + 9,
+            index * index + 13,
+            index * index + 27
+          ]
+          |> all_prime() ->
+            Logger.info("#{index}: #{pass}")
+            sl(index + 10, pMap, primes, [index | acc])
+
+          :else ->
+            sl(index + 10, pMap, primes, acc)
+        end
 
       false ->
         sl(index + 10, pMap, primes, acc)
