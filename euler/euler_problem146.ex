@@ -6,115 +6,77 @@ defmodule Euler146 do
 
   require Integer
   require Logger
-  use GenServer
+  def prime?(n) when n < 2, do: false
+  def prime?(2), do: true
+  def prime?(n) when Integer.is_even(n), do: false
 
-  ### GenServer API
-  def init(state), do: {:ok, state}
+  def prime?(n), do: fermat_check(n, get_u(n - 1), 3)
 
-  def handle_call({:get, tag, key}, _from, state) do
-    case Map.fetch(state, tag) do
-      {:ok, mc} ->
-        case Map.fetch(mc, key) do
-          {:ok, value} -> {:reply, value, state}
-          :error -> {:reply, nil, state}
+  defp fermat_check(_, _, 0), do: true
+
+  defp fermat_check(n, u, s) do
+    a = Enum.random(2..(n - 1))
+    x = pow_mod(a, u, n)
+    {flag, nx} = double_check(u, n, x)
+
+    case flag do
+      true ->
+        case nx do
+          1 -> fermat_check(n, u, s - 1)
+          _ -> false
         end
 
-      :error ->
-        {:reply, nil, state}
+      false ->
+        false
     end
   end
 
-  def handle_cast({:set, tag, key, value}, state) do
-    case Map.fetch(state, tag) do
-      {:ok, mc} ->
-        {:noreply, Map.update!(state, tag, fn _ -> Map.put(mc, key, value) end)}
+  defp double_check(tu, n, x) when tu >= n, do: {true, x}
 
-      :error ->
-        {:noreply, Map.put(state, tag, %{key => value})}
-    end
-  end
+  defp double_check(tu, n, x) do
+    y = Integer.mod(x * x, n)
 
-  def handle_cast({:drop, tag, keys}, state) do
-    case Map.fetch(state, tag) do
-      {:ok, mc} ->
-        {:noreply, Map.update!(state, tag, fn _ -> Map.drop(mc, keys) end)}
-
-      :error ->
-        {:noreply, state}
-    end
-  end
-
-  ### Client
-  def start_link(state \\ %{}) do
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
-  end
-
-  def get(tag, key), do: GenServer.call(__MODULE__, {:get, tag, key})
-  def set(tag, key, value), do: GenServer.cast(__MODULE__, {:set, tag, key, value})
-  def drop(tag, keys), do: GenServer.cast(__MODULE__, {:drop, tag, keys})
-
-  def set_and_get(tag, key, value) do
-    set(tag, key, value)
-    value
-  end
-
-  @spec prime?(Integer) :: boolean
-  def prime?(1), do: false
-  def prime?(2), do: true
-  def prime?(3), do: true
-
-  def prime?(x) do
     cond do
-      Integer.is_even(x) -> false
-      :else -> is_prime(x, 3)
+      y == 1 and x != 1 and x != n - 1 -> {false, 0}
+      :else -> double_check(tu * 2, n, y)
     end
   end
 
-  defp is_prime(x, c) when c * c > x, do: true
+  # 同余定理
+  def pow_mod(m, 1, k), do: Integer.mod(m, k)
+  def pow_mod(m, 2, k), do: Integer.mod(m * m, k)
 
-  defp is_prime(x, c) do
+  def pow_mod(m, n, k) do
+    t = Integer.mod(m, k)
+
     cond do
-      rem(x, c) == 0 -> false
-      :else -> is_prime(x, next_prime(c))
+      t == 0 ->
+        0
+
+      :else ->
+        cond do
+          Integer.is_even(n) ->
+            pow_mod(m, 2, k) |> pow_mod(div(n, 2), k)
+
+          :else ->
+            ((pow_mod(m, 2, k) |> pow_mod(div(n - 1, 2), k)) * t) |> Integer.mod(k)
+        end
     end
   end
 
-  @doc """
-  获得下一个质数
-  """
-  def next_prime(2), do: 3
-
-  def next_prime(x) do
-    cond do
-      Integer.is_even(x) -> np(x + 1)
-      :else -> np(x + 2)
+  defp get_u(u) do
+    case rem(u, 2) do
+      1 -> get_u(div(u, 2))
+      _ -> u
     end
   end
 
-  defp np(y) do
-    cond do
-      cache_prime?(y) -> y
-      :else -> np(y + 2)
-    end
-  end
-
-  @doc """
-  缓存的质数判断
-  """
-  def cache_prime?(x) do
-    cached_value = get(:prime, x)
-
-    case cached_value do
-      nil -> set_and_get(:prime, x, prime?(x))
-      _ -> cached_value
-    end
-  end
 
   def all_prime([]), do: true
 
   def all_prime([h | t]) do
     cond do
-      cache_prime?(h) -> all_prime(t)
+      prime?(h) -> all_prime(t)
       :else -> false
     end
   end
@@ -134,11 +96,10 @@ defmodule Euler146 do
 
   def solution() do
     t1 = timestamp()
-    start_link()
 
     pMap =
       1..5000
-      |> Enum.filter(fn x -> cache_prime?(x) end)
+      |> Enum.filter(fn x -> prime?(x) end)
       |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, ck_mod(x)) end)
 
     primes = Map.keys(pMap) |> Enum.sort()
@@ -147,8 +108,8 @@ defmodule Euler146 do
 
     res =
       sl(10, pMap, primes, [])
-      |> Enum.filter(fn x -> not cache_prime?(x * x + 19) end)
-      |> Enum.filter(fn x -> not cache_prime?(x * x + 21) end)
+      |> Enum.filter(fn x -> not prime?(x * x + 19) end)
+      |> Enum.filter(fn x -> not prime?(x * x + 21) end)
       |> Enum.sum()
 
     Logger.info("timeuse: #{timestamp() - t1} ms")
