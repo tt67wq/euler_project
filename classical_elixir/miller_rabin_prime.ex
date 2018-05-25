@@ -1,6 +1,8 @@
 defmodule MillerRabin do
   @moduledoc """
   Miller-Rabin素数判定方法
+  a(p−1)≡1(mod p)
+  如果p是奇素数，则 x2≡1(mod p)的解为x≡1或x≡p−1(mod p)
   """
   require Integer
   def prime?(n) when n < 2, do: false
