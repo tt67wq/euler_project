@@ -71,7 +71,6 @@ defmodule Euler146 do
     end
   end
 
-
   def all_prime([]), do: true
 
   def all_prime([h | t]) do
