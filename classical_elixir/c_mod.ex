@@ -52,9 +52,11 @@ defmodule ChooseMod do
 
   def choose_mod(n, r, m) do
     ms = factorial_mod(n + 10, m)
+    Logger.info(fn -> inspect(ms) end)
     x1 = niyuan(Enum.at(ms, r), m)
     x2 = rem(Enum.at(ms, n) * x1, m)
     x3 = niyuan(Enum.at(ms, n - r), m)
+    Logger.info("#{x1}, #{x2}, #{x3}")
     rem(x2 * x3, m)
   end
 end
