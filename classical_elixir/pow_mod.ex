@@ -1,5 +1,6 @@
 defmodule PowMod do
   require Integer
+  require Logger
 
   def pow(_, 0), do: 1
   def pow(x, n) when Integer.is_odd(n), do: x * pow(x, n - 1)
@@ -40,4 +41,10 @@ defmodule PowMod do
       :else -> multi_mod(m1, m2, k)
     end
   end
+
+  def factorial_mod(0, _), do: 1
+  def factorial_mod(n, m), do: fm(n, m, 1, 1)
+  defp fm(n, m, index, acc) when index > n, do: rem(acc, m)
+  defp fm(n, m, index, acc) when acc > m, do: fm(n, m, index, rem(acc, m))
+  defp fm(n, m, index, acc), do: fm(n, m, index + 1, rem(index, m) * acc)
 end
