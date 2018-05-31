@@ -19,4 +19,13 @@ defmodule GCD do
     quotient = div(a, b)
     eg(b, rem(a, b), {lx - quotient * x, x}, {ly - quotient * y, y})
   end
+
+  def niyuan(a, b) do
+    {g, _, _} = extend_gcd(a, b)
+
+    cond do
+      g > 0 -> g
+      :else -> b + g
+    end
+  end
 end
