@@ -1,4 +1,4 @@
-defmodule ChooseMod do
+defmodule ModComb do
   @moduledoc """
   快速求排列组合C（m，n）%mod
   """
@@ -50,7 +50,7 @@ defmodule ChooseMod do
   defp fm(n, _m, index, acc) when index == n, do: acc
   defp fm(n, m, index, [h | _] = acc), do: fm(n, m, index + 1, [rem(h * index, m) | acc])
 
-  def choose_mod(n, r, m) do
+  def comb(n, r, m) do
     ms = factorial_mod(n + 10, m)
     Logger.info(fn -> inspect(ms) end)
     x1 = niyuan(Enum.at(ms, r), m)
