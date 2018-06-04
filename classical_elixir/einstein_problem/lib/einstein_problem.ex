@@ -203,8 +203,6 @@ defmodule EinsteinProblem do
     item0 = Enum.at(list, 0)
     item_right = Enum.at(list, 1)
 
-    # Logger.info("#{inspect(item0)}")
-
     cond do
       Map.fetch!(item0, relation.item_type) == relation.item_value and
           Map.fetch!(item_right, relation.related_type) == relation.related_value ->
