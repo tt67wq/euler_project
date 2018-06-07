@@ -15,6 +15,7 @@ defmodule TopSort do
       Queue.push(q, filter_zero_in(graph)),
       []
     )
+    |> Enum.reverse()
   end
 
   def iter(graph, q, acc) do
@@ -49,7 +50,7 @@ defmodule TopSort do
         {_, ms} = Enum.min_by(zs, fn {_, x} -> x.stime end)
 
         Enum.filter(zs, fn {_, x} -> x.stime == ms.stime end)
-        |> Enum.sort_by(fn {_, x} -> x.cost end)
+        |> Enum.sort_by(fn {_, x} -> -x.cost end)
         |> List.first()
 
       :else ->
@@ -61,8 +62,6 @@ defmodule TopSort do
   某个点出列的时候更新图
   """
   def update_graph(graph, node) do
-    Logger.info("graph: #{inspect(graph)}")
-    Logger.info("node: #{inspect(node)}")
     {name, node_obj} = node
 
     node_obj.adjacentNodes
@@ -160,18 +159,6 @@ defmodule TopSort do
        }}
     ]
 
-    # node1 =
-    #   {:p1,
-    #    %TopSort.Node{
-    #      name: :p1,
-    #      cost: 8,
-    #      stime: 0,
-    #      inCount: 0,
-    #      adjacent: 2,
-    #      adjacentNodes: [:p3, :p7]
-    #    }}
-
-    # update_graph(graph, node1)
     sort(graph)
   end
 end
