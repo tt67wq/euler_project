@@ -130,8 +130,7 @@ defmodule SkipList do
     # 更新位置标记位
     0..random_level()
     |> Enum.reduce(sl, fn x, acc -> insert_into_list(acc, x, key, value) end)
-
- end
+  end
 
   @doc """
   查询
@@ -186,12 +185,8 @@ defmodule SkipList do
   end
 
   def solution() do
-    sl = new_sl()
-
-    nsl =
-      0..18
-      |> Enum.reduce(sl, fn x, acc -> insert(acc, x, x * x) end)
-
-    printSL(nsl)
+    0..18
+    |> Enum.reduce(new_sl(), fn x, acc -> insert(acc, x, x * x) end)
+    |> printSL()
   end
 end
