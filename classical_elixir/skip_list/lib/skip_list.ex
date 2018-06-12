@@ -128,18 +128,10 @@ defmodule SkipList do
     end
 
     # 更新位置标记位
-    k = random_level()
+    0..random_level()
+    |> Enum.reduce(sl, fn x, acc -> insert_into_list(acc, x, key, value) end)
 
-    cond do
-      k > sl.top_level ->
-        0..k
-        |> Enum.reduce(sl, fn x, acc -> insert_into_list(acc, x, key, value) end)
-
-      :else ->
-        0..sl.top_level
-        |> Enum.reduce(sl, fn x, acc -> insert_into_list(acc, x, key, value) end)
-    end
-  end
+ end
 
   @doc """
   查询
@@ -185,7 +177,10 @@ defmodule SkipList do
         raise "level not exists"
 
       {:ok, list} ->
-        IO.inspect(list)
+        list
+        |> Enum.map(fn x -> x.value end)
+        |> IO.inspect()
+
         printSL(lmap, level - 1)
     end
   end
@@ -194,13 +189,9 @@ defmodule SkipList do
     sl = new_sl()
 
     nsl =
-      1..20
+      0..18
       |> Enum.reduce(sl, fn x, acc -> insert(acc, x, x * x) end)
 
-    nsl
-    # search(nsl, 14)
-    
-    # nsl = delete(nsl, 14)
-    # search(nsl, 14)
+    printSL(nsl)
   end
 end

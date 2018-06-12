@@ -144,6 +144,7 @@ void printSL(skiplist *sl) {
                         printf("%d -> ", p->value);
                         p = q;
                 }
+                printf("%d", p->value);
                 printf("\n");
         }
         printf("\n");
@@ -155,7 +156,7 @@ int main() {
                 insert(sl, i, i * i);
         printSL(sl);
 
-        int i = search(sl, 12);
+        int i = search(sl, 18);
         printf("i=%d\n", i);
 
         // 删除
