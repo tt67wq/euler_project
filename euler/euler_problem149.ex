@@ -1,59 +1,12 @@
 defmodule Euler149 do
   @moduledoc """
   https://projecteuler.net/problem=149
+  horizontal, vertical, diagonal or anti-diagonal
   """
   require Integer
-  use GenServer
+  require Logger
 
-  ### GenServer API
-  def init(state), do: {:ok, state}
-
-  def handle_call({:get, tag, key}, _from, state) do
-    case Map.fetch(state, tag) do
-      {:ok, mc} ->
-        case Map.fetch(mc, key) do
-          {:ok, value} -> {:reply, value, state}
-          :error -> {:reply, nil, state}
-        end
-
-      :error ->
-        {:reply, nil, state}
-    end
-  end
-
-  def handle_cast({:set, tag, key, value}, state) do
-    case Map.fetch(state, tag) do
-      {:ok, mc} ->
-        {:noreply, Map.update!(state, tag, fn _ -> Map.put(mc, key, value) end)}
-
-      :error ->
-        {:noreply, Map.put(state, tag, %{key => value})}
-    end
-  end
-
-  def handle_cast({:drop, tag, keys}, state) do
-    case Map.fetch(state, tag) do
-      {:ok, mc} ->
-        {:noreply, Map.update!(state, tag, fn _ -> Map.drop(mc, keys) end)}
-
-      :error ->
-        {:noreply, state}
-    end
-  end
-
-  ### Client
-  def start_link(state \\ %{}) do
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
-  end
-
-  def get(tag, key), do: GenServer.call(__MODULE__, {:get, tag, key})
-  def set(tag, key, value), do: GenServer.cast(__MODULE__, {:set, tag, key, value})
-  def drop(tag, keys), do: GenServer.cast(__MODULE__, {:drop, tag, keys})
-
-  def set_and_get(tag, key, value) do
-    set(tag, key, value)
-    value
-  end
+  @k 2000
 
   # 同余定理
   def pow_mod(m, 1, k), do: Integer.mod(m, k)
@@ -77,15 +30,6 @@ defmodule Euler149 do
     end
   end
 
-  def cache_lfg(k) do
-    v = get(:lag, k)
-
-    case v do
-      nil -> set_and_get(:lag, k, lagged_fibonacci_generator(k))
-      _ -> v
-    end
-  end
-
   def lagged_fibonacci_generator(k) when k <= 55 do
     r1 = (200_003 * rem(k, 1_000_000)) |> rem(1_000_000)
     r2 = (300_007 * pow_mod(k, 3, 1_000_000)) |> rem(1_000_000)
@@ -96,5 +40,101 @@ defmodule Euler149 do
     r1 = cache_lfg(k - 24)
     r2 = cache_lfg(k - 55)
     rem(r1 + r2 + 1_000_000, 1_000_000) - 500_000
+  end
+
+  def cache_lfg(k) do
+    case :ets.lookup(:lagged_fibonacci, k) do
+      [] ->
+        v = lagged_fibonacci_generator(k)
+        :ets.insert(:lagged_fibonacci, {k, v})
+        v
+
+      [{^k, value}] ->
+        value
+    end
+  end
+
+  def max_horizontal(mp), do: mh(mp, 0, 0)
+
+  defp mh(_mp, index, acc) when index >= @k, do: acc
+
+  defp mh(mp, index, acc) do
+    s =
+      1..2000
+      |> Enum.map(fn x -> Map.fetch!(mp, index * @k + x) end)
+      |> Enum.sum()
+
+    if s > acc do
+      mh(mp, index + 1, s)
+    else
+      mh(mp, index + 1, acc)
+    end
+  end
+
+  def max_vertical(mp), do: mv(mp, 0, 0)
+
+  defp mv(_mp, index, acc) when index >= @k, do: acc
+
+  defp mv(mp, index, acc) do
+    s =
+      1..2000
+      |> Enum.map(fn x -> Map.fetch!(mp, (x - 1) * @k + index + 1) end)
+      |> Enum.sum()
+
+    if s > acc do
+      mv(mp, index + 1, s)
+    else
+      mv(mp, index + 1, acc)
+    end
+  end
+
+  def max_diagonal(mp), do: md(mp, -@k, 0)
+
+  defp md(_mp, index, acc) when index > @k, do: acc
+
+  defp md(mp, index, acc) do
+    s =
+      1..2000
+      |> Enum.map(fn x -> (x - 1) * @k + x - index end)
+      |> Enum.map(fn x -> Map.fetch(mp, x) end)
+      |> Enum.filter(fn x -> x != :error end)
+      |> Enum.map(fn {_, v} -> v end)
+      |> Enum.sum()
+
+    if s > acc do
+      md(mp, index + 1, s)
+    else
+      md(mp, index + 1, acc)
+    end
+  end
+
+  def max_anti_diagonal(mp), do: mad(mp, -@k, 0)
+
+  defp mad(_mp, index, acc) when index > @k, do: acc
+
+  defp mad(mp, index, acc) do
+    s =
+      1..2000
+      |> Enum.map(fn x -> x * @k - (x - 1) - index end)
+      |> Enum.map(fn x -> Map.fetch(mp, x) end)
+      |> Enum.filter(fn x -> x != :error end)
+      |> Enum.map(fn {_, v} -> v end)
+      |> Enum.sum()
+    Logger.info("#{index}: #{s}")
+    if s > acc do
+      mad(mp, index + 1, s)
+    else
+      mad(mp, index + 1, acc)
+    end
+  end
+
+  def solution() do
+    # 41078532, 36742681, 44540336, 34192309
+    :ets.new(:lagged_fibonacci, [:named_table])
+    mp = 1..(@k * @k) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, cache_lfg(x)) end)
+    # max_horizontal(mp)
+    # max_vertical(mp)
+    # max_diagonal(mp)
+    max_anti_diagonal(mp)
   end
 end
