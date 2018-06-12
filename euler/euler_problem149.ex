@@ -3,37 +3,12 @@ defmodule Euler149 do
   https://projecteuler.net/problem=149
   horizontal, vertical, diagonal or anti-diagonal
   """
-  require Integer
   require Logger
 
   @k 2000
 
-  # 同余定理
-  def pow_mod(m, 1, k), do: Integer.mod(m, k)
-  def pow_mod(m, 2, k), do: Integer.mod(m * m, k)
-
-  def pow_mod(m, n, k) do
-    t = Integer.mod(m, k)
-
-    cond do
-      t == 0 ->
-        0
-
-      :else ->
-        cond do
-          Integer.is_even(n) ->
-            pow_mod(m, 2, k) |> pow_mod(div(n, 2), k)
-
-          :else ->
-            ((pow_mod(m, 2, k) |> pow_mod(div(n - 1, 2), k)) * t) |> Integer.mod(k)
-        end
-    end
-  end
-
   def lagged_fibonacci_generator(k) when k <= 55 do
-    r1 = (200_003 * rem(k, 1_000_000)) |> rem(1_000_000)
-    r2 = (300_007 * pow_mod(k, 3, 1_000_000)) |> rem(1_000_000)
-    rem(100_003 - r1 + r2, 1_000_000) - 500_000
+    rem(100_003 - 200_003 * k + 300_007 * k * k * k, 1_000_000) - 500_000
   end
 
   def lagged_fibonacci_generator(k) when k <= 4_000_000 do
@@ -120,7 +95,7 @@ defmodule Euler149 do
       |> Enum.filter(fn x -> x != :error end)
       |> Enum.map(fn {_, v} -> v end)
       |> Enum.sum()
-    Logger.info("#{index}: #{s}")
+
     if s > acc do
       mad(mp, index + 1, s)
     else
@@ -132,9 +107,10 @@ defmodule Euler149 do
     # 41078532, 36742681, 44540336, 34192309
     :ets.new(:lagged_fibonacci, [:named_table])
     mp = 1..(@k * @k) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, cache_lfg(x)) end)
-    # max_horizontal(mp)
-    # max_vertical(mp)
-    # max_diagonal(mp)
-    max_anti_diagonal(mp)
+    s1 = max_horizontal(mp)
+    s2 = max_vertical(mp)
+    s3 = max_diagonal(mp)
+    s4 = max_anti_diagonal(mp)
+    Logger.info("#{s1}, #{s2}, #{s3}, #{s4}")
   end
 end
