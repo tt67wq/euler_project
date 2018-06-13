@@ -7,6 +7,25 @@ defmodule Euler149 do
 
   @k 2000
 
+  def max_sub(list), do: mss(list, 0, 0)
+
+  defp mss([], _bcc, acc), do: acc
+
+  defp mss([h | t], bcc, acc) do
+    nacc =
+      if bcc + h > acc do
+        bcc + h
+      else
+        acc
+      end
+
+    if bcc + h < 0 do
+      mss(t, 0, nacc)
+    else
+      mss(t, bcc + h, nacc)
+    end
+  end
+
   def lagged_fibonacci_generator(k) when k <= 55 do
     rem(100_003 - 200_003 * k + 300_007 * k * k * k, 1_000_000) - 500_000
   end
@@ -39,7 +58,7 @@ defmodule Euler149 do
       |> Enum.map(fn x -> Map.fetch!(mp, index * @k + x) end)
 
     # Logger.info("#{inspect(ls)}")
-    s = ls |> Enum.sum()
+    s = ls |> max_sub()
 
     if s > acc do
       mh(mp, index + 1, s)
@@ -58,7 +77,7 @@ defmodule Euler149 do
       |> Enum.map(fn x -> Map.fetch!(mp, (x - 1) * @k + index + 1) end)
 
     # Logger.info("#{inspect(ls)}")
-    s = ls |> Enum.sum()
+    s = ls |> max_sub()
 
     if s > acc do
       mv(mp, index + 1, s)
