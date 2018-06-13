@@ -34,10 +34,12 @@ defmodule Euler149 do
   defp mh(_mp, index, acc) when index >= @k, do: acc
 
   defp mh(mp, index, acc) do
-    s =
-      1..2000
+    ls =
+      1..@k
       |> Enum.map(fn x -> Map.fetch!(mp, index * @k + x) end)
-      |> Enum.sum()
+
+    # Logger.info("#{inspect(ls)}")
+    s = ls |> Enum.sum()
 
     if s > acc do
       mh(mp, index + 1, s)
@@ -51,10 +53,12 @@ defmodule Euler149 do
   defp mv(_mp, index, acc) when index >= @k, do: acc
 
   defp mv(mp, index, acc) do
-    s =
-      1..2000
+    ls =
+      1..@k
       |> Enum.map(fn x -> Map.fetch!(mp, (x - 1) * @k + index + 1) end)
-      |> Enum.sum()
+
+    # Logger.info("#{inspect(ls)}")
+    s = ls |> Enum.sum()
 
     if s > acc do
       mv(mp, index + 1, s)
@@ -68,13 +72,24 @@ defmodule Euler149 do
   defp md(_mp, index, acc) when index > @k, do: acc
 
   defp md(mp, index, acc) do
-    s =
-      1..2000
-      |> Enum.map(fn x -> (x - 1) * @k + x - index end)
+    mdfunc = fn x ->
+      s = (x - 1) * @k + x - index
+
+      cond do
+        s > x * @k -> -1
+        s < (x - 1) * @k + 1 -> -1
+        :else -> s
+      end
+    end
+
+    ls =
+      1..@k
+      |> Enum.map(mdfunc)
       |> Enum.map(fn x -> Map.fetch(mp, x) end)
       |> Enum.filter(fn x -> x != :error end)
       |> Enum.map(fn {_, v} -> v end)
-      |> Enum.sum()
+
+    s = ls |> Enum.sum()
 
     if s > acc do
       md(mp, index + 1, s)
@@ -88,13 +103,24 @@ defmodule Euler149 do
   defp mad(_mp, index, acc) when index > @k, do: acc
 
   defp mad(mp, index, acc) do
-    s =
-      1..2000
-      |> Enum.map(fn x -> x * @k - (x - 1) - index end)
+    madfunc = fn x ->
+      s = x * @k - (x - 1) - index
+
+      cond do
+        s > x * @k -> -1
+        s < (x - 1) * @k + 1 -> -1
+        :else -> s
+      end
+    end
+
+    ls =
+      1..@k
+      |> Enum.map(madfunc)
       |> Enum.map(fn x -> Map.fetch(mp, x) end)
       |> Enum.filter(fn x -> x != :error end)
       |> Enum.map(fn {_, v} -> v end)
-      |> Enum.sum()
+
+    s = ls |> Enum.sum()
 
     if s > acc do
       mad(mp, index + 1, s)
@@ -104,13 +130,13 @@ defmodule Euler149 do
   end
 
   def solution() do
-    # 41078532, 36742681, 44540336, 34192309
     :ets.new(:lagged_fibonacci, [:named_table])
     mp = 1..(@k * @k) |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, cache_lfg(x)) end)
     s1 = max_horizontal(mp)
     s2 = max_vertical(mp)
-    s3 = max_diagonal(mp)
-    s4 = max_anti_diagonal(mp)
-    Logger.info("#{s1}, #{s2}, #{s3}, #{s4}")
+    Logger.info("#{s1}, #{s2}")
+    # s3 = max_diagonal(mp)
+    # s4 = max_anti_diagonal(mp)
+    # Logger.info("#{s3}, #{s4}")
   end
 end
