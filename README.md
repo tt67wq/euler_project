@@ -4,8 +4,12 @@
 
 https://projecteuler.net/archives
 
-euler目录下都是欧拉计划的题目，部分题目的解法很蠢，还没想出好解法，有感兴趣的人可以联系我，探讨探讨
-大部分用的Elixir解的，有些实在太慢，改用C的
+[card](https://projecteuler.net/profile/clearlove.png)
+
+euler目录下都是欧拉计划的题目，部分题目的解法很蠢，还没想出好解法，
+有感兴趣的人可以联系我，探讨探讨
+大部分用的Elixir解的，虽然elixir写代码逻辑清晰，但是大量的内存拷贝导致elixir在数值计算上非常弱鸡
+有些实在太慢，改用C的
 
 ----
 
