@@ -4,19 +4,47 @@ defmodule Euler152 do
   """
   require Logger
 
-  def start() do
-    :ets.new(:eu152, [:named_table])
-  end
+  @type int :: non_neg_integer
+  @type ints :: [int]
 
-  def inverse_sqr_sum(_, {0, _}, acc), do: acc
-  def inverse_sqr_sum([], _, _acc), do: []
+  @base nums = [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          12,
+          14,
+          15,
+          16,
+          18,
+          20,
+          21,
+          24,
+          25,
+          27,
+          28,
+          30,
+          32,
+          35,
+          36,
+          40,
+          42,
+          45
+        ]
 
-  def inverse_sqr_sum([h | t], {n, m}, acc) do
-    inverse_sqr_sum(t, {n * h * h - m, m * h * h}, [h | acc])
-  end
+  @lcm 4_480_842_240_000
 
-  def demo() do
-    inverse_sqr_sum([2, 3, 4, 5, 7, 12, 15, 20, 28, 35], {1, 2}, [])
-    # find(1, 2, 2..35 |> Enum.to_list())
+  @inverse @base |> Enum.map(fn x -> div(@lcm, x) end)
+
+  @spec find(int, int, ints) :: ints
+  defp find(0, _index, acc), do: acc
+
+  defp find(remainder, index, acc) do
+    new_remainder = remainder - Enum.at(@inverse, index)
   end
 end

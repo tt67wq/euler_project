@@ -72,6 +72,24 @@ defmodule Eratoschenes do
   end
 
   @doc """
+  获得下一个质数
+  """
+  def next_prime(2), do: 3
+  def next_prime(x) do
+    cond do
+      Integer.is_even(x) -> np(x + 1)
+      :else -> np(x + 2)
+    end
+  end
+  defp np(y) do
+    cond do
+      prime?(y) -> y
+      :else -> np(y + 2)
+    end
+  end
+
+
+  @doc """
   获得小于n的所有素数
   """
   def get_primes_before(n) do
