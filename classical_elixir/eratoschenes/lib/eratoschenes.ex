@@ -2,10 +2,11 @@ defmodule Eratoschenes do
   @moduledoc """
   Documentation for Eratoschenes.
   """
+  @type int :: non_neg_integer
 
-  # alias Eratoschenes.Cache
   require Integer
 
+  @spec prime?(int) :: boolean
   def prime?(n) when n < 2, do: false
   def prime?(2), do: true
   def prime?(n) when Integer.is_even(n), do: false
@@ -43,6 +44,7 @@ defmodule Eratoschenes do
   end
 
   # 同余定理
+  @spec pow_mod(int, int, int) :: int
   def pow_mod(m, 1, k), do: Integer.mod(m, k)
   def pow_mod(m, 2, k), do: Integer.mod(m * m, k)
 
