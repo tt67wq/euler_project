@@ -9,7 +9,7 @@ defmodule Euler153 do
   require Integer
   require Logger
 
-  @limit 6
+  @limit 100_000_000
 
   defp func1(_a, _b, _index, _base, bcc, acc) when bcc > @limit, do: acc
 
@@ -26,7 +26,7 @@ defmodule Euler153 do
       index + 1,
       base,
       bcc + base,
-      acc + s * 2 * a
+      acc + a * index * 2 * div(@limit, bcc)
     )
   end
 
@@ -34,14 +34,11 @@ defmodule Euler153 do
   defp sf(num, index, acc) when index > num, do: acc
 
   defp sf(num, index, acc), do: sf(num, index + 1, div(num, index) * index + acc)
-
-  # def add(a, b), do: a + b
-
   def sl(a, 1, acc) when a * a + 1 > @limit, do: acc
   def sl(a, b, acc) when b > a, do: sl(a + 1, 1, acc)
 
   def sl(a, b, acc) do
-    Logger.info("#{a}, #{b}, #{acc}")
+    # Logger.info("#{a}, #{b}, #{acc}")
 
     case Integer.gcd(a, b) do
       1 ->
