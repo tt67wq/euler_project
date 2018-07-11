@@ -32,9 +32,9 @@ struct fft_complex {
 
 int fft_fi(double in) { // 四舍五入
         if ((in - (int)in) > 0.5)
-                return int(in) + 1;
+                return (int)in + 1;
         else
-                return int(in);
+                return (int)in;
 }
 
 int fft_fac2(int n) { // log2n
@@ -61,22 +61,22 @@ int fft_turndat(int n, int num) {
         return r;
 }
 
-fft_complex fft_t(fft_complex a) {
-        fft_complex tmp;
+struct fft_complex fft_t(struct fft_complex a) {
+        struct fft_complex tmp;
         tmp.i = -1 * a.i;
         tmp.r = -1 * a.r;
         return tmp;
 }
 
-fft_complex fft_multi(fft_complex a, fft_complex b) {
-        fft_complex tmp;
+struct fft_complex fft_multi(struct fft_complex a, struct fft_complex b) {
+        struct fft_complex tmp;
         tmp.r = a.r * b.r - a.i * b.i;
         tmp.i = a.r * b.i + a.i * b.r;
-        return tmp
+        return tmp;
 }
 
-fft_complex fft_add(fft_complex a, fft_complex b) {
-        fft_complex tmp;
+struct fft_complex fft_add(struct fft_complex a, struct fft_complex b) {
+        struct fft_complex tmp;
         tmp.r = a.r + b.r;
         tmp.i = a.i + b.i;
         return tmp;
@@ -87,7 +87,9 @@ void FFT(int *in, double *outr, double *outi) {
         int i, j;
         int deep;
         const int N = FFT_N / 2;
-        fft_complex W[N];
+
+        // 旋转算子
+        struct fft_complex W[N];
         W[0].r = 1;
         W[0].i = 0;
         W[1].r = cos(2.0 * PI / FFT_N);
@@ -95,23 +97,89 @@ void FFT(int *in, double *outr, double *outi) {
 
         for (i = 2; i < N; i++)
                 W[i] = fft_multi(W[1], W[i - 1]);
+
         deep = fft_fac2(FFT_N);
-        int g = 1;
-        int ne = 0, ge = 0;
 
-        fft_complex left[FFT_N];
-        fft_complex right[FFT_N];
+        struct fft_complex left[FFT_N];
+        struct fft_complex right[FFT_N];
 
+        // 蝶形算法 重新排序
         for (i = 0; i < FFT_N; i++) {
                 left[i].r = in[fft_turndat(i, FFT_N)];
                 left[i].i = 0;
         }
 
-        fft_complex tpp;
+        struct fft_complex tpp;
         int mggtmp;
+        int g = 1;
+        int ne = 0, ge = 0;
 
         while (1) {
-                if (deep = 0)
+                if (deep == 0)
+                        break;
+                int adt = pow(2, deep - 1);
+                mggtmp = pow(2, g); // 跨度
+                for (i = 0; i < FFT_N; i += mggtmp) {
+                        ne = 0;
+                        ge = 0;
+                        for (j = 0; j < mggtmp; j++) {
+                                if (j < mggtmp / 2) {
+                                        tpp = fft_multi(left[i + j + mggtmp / 2], W[ne]);
+                                        right[i + j] = fft_add(left[i + j], tpp);
+                                        ne += adt;
+                                } else {
+                                        tpp = fft_t(fft_multi(left[i + j], W[ge]));
+                                        right[i + j] = fft_add(left[i + j - mggtmp / 2], tpp);
+                                        ge += adt;
+                                }
+                        }
+                }
+                printf("============\n");
+                for (i = 0; i < FFT_N; i++)
+                        left[i] = right[i];
+                deep--;
+                g++;
+        }
+        for (i = 0; i < FFT_N; i++) {
+                outr[i] = left[i].r;
+                outi[i] = -1 * left[i].i;
+                printf("outr[%d]=%f, outi[%d]=%f\n", i, outr[i], i, outi[i]);
+        }
+}
+
+/* 定点IFFT，输入实部和虚部,返回时域int类型 */
+void IFFT(double *inr, double *ini, int *out) {
+        int i, j;
+        int deep;
+
+        const int N = FFT_N / 2;
+
+        struct fft_complex W[N];
+
+        W[0].r = 1;
+        W[0].i = 0;
+
+        W[1].r = cos(2.0 * PI / FFT_N);
+        W[1].i = -1 * sin(2.0 * PI / FFT_N);
+
+        for (i = 2; i < N; i++)
+                W[i] = fft_multi(W[1], W[i - 1]);
+        deep = fft_fac2(FFT_N);
+
+        int g = 1;
+        int ne = 0, ge = 0;
+
+        struct fft_complex left[FFT_N];
+        struct fft_complex right[FFT_N];
+
+        for (i = 0; i < FFT_N; i++) {
+                left[i].r = inr[fft_turndat(i, FFT_N)];
+                left[i].i = -1 * ini[fft_turndat(i, FFT_N)];
+        }
+        struct fft_complex tpp;
+        int mggtmp;
+        while (1) {
+                if (deep == 0)
                         break;
                 int adt = pow(2, deep - 1);
                 mggtmp = pow(2, g);
@@ -136,68 +204,15 @@ void FFT(int *in, double *outr, double *outi) {
                 g++;
         }
         for (i = 0; i < FFT_N; i++) {
-                outr[i] = left[i].r;
-                outi[i] = -1 * left[i].i;
+                out[i] = fft_fi(left[i].r / FFT_N);
         }
 }
 
-/* 定点IFFT，输入实部和虚部,返回时域int类型 */
-void IFFT(double *inr, double *ini, int *out) {
-        int i, j;
-        int deep;
+int main() {
+        int in[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+        double *outr = (double *)malloc(FFT_N * sizeof(double));
+	double *outi = (double *)malloc(FFT_N * sizeof(double));
 
-        const int N = FFT_N / 2;
-
-        fft_complex W[N];
-
-        W[0].r = 1;
-        w[0].i = 0;
-
-        W[1].r = cos(2.0 * PI / FFT_N);
-        W[1].i = -1 * sin(2.0 * PI / FFT_N);
-
-        for (i = 2; i < N; i++)
-                W[i] = fft_multi(W[1], W[i - 1]);
-        deep = fft_fac2(FFT_N);
-
-        int g = 1;
-        int ne = 0, ge = 0;
-
-        fft_complex left[FFT_N];
-        fft_complex right[FFT_N];
-
-        for (i = 0; i < FFT_N; i++) {
-                left[i].r = inr[fft_turndat(i, FFT_N)];
-                left[i].i = -1 * ini[fft_turndat(i, FFT_N)];
-        }
-        fft_complex tpp;
-        int mggtmp;
-        while (1) {
-                if (deep == 0)
-                        break;
-                int adt = pow(2, deep - 1);
-                mggtmp = pow(2, g);
-                for (i = 0; i < FFT_N; i += mggtmp) {
-                        ne = 0;
-                        ge = 0;
-                        for (j = 0; j < mggtmp; j++) {
-                                if (j < mggtmp / 2) {
-                                        tpp = fft_multi(left[i + j + mggtmp / 2], W[ne]);
-                                        right[i + j] = fft_add(left[i + j], tpp);
-                                        ne += adt;
-                                } else {
-                                        tpp = fft_t(fft_multi(left[i + j], W[ge]));
-                                        right[i + j] = fft_add(left[i + j - mggtmp / 2], tpp);
-                                        ge += adt;
-                                }
-                        }
-                }
-                for (i = 0; i < FTT_N; i++)
-                        left[i] = right[i];
-                deep--;
-                g++;
-        }
-        for (i = 0; i < FFT_N; i++) {
-                out[i] = fft_fi(left[i].r / FFT_N);
-        }
+        FFT(in, outr, outi);
+        return 0;
 }
