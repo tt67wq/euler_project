@@ -19,11 +19,11 @@ ElementType Retrieve(Position P);
 int Hash(ElementType X, int TableSize);
 
 struct ListNode {
-	ElementType Element;
-	Position Next;
+        ElementType Element;
+        Position Next;
 };
 
 struct HashTbl {
-	int TableSize;
-	List *TheLists;
+        int TableSize;
+        List *TheLists;
 }
