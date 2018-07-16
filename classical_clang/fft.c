@@ -3,10 +3,10 @@
  *
  *       Filename:  fft.c
  *
- *    Description:  快速傅里叶变换
+ *    Description:  傅里叶变换
  *
  *        Version:  1.0
- *        Created:  2018-07-10
+ *        Created:  2018-07-16
  *       Revision:  none
  *       Compiler:  gcc
  *
@@ -15,204 +15,154 @@
  * =====================================================================================
  */
 
-// https://blog.csdn.net/Calcular/article/details/46804643
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
-#define TRUE 1
-#define FALSE 0
-#define FFT_N 8
-#define PI 3.14159265354
+#define N 1000
+typedef struct {
+        double real;
+        double img;
+} complex;
+void fft();  /*快速傅里叶变换*/
+void ifft(); /*快速傅里叶逆变换*/
+void initW();
+void change();
+void add(complex, complex, complex *);  /*复数加法*/
+void mul(complex, complex, complex *);  /*复数乘法*/
+void sub(complex, complex, complex *);  /*复数减法*/
+void divi(complex, complex, complex *); /*复数除法*/
+void output();                          /*输出结果*/
 
-struct fft_complex {
-        double r, i;
-};
-
-int fft_fi(double in) { // 四舍五入
-        if ((in - (int)in) > 0.5)
-                return (int)in + 1;
-        else
-                return (int)in;
-}
-
-int fft_fac2(int n) { // log2n
-        int count = 0;
-        while (n / 2 != 0) {
-                n /= 2;
-                count++;
-        }
-        return count;
-}
-
-int fft_turndat(int n, int num) {
-        int g = n, m, r = 0;
-        int count = 0;
-        while (num / 2 != 0) {
-                num /= 2;
-                count++;
-        }
-        while (count >= 0) {
-                m = g % 2;
-                r += m * pow(2, --count);
-                g /= 2;
-        }
-        return r;
-}
-
-struct fft_complex fft_t(struct fft_complex a) {
-        struct fft_complex tmp;
-        tmp.i = -1 * a.i;
-        tmp.r = -1 * a.r;
-        return tmp;
-}
-
-struct fft_complex fft_multi(struct fft_complex a, struct fft_complex b) {
-        struct fft_complex tmp;
-        tmp.r = a.r * b.r - a.i * b.i;
-        tmp.i = a.r * b.i + a.i * b.r;
-        return tmp;
-}
-
-struct fft_complex fft_add(struct fft_complex a, struct fft_complex b) {
-        struct fft_complex tmp;
-        tmp.r = a.r + b.r;
-        tmp.i = a.i + b.i;
-        return tmp;
-}
-
-/* 定点FFT，返回两个double型数组分别是实部和虚部  */
-void FFT(int *in, double *outr, double *outi) {
-        int i, j;
-        int deep;
-        const int N = FFT_N / 2;
-
-        // 旋转算子
-        struct fft_complex W[N];
-        W[0].r = 1;
-        W[0].i = 0;
-        W[1].r = cos(2.0 * PI / FFT_N);
-        W[1].i = sin(2.0 * PI / FFT_N);
-
-        for (i = 2; i < N; i++)
-                W[i] = fft_multi(W[1], W[i - 1]);
-
-        deep = fft_fac2(FFT_N);
-
-        struct fft_complex left[FFT_N];
-        struct fft_complex right[FFT_N];
-
-        // 蝶形算法 重新排序
-        for (i = 0; i < FFT_N; i++) {
-                left[i].r = in[fft_turndat(i, FFT_N)];
-                left[i].i = 0;
-        }
-
-        struct fft_complex tpp;
-        int mggtmp;
-        int g = 1;
-        int ne = 0, ge = 0;
-
-        while (1) {
-                if (deep == 0)
-                        break;
-                int adt = pow(2, deep - 1);
-                mggtmp = pow(2, g); // 跨度
-                for (i = 0; i < FFT_N; i += mggtmp) {
-                        ne = 0;
-                        ge = 0;
-                        for (j = 0; j < mggtmp; j++) {
-                                if (j < mggtmp / 2) {
-                                        tpp = fft_multi(left[i + j + mggtmp / 2], W[ne]);
-                                        right[i + j] = fft_add(left[i + j], tpp);
-                                        ne += adt;
-                                } else {
-                                        tpp = fft_t(fft_multi(left[i + j], W[ge]));
-                                        right[i + j] = fft_add(left[i + j - mggtmp / 2], tpp);
-                                        ge += adt;
-                                }
-                        }
-                }
-                printf("============\n");
-                for (i = 0; i < FFT_N; i++)
-                        left[i] = right[i];
-                deep--;
-                g++;
-        }
-        for (i = 0; i < FFT_N; i++) {
-                outr[i] = left[i].r;
-                outi[i] = -1 * left[i].i;
-                printf("outr[%d]=%f, outi[%d]=%f\n", i, outr[i], i, outi[i]);
-        }
-}
-
-/* 定点IFFT，输入实部和虚部,返回时域int类型 */
-void IFFT(double *inr, double *ini, int *out) {
-        int i, j;
-        int deep;
-
-        const int N = FFT_N / 2;
-
-        struct fft_complex W[N];
-
-        W[0].r = 1;
-        W[0].i = 0;
-
-        W[1].r = cos(2.0 * PI / FFT_N);
-        W[1].i = -1 * sin(2.0 * PI / FFT_N);
-
-        for (i = 2; i < N; i++)
-                W[i] = fft_multi(W[1], W[i - 1]);
-        deep = fft_fac2(FFT_N);
-
-        int g = 1;
-        int ne = 0, ge = 0;
-
-        struct fft_complex left[FFT_N];
-        struct fft_complex right[FFT_N];
-
-        for (i = 0; i < FFT_N; i++) {
-                left[i].r = inr[fft_turndat(i, FFT_N)];
-                left[i].i = -1 * ini[fft_turndat(i, FFT_N)];
-        }
-        struct fft_complex tpp;
-        int mggtmp;
-        while (1) {
-                if (deep == 0)
-                        break;
-                int adt = pow(2, deep - 1);
-                mggtmp = pow(2, g);
-                for (i = 0; i < FFT_N; i += mggtmp) {
-                        ne = 0;
-                        ge = 0;
-                        for (j = 0; j < mggtmp; j++) {
-                                if (j < mggtmp / 2) {
-                                        tpp = fft_multi(left[i + j + mggtmp / 2], W[ne]);
-                                        right[i + j] = fft_add(left[i + j], tpp);
-                                        ne += adt;
-                                } else {
-                                        tpp = fft_t(fft_multi(left[i + j], W[ge]));
-                                        right[i + j] = fft_add(left[i + j - mggtmp / 2], tpp);
-                                        ge += adt;
-                                }
-                        }
-                }
-                for (i = 0; i < FFT_N; i++)
-                        left[i] = right[i];
-                deep--;
-                g++;
-        }
-        for (i = 0; i < FFT_N; i++) {
-                out[i] = fft_fi(left[i].r / FFT_N);
-        }
-}
+complex x[N], *W; /*输出序列的值*/
+int size_x = 0;   /*输入序列的长度，只限2的N次方*/
+double PI;
 
 int main() {
-        int in[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-        double *outr = (double *)malloc(FFT_N * sizeof(double));
-	double *outi = (double *)malloc(FFT_N * sizeof(double));
+        int i, method;
 
-        FFT(in, outr, outi);
+        system("cls");
+        PI = atan(1) * 4;
+        printf("Please input the size of x:\n");
+        /*输入序列的长度*/
+        scanf("%d", &size_x);
+        printf("Please input the data in x[N]:(such as:5 6)\n");
+        /*输入序列对应的值*/
+        for (i = 0; i < size_x; i++)
+                scanf("%lf %lf", &x[i].real, &x[i].img);
+        initW();
+        /*选择FFT或逆FFT运算*/
+        printf("Use FFT(0) or IFFT(1)?\n");
+        scanf("%d", &method);
+        if (method == 0)
+                fft();
+        else
+                ifft();
+        output();
         return 0;
+}
+
+/*进行基-2 FFT运算*/
+void fft() {
+        int i = 0, j = 0, k = 0, l = 0;
+        complex up, down, product;
+        change();
+        for (i = 0; i < log(size_x) / log(2); i++) {
+                l = 1 << i;
+                for (j = 0; j < size_x; j += 2 * l) {
+                        for (k = 0; k < l; k++) {
+                                mul(x[j + k + l], W[size_x * k / 2 / l], &product); // 旋转算子
+                                add(x[j + k], product, &up);                        // up
+                                sub(x[j + k], product, &down);                      // down
+                                x[j + k] = up;
+                                x[j + k + l] = down;
+                        }
+                }
+        }
+}
+
+/* FFT逆运算 */
+void ifft() {
+        int i = 0, j = 0, k = 0, l = size_x;
+        complex up, down;
+        for (i = 0; i < (int)(log(size_x) / log(2)); i++) /*蝶形运算*/
+        {
+                l /= 2;
+                for (j = 0; j < size_x; j += 2 * l) {
+                        for (k = 0; k < l; k++) {
+                                add(x[j + k], x[j + k + l], &up);
+                                up.real /= 2;
+                                up.img /= 2;
+                                sub(x[j + k], x[j + k + l], &down);
+                                down.real /= 2;
+                                down.img /= 2;
+                                divi(down, W[size_x * k / 2 / l], &down);
+                                x[j + k] = up;
+                                x[j + k + l] = down;
+                        }
+                }
+        }
+        change();
+}
+
+void initW() {
+        int i;
+        W = (complex *)malloc(sizeof(complex) * size_x);
+        for (i = 0; i < size_x; i++) {
+                W[i].real = cos(2 * PI / size_x * i);
+                W[i].img = -1 * sin(2 * PI / size_x * i);
+        }
+}
+
+void change() {
+        complex temp;
+        unsigned short i = 0, j = 0, k = 0;
+        double t;
+        for (i = 0; i < size_x; i++) {
+                k = i;
+                j = 0;
+                t = (log(size_x) / log(2));
+                while ((t--) > 0) {
+                        j = j << 1;
+                        j |= (k & 1);
+                        k = k >> 1;
+                }
+                if (j > i) {
+                        temp = x[i];
+                        x[i] = x[j];
+                        x[j] = temp;
+                }
+        }
+}
+
+void output() /*输出结果*/
+{
+        int i;
+        printf("The result are as follows\n");
+        for (i = 0; i < size_x; i++) {
+                printf("%.4f", x[i].real);
+                if (x[i].img >= 0.0001)
+                        printf("+%.4fj\n", x[i].img);
+                else if (fabs(x[i].img) < 0.0001)
+                        printf("\n");
+                else
+                        printf("%.4fj\n", x[i].img);
+        }
+}
+void add(complex a, complex b, complex *c) {
+        c->real = a.real + b.real;
+        c->img = a.img + b.img;
+}
+
+void mul(complex a, complex b, complex *c) {
+        c->real = a.real * b.real - a.img * b.img;
+        c->img = a.real * b.img + a.img * b.real;
+}
+void sub(complex a, complex b, complex *c) {
+        c->real = a.real - b.real;
+        c->img = a.img - b.img;
+}
+void divi(complex a, complex b, complex *c) {
+        c->real = (a.real * b.real + a.img * b.img) / (b.real * b.real + b.img * b.img);
+        c->img = (a.img * b.real - a.real * b.img) / (b.real * b.real + b.img * b.img);
 }
