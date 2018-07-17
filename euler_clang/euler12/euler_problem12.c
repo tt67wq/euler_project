@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define KEY_MAX_LENGTH (256)
 #define KEY_PREFIX ("fac")
@@ -42,10 +43,9 @@ void factorize(int num, int *facs, int *len) {
         *len = j;
 }
 
-int main() {
-        int num;
-        printf("请输入想分解的数字: \n");
-        scanf("%d", &num);
+int nth_num(int n) { return n * (n + 1) / 2; }
+
+int count_fac(int num) {
         int *facs = (int *)malloc(500 * sizeof(int));
         int len;
         int error;
@@ -70,14 +70,40 @@ int main() {
                 }
         }
 
+        int result = 1;
         for (int i = 0; i <= len; i++) {
                 char key[KEY_MAX_LENGTH];
                 data_struct_t *value;
                 snprintf(key, KEY_MAX_LENGTH, "%s%d", KEY_PREFIX, nums[i]);
                 error = hashmap_get(hmap, key, (void **)(&value));
-                if (error == MAP_OK)
-                        printf("%d => %d\n", nums[i], value->number);
+                if (error == MAP_OK) {
+                        /* printf("%d => %d\n", nums[i], value->number); */
+                        result *= (value->number + 1);
+                }
         }
 
+        hashmap_free(hmap);
+        free(facs);
+        /* free(nums); */
+        return result;
+}
+
+int main() {
+        clock_t begin = clock();
+        int index = 1;
+        while (1) {
+                int num = nth_num(index);
+                int result;
+                result = count_fac(num);
+                printf("%d: %d => %d\n", index, num, result);
+                if (result > 500) {
+                        clock_t end = clock();
+                        double timespent = end - begin;
+                        printf("num: %d, result: %d\nTime spent:%lfs\n", num, result, (double)(timespent / CLOCKS_PER_SEC));
+
+                        break;
+                }
+                index += 1;
+        }
         return 0;
 }
