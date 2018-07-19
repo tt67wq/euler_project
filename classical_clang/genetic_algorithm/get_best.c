@@ -118,3 +118,41 @@ void select(double chrom[sizepop][lenchrom]) {
                 fitness[i] = fitness[index[j]];
         }
 }
+
+// 交叉操作
+void cross(double chrom[sizepop][lenchrom]) {
+        for (int i = 0; i < sizepop; i++) {
+                // 随机选择两个染色体进行交叉
+                double pick1 = ((double)rand()) / RAND_MAX;
+                double pick2 = ((double)rand()) / RAND_MAX;
+
+                int choice1 = (int)(pick1 * sizepop); // 第一个染色体的序号
+                int choice2 = (int)(pick2 * sizepop); // 第二个染色体的序号
+
+                while (choice1 > sizepop - 1) {
+                        pick1 = ((double)rand()) / RAND_MAX;
+                        choice1 = (int)(pick1 * sizepop);
+                }
+                double pick = ((double)rand()) / RAND_MAX;
+                if (pick > pcross)
+                        continue;
+                int flag = 0;
+                while (flag == 0) {
+                        double pick = ((double)rand()) / RAND_MAX;
+                        int pos = (int)(pick * sizepop);
+                        while (pos > lenchrom - 1) {
+                                double pick = ((double)rand()) / RAND_MAX;
+                                int pos = (int)(pick * lenchrom);
+                        }
+                        // 开始交叉
+                        double r = ((double)rand()) / RAND_MAX;
+                        double v1 = chrom[choice1][pos];
+                        double v2 = chrom[choice2][pos];
+
+                        chrom[choice1][pos] = r * v2 + (1 - r) * v1;
+                        chrom[choice2][pos] = r * v1 + (1 - r) * v2;
+                        if (chrom[choice1][pos] >= bound_down && chrom[choice1][pos] <= bound_up && chrom[choice2][pos] >= bound_down && chrom[choice2][pos] <= bound_up)
+                                flag = 1; // 有效交叉
+                }
+        }
+}
