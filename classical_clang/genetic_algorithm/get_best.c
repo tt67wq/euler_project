@@ -75,6 +75,7 @@ double *min(double *fitness) {
         return arr;
 }
 
+// 初始化组件
 void init_chrom() {
         for (int i = 0; i < sizepop; i++) {
                 for (int j = 0; j < lenchrom; j++)
@@ -139,6 +140,7 @@ void cross(double chrom[sizepop][lenchrom]) {
                         continue;
                 int flag = 0;
                 while (flag == 0) {
+			// 选择染色体交叉位置
                         double pick = ((double)rand()) / RAND_MAX;
                         int pos = (int)(pick * sizepop);
                         while (pos > lenchrom - 1) {
@@ -146,7 +148,7 @@ void cross(double chrom[sizepop][lenchrom]) {
                                 pos = (int)(pick * lenchrom);
                         }
                         // 开始交叉
-                        double r = ((double)rand()) / RAND_MAX;
+                        double r = ((double)rand()) / RAND_MAX; // 交叉系数
                         double v1 = chrom[choice1][pos];
                         double v2 = chrom[choice2][pos];
 
@@ -161,13 +163,14 @@ void cross(double chrom[sizepop][lenchrom]) {
 // 变异
 void mutation(double chrom[sizepop][lenchrom]) {
         for (int i = 0; i < sizepop; i++) {
+		// 选择变异位置
                 double pick = ((double)rand()) / RAND_MAX;
                 int choice = (int)(pick * sizepop);
                 while (choice > sizepop - 1) {
                         double pick = ((double)rand()) / RAND_MAX;
                         choice = (int)(pick * sizepop); // 下标越界处理
                 }
-                pick = ((double)rand()) / RAND_MAX;
+                pick = ((double)rand()) / RAND_MAX; // 变异概率
                 if (pick > pmutation)
                         continue;
                 pick = ((double)rand()) / RAND_MAX;
