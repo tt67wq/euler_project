@@ -3,6 +3,7 @@
 ---- 
 
 [欧拉计划](https://projecteuler.net/archives)
+[欧拉计划中文](http://pe-cn.github.io/problems/)
 
 ![image](https://projecteuler.net/profile/clearlove.png)
 
