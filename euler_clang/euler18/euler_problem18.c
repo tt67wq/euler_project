@@ -62,7 +62,7 @@ int main() {
 
         fclose(fp);
 
-	int res = sum(0, 0, 0, tr);
-	printf("%d\n", res);
+        int res = sum(0, 0, 0, tr);
+        printf("%d\n", res);
         return 0;
 }
