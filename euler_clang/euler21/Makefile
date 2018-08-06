@@ -1,6 +1,6 @@
 CC = gcc
-INFILE = euler_problem19.c
-OUTFILE = euler_problem19.o
+INFILE = euler_problem21.c
+OUTFILE = euler_problem21.o
 FLAGS = -Wall
 
 build: $(INFILE)
