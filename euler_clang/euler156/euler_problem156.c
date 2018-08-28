@@ -21,7 +21,7 @@
 #include <time.h>
 
 typedef unsigned long long ull;
-ull ten_base_count(int, int, int);
+ull ten_base_count(int, int, int, ull *);
 
 void count_digits(ull num, ull *counter) {
         while (num > 0) {
@@ -30,17 +30,18 @@ void count_digits(ull num, ull *counter) {
         }
 }
 
-ull count_digits2(ull num, int base) {
+ull count_digits2(ull num, int base, ull *pows) {
         ull tmp = num;
         int p = 0;
         ull count = 0;
+
         while (tmp > 0) {
                 tmp /= 10;
                 p++;
         }
         while (p >= 0) {
-                ull n = (ull)pow(10, p);
-                count += ten_base_count((int)(num / n), p, base);
+                ull n = pows[p];
+                count += ten_base_count((int)(num / n), p, base, pows);
                 if ((int)(num / n) == base)
                         count += num % n;
                 num %= n;
@@ -49,42 +50,42 @@ ull count_digits2(ull num, int base) {
         return count;
 }
 
-ull ten_base_count(int m, int n, int b) {
+ull ten_base_count(int m, int n, int b, ull *pows) {
         if (m == 1) {
                 if (b != 1)
-                        return pow(10, n - 1) * n;
+                        return pows[n - 1] * n;
                 else
-                        return pow(10, n - 1) * n + 1;
+                        return pows[n - 1] * n + 1;
         } else {
                 if (m > b)
-                        return pow(10, n - 1) * n * m + pow(10, n);
+                        return pows[n - 1] * n * m + pows[n];
                 else if (m == b)
-                        return pow(10, n - 1) * n * m + 1;
+                        return pows[n - 1] * n * m + 1;
                 else
-                        return pow(10, n - 1) * n * m;
+                        return pows[n - 1] * n * m;
         }
 }
 
+// 二分查找
+void binary_search(ull lower, ull higher, int d, ull *res){
+	
+}
+
 int main() {
-        /* ull counter[10] = {0}; */
-        /* for (ull i = 1; i < 1000000; i++) { */
-        /*         count_digits(i, counter); */
-        /*         for (int j = 1; j < 10; j++) */
-        /*                 if (counter[j] == i) { */
-        /*                         printf("f(%llu, %d) = %llu\n", i, j, i); */
-        /*                 } */
-        /* } */
-        for (ull i = 1; i < 10000000000; i++) {
-                ull tmp = count_digits2(i, 1);
-                if (tmp == i)
-                        printf("f(%llu, %d) = %llu\n", i, 1, tmp);
+        ull pows[13] = {0};
+
+        /* ull sum = 0; */
+        for (int i = 0; i < 13; i++)
+                pows[i] = pow(10, i);
+
+        for (ull i = 1; i <= pows[10]; i++) {
+                ull num = i;
+                int b = 1;
+
+                ull tmp = count_digits2(num, b, pows);
         }
 
-        /* for (int j = 1; j < 10; j++) { */
-        /*         ull tmp = count_digits2(i, j); */
-        /*         if (tmp == i) */
-        /*                 printf("f(%llu, %d) = %llu\n", i, j, tmp); */
-        /* } */
+        /* printf("sum = %llu\n", sum); */
 
         return 0;
 }
