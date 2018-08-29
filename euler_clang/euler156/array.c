@@ -19,9 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 void initArr(A *arr, int len) {
-        arr->head = (int *)malloc(sizeof(int) * len);
+        arr->head = (ull *)malloc(sizeof(ull) * len);
         if (NULL == arr) {
                 printf("Dynamic storage fail to distribute!");
                 exit(-1);
@@ -45,7 +44,7 @@ bool isEmpty(A *arr) {
         return false;
 }
 
-bool insert(A *arr, int index, int val) {
+bool insert(A *arr, int index, ull val) {
         if (isFull(arr)) {
                 return false;
         }
@@ -63,7 +62,7 @@ bool insert(A *arr, int index, int val) {
         return true;
 }
 
-bool append(A *arr, int val) {
+bool append(A *arr, ull val) {
         if (isFull(arr)) {
                 return false;
         } else {
@@ -91,9 +90,9 @@ bool remove_arr(A *arr, int index) {
 
 void show_arr(A *arr) {
         int i;
-        for (i = 0; i < arr->num; i++) {
-                printf("%d ", arr->head[i]);
-        }
+        for (i = 0; i < arr->num; i++)
+                printf("%d -> %llu\n", i, arr->head[i]);
+
         printf("\n");
 }
 
@@ -113,37 +112,10 @@ bool inverse(A *arr) {
         return true;
 }
 
-bool replace(A *arr, int index, int val) {
+bool replace(A *arr, int index, ull val) {
         if (arr->num <= 0 || index < 0 || index > arr->num - 1) {
                 return false;
         }
         arr->head[index] = val;
         return true;
-}
-
-int main(void) {
-        A arr;
-        initArr(&arr, 6);
-        append(&arr, 4);
-        append(&arr, 2);
-        append(&arr, 3);
-        append(&arr, 1);
-        append(&arr, 1);
-        insert(&arr, 0, 5);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        remove_arr(&arr, 0);
-        append(&arr, 0);
-        append(&arr, 2);
-        append(&arr, 30);
-        append(&arr, 23);
-        inverse(&arr);
-        replace(&arr, 3, 8);
-
-        show_arr(&arr);
 }

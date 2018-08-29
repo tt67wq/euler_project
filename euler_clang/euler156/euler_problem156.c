@@ -15,12 +15,12 @@
  * =====================================================================================
  */
 
+#include "array.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-typedef unsigned long long ull;
 ull ten_base_count(int, int, int, ull *);
 
 void count_digits(ull num, ull *counter) {
@@ -67,25 +67,57 @@ ull ten_base_count(int m, int n, int b, ull *pows) {
 }
 
 // 二分查找
-void binary_search(ull lower, ull higher, int d, ull *res){
-	
+void binary_search(ull lower, ull higher, int base, ull *pows, A *res) {
+        // 逃逸条件
+        if (lower + 1 == higher) {
+                if (count_digits2(lower, base, pows) == lower) {
+                        /* printf("%llu\n", lower); */
+                        if (append(res, lower))
+                                ;
+                        else
+                                printf("insert %llu failed\n", lower);
+                }
+
+                return;
+        }
+        ull mid = (lower + higher) / 2;
+        ull lower_value = count_digits2(lower, base, pows);
+        ull higher_value = count_digits2(higher, base, pows);
+        ull mid_value = count_digits2(mid, base, pows);
+
+        if (mid_value >= lower && lower_value <= mid)
+                binary_search(lower, mid, base, pows, res);
+        if (mid_value <= higher && higher_value >= mid)
+                binary_search(mid, higher, base, pows, res);
 }
 
 int main() {
+	clock_t begin = clock();
         ull pows[13] = {0};
-
-        /* ull sum = 0; */
         for (int i = 0; i < 13; i++)
-                pows[i] = pow(10, i);
+                pows[i] = (ull)pow(10, i);
 
-        for (ull i = 1; i <= pows[10]; i++) {
-                ull num = i;
-                int b = 1;
+        A *arr;
+        initArr(arr, 1000);
 
-                ull tmp = count_digits2(num, b, pows);
+        for (int i = 1; i < 10; i++)
+		binary_search(1, pows[11], i, pows, arr);
+
+        printf("binary search finished, total %d nums\n", arr->num);
+
+	/* show_arr(arr); */
+	ull sum = 0;
+        for (int j = 0; j < arr->num; j++) {
+                /* printf("%d ==> %llu\n", j, arr->head[j]); */
+                sum += arr->head[j];
         }
 
-        /* printf("sum = %llu\n", sum); */
+	clock_t end = clock();
+        double timespent = end - begin;
 
-        return 0;
+	printf("result => %llu, time use => %lfs\n", sum, (double)(timespent / CLOCKS_PER_SEC));
+
+        free(arr->head);
+
+        exit(EXIT_SUCCESS);
 }
