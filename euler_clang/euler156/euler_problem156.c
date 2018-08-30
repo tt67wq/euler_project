@@ -23,13 +23,6 @@
 
 ull ten_base_count(int, int, int, ull *);
 
-void count_digits(ull num, ull *counter) {
-        while (num > 0) {
-                counter[num % 10]++;
-                num /= 10;
-        }
-}
-
 ull count_digits2(ull num, int base, ull *pows) {
         ull tmp = num;
         int p = 0;

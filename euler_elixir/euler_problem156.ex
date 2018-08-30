@@ -2,33 +2,85 @@ defmodule Euler156 do
   @moduledoc """
   https://projecteuler.net/problem=156
   """
-  def digit_count(10, 1), do: 2
-  def digit_count(10, _), do: 1
+  require Logger
+  @type int :: integer()
 
-  def digit_count(100, 1), do: 21
-  def digit_count(100, _), do: 20
+  defp pow(a, b), do: :math.pow(a, b) |> round()
 
-  def digit_count(1000, 1), do: 301
-  def digit_count(1000, _), do: 300
+  def ten_base_count(1, n, 1), do: pow(10, n - 1) * n + 1
+  def ten_base_count(1, n, _base), do: pow(10, n - 1) * n
+  def ten_base_count(m, n, base) when m > base, do: pow(10, n - 1) * n * m + pow(10, n)
+  def ten_base_count(m, n, base) when m == base, do: pow(10, n - 1) * n * m + 1
+  def ten_base_count(m, n, _base), do: pow(10, n - 1) * n * m
 
-  def digit_count(10000, 1), do: 4001
-  def digit_count(10000, _), do: 4000
+  def count_digit(n, base), do: count_digit(n, base, digit_size(n, 0), 0)
 
-  def digit_count(100_000, 1), do: 50001
-  def digit_count(100_000, _), do: 50000
+  defp count_digit(_n, _base, -1, acc), do: acc
 
-  def digit_count(1_000_000, 1), do: 600_001
-  def digit_count(1_000_000, _), do: 600_000
+  defp count_digit(n, base, p, acc) do
+    s = pow(10, p)
+    acc = acc + ten_base_count(div(n, s), p, base)
 
-  def digit_count(10_000_000, 1), do: 7_000_001
-  def digit_count(10_000_000, _), do: 7_000_000
+    cond do
+      div(n, s) == base ->
+        count_digit(rem(n, s), base, p - 1, acc + rem(n, s))
 
-  def digit_count(100_000_000, 1), do: 80_000_001
-  def digit_count(100_000_000, _), do: 80_000_000
+      :else ->
+        count_digit(rem(n, s), base, p - 1, acc)
+    end
+  end
 
-  def digit_count(1_000_000_000, 1), do: 900_000_001
-  def digit_count(1_000_000_000, _), do: 900_000_000
+  defp digit_size(0, acc), do: acc
+  defp digit_size(n, acc), do: digit_size(div(n, 10), acc + 1)
 
-  def digit_count(10_000_000_000, 1), do: 10_000_000_001
-  def digit_count(10_000_000_000, _), do: 10_000_000_000
+  def binary_search(lower, higher, base, pid) when higher == lower + 1 do
+    cond do
+      count_digit(lower, base) == lower -> send(pid, {:ok, lower})
+      :else -> send(pid, {:error})
+    end
+  end
+
+  def binary_search(lower, higher, base, pid) do
+    mid = div(lower + higher, 2)
+    lower_value = count_digit(lower, base)
+    higher_value = count_digit(higher, base)
+    mid_value = count_digit(mid, base)
+
+    if mid_value >= lower and lower_value <= mid do
+      binary_search(lower, mid, base, pid)
+    end
+
+    if mid_value <= higher && higher_value >= mid do
+      binary_search(mid, higher, base, pid)
+    end
+  end
+
+  def loop_accept(acc) do
+    receive do
+      {:ok, num} ->
+        Logger.info("#{num}")
+
+        if num == 80_000_000_000 do
+          Logger.info("sum ==> #{Enum.sum([num | acc])}")
+        end
+
+        loop_accept([num | acc])
+
+      {:error} ->
+        loop_accept(acc)
+    end
+  end
+
+  def run() do
+    {:ok, pid} = Task.start_link(fn -> loop_accept([]) end)
+    binary_search(1, pow(10, 12), 1, pid)
+    binary_search(1, pow(10, 12), 2, pid)
+    binary_search(1, pow(10, 12), 3, pid)
+    binary_search(1, pow(10, 12), 4, pid)
+    binary_search(1, pow(10, 12), 5, pid)
+    binary_search(1, pow(10, 12), 6, pid)
+    binary_search(1, pow(10, 12), 7, pid)
+    binary_search(1, pow(10, 12), 8, pid)
+    binary_search(1, pow(10, 12), 9, pid)
+  end
 end
