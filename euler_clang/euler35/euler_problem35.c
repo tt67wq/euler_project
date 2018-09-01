@@ -77,7 +77,7 @@ int rotate(int num) {
 }
 
 int main() {
-	clock_t begin = clock();
+        clock_t begin = clock();
         int arr[LIMIT] = {0};
         for (int i = 2; i < LIMIT; i++) {
                 if (probablyPrime(i, 3))
@@ -86,6 +86,7 @@ int main() {
 
         int jump[LIMIT] = {0};
 
+        int count = 0;
         for (int i = 0; i < LIMIT; i++) {
                 if (!arr[i])
                         continue;
@@ -122,15 +123,13 @@ int main() {
                 }
         }
 
-        int count = 0;
         for (int i = 0; i < LIMIT; i++)
                 if (arr[i] == 1)
                         count++;
 
-	clock_t end = clock();
+        clock_t end = clock();
         double timespent = end - begin;
         printf("result => %d time use => %lfs\n", count, (double)(timespent / CLOCKS_PER_SEC));
-
 
         exit(EXIT_SUCCESS);
 }
