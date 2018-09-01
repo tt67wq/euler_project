@@ -49,6 +49,7 @@
 * [背包问题](https://github.com/tt67wq/euler_project/blob/master/classical_clang/knapsack.c)
 * [合并排序](https://github.com/tt67wq/euler_project/blob/master/classical_clang/merge_sort.c)
 * [基数排序](https://github.com/tt67wq/euler_project/blob/master/classical_clang/radix_sort.c)
+* [布隆过滤器](https://github.com/tt67wq/euler_project/blob/master/classical_clang/bloom_filter)
 
 
 ### 经典算法(Elixir实现)
