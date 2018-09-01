@@ -15,16 +15,15 @@
  * =====================================================================================
  */
 
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "array.h"
+
+#define LIMIT 1000000
 
 typedef unsigned long long ull;
-typedef int bool;
-
-const bool true = 1;
-const bool false = 0;
 
 // =====================  素数检测 ====================
 
@@ -63,4 +62,75 @@ bool probablyPrime(ull n, int k) {
                 if (witness(random2(n - 3) + 2, n))
                         return false;
         return true;
+}
+
+int rotate(int num) {
+        int r = num % 10;
+        int d = num / 10;
+        int t = d;
+        int p = 0;
+        while (t > 0) {
+                t /= 10;
+                p++;
+        }
+        return pow(10, p) * r + d;
+}
+
+int main() {
+	clock_t begin = clock();
+        int arr[LIMIT] = {0};
+        for (int i = 2; i < LIMIT; i++) {
+                if (probablyPrime(i, 3))
+                        arr[i] = 1;
+        }
+
+        int jump[LIMIT] = {0};
+
+        for (int i = 0; i < LIMIT; i++) {
+                if (!arr[i])
+                        continue;
+                // check jump
+                if (jump[i] == 1)
+                        continue;
+                int ps[6] = {0};
+                int index = 1;
+                ps[0] = i;
+
+                int temp = rotate(i);
+                int all_prime = 1;
+
+                while (i != temp) {
+                        if (!probablyPrime((ull)temp, 3)) {
+                                all_prime = 0;
+                                break;
+                        }
+
+                        ps[index++] = temp;
+                        temp = rotate(temp);
+                }
+                if (all_prime == 0) {
+                        arr[i] = 0;
+                } else {
+                        for (int j = 0; j < index; j++) {
+                                if (j == 0)
+                                        printf("%d ", ps[j]);
+                                else
+                                        printf(" ==> %d ", ps[j]);
+                                jump[ps[j]] = 1;
+                        }
+                        printf("\n");
+                }
+        }
+
+        int count = 0;
+        for (int i = 0; i < LIMIT; i++)
+                if (arr[i] == 1)
+                        count++;
+
+	clock_t end = clock();
+        double timespent = end - begin;
+        printf("result => %d time use => %lfs\n", count, (double)(timespent / CLOCKS_PER_SEC));
+
+
+        exit(EXIT_SUCCESS);
 }
