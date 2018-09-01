@@ -37,25 +37,19 @@ unsigned int sdbm_hash(const char *key) {
 }
 
 int main() {
-        FILE *fp;
-        char line[1024];
-        char *p;
         BLOOM *bloom;
-
-        if (argc < 2) {
-                fprintf(stderr, "ERROR: No file specified\n");
-                return EXIT_FAILURE;
-        }
 
         if (!(bloom = bloom_create(2500000, 2, sax_hash, sdbm_hash))) {
                 fprintf(stderr, "ERROR: Could not create bloom filter\n");
                 return EXIT_FAILURE;
         }
 
-        if (!(fp = fopen(argv[1], "r"))) {
-                fprintf(stderr, "ERROR: Could not open file %s\n", argv[1]);
-                return EXIT_FAILURE;
-        }
+        bloom_add(bloom, "aaa");
+        bloom_add(bloom, "bbb");
+        bloom_add(bloom, "ccc");
+
+        printf("%d\n", bloom_check(bloom, "aaa"));
+        printf("%d\n", bloom_check(bloom, "ddd"));
 
         return EXIT_SUCCESS;
 }

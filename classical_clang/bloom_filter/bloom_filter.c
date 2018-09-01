@@ -16,6 +16,7 @@
  */
 
 #include <limits.h>
+#include <stdarg.h>
 /* #include <stdio.h> */
 /* #include <time.h> */
 
@@ -64,7 +65,7 @@ int bloom_destroy(BLOOM *bloom) {
 
 int bloom_add(BLOOM *bloom, const char *s) {
         size_t n;
-        for (n = 0; n < bloom->funcs; n++)
+        for (n = 0; n < bloom->nfuncs; n++)
                 SETBIT(bloom->a, bloom->funcs[n](s) % bloom->asize);
 
         return 0;
@@ -73,7 +74,7 @@ int bloom_add(BLOOM *bloom, const char *s) {
 int bloom_check(BLOOM *bloom, const char *s) {
         size_t n;
 
-        for (n = 0; < bloom->nfuncs; n++)
+        for (n = 0; n < bloom->nfuncs; n++)
                 if (!(GETBIT(bloom->a, bloom->funcs[n](s) % bloom->asize)))
                         return 0;
         return 1;
