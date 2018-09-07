@@ -99,7 +99,8 @@ int main() {
                 if (result > 500) {
                         clock_t end = clock();
                         double timespent = end - begin;
-                        printf("num: %d, result: %d\nTime spent:%lfs\n", num, result, (double)(timespent / CLOCKS_PER_SEC));
+                        printf("num: %d, result: %d\nTime spent:%lfs\n", num, result,
+                               (double)(timespent / CLOCKS_PER_SEC));
 
                         break;
                 }
