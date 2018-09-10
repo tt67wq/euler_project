@@ -45,19 +45,19 @@ int main() {
         int eindex = 1;
         int anchors[7] = {1, 10, 100, 1000, 10000, 100000, 1000000};
         int product = 1;
+        int j = 0;
         for (int i = 1; i < 1000000; i++) {
                 if (sindex > 1000000)
                         break;
                 eindex = sindex + num_len(i);
-                for (int j = 0; j < 7; j++)
-                        if (anchors[j] >= sindex && anchors[j] < eindex) {
-                                int offset = anchors[j] - sindex;
-                                int offset_digit = get_offset(i, offset);
-                                printf("[%d, %d): %d, offset: %d, offset digits: %d\n", sindex,
-                                       eindex, i, offset, offset_digit);
-                                product *= offset_digit;
-                                break;
-                        }
+                if (anchors[j] >= sindex && anchors[j] < eindex) {
+                        int offset = anchors[j] - sindex;
+                        int offset_digit = get_offset(i, offset);
+                        printf("[%d, %d): %d, offset: %d, offset digits: %d\n", sindex, eindex, i,
+                               offset, offset_digit);
+                        product *= offset_digit;
+                        j++;
+                }
 
                 sindex = eindex;
         }
