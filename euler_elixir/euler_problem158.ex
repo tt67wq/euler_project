@@ -3,62 +3,90 @@ defmodule Euler158 do
   https://projecteuler.net/problem=158
   """
   require Logger
+  require Integer
 
-  def perm(_pool, _digits, _pid, deep, n) when deep > n, do: nil
+  ##### Start 计算组合数工具
+  @doc """
+  乘方
+  """
+  def pow(x, n) when is_integer(x) and is_integer(n) and n >= 0, do: pow(x, n, 1)
 
-  def perm(_pool, digits, pid, deep, n) when deep == n do
-    send(pid, {:ok, digits})
-  end
+  defp pow(_x, 0, acc), do: acc
+  defp pow(x, 1, acc), do: x * acc
+  defp pow(x, n, acc) when rem(n, 2) == 0, do: pow(x * x, div(n, 2), acc)
+  defp pow(x, n, acc) when rem(n, 2) == 1, do: pow(x * x, div(n - 1, 2), acc * x)
 
-  def perm(pool, digits, pid, deep, n) do
-    pool
-    |> Enum.filter(fn x -> not Enum.member?(digits, x) end)
-    |> Enum.map(fn x -> [x | digits] end)
-    |> Enum.filter(fn x -> lexicographically_times(x) <= 1 end)
-    |> Enum.map(fn x -> perm(pool, x, pid, deep + 1, n) end)
+  @doc """
+  质因数分解
+  """
+  @spec factorize(Integer) :: map()
+  def factorize(num), do: factorize(num, 2, %{})
 
-    if deep == 0 do
-      send(pid, {:finish})
-    end
+  defp factorize(num, index, acc) when index > num, do: acc
 
-    :ok
-  end
-
-  def digit_encode(digits), do: encode(digits, [])
-  defp encode([_], acc), do: Enum.reverse(acc)
-  defp encode([h1, h2 | t], acc) when h1 > h2, do: encode([h2 | t], [1 | acc])
-  defp encode([_h1, h2 | t], acc), do: encode([h2 | t], [0 | acc])
-
-  def lexicographically_times(digits), do: once(digits, 0)
-  defp once([_], acc), do: acc
-  defp once([h1, h2 | t], acc) when h1 < h2, do: once([h2 | t], acc + 1)
-  defp once([_, h | t], acc), do: once([h | t], acc)
-
-  def loop_accept(acc, st) do
-    receive do
-      {:ok, digits} ->
-        cond do
-          lexicographically_times(digits) == 1 ->
-            loop_accept([digit_encode(digits) | acc], st)
-
-          :else ->
-            loop_accept(acc, st)
-        end
-
-      {:finish} ->
-        timeuse = now() - st
-        s = Enum.count(acc)
-        mp = acc |> Enum.reduce(%{}, fn x, acc -> Map.update(acc, x, 1, fn y -> y + 1 end) end)
-        IO.puts("count => #{s}, timecost => #{timeuse} milliseconds")
-	IO.inspect(mp)
+  defp factorize(num, index, acc) do
+    case rem(num, index) do
+      0 -> factorize(div(num, index), index, Map.update(acc, index, 1, fn x -> x + 1 end))
+      _ -> factorize(num, index + 1, acc)
     end
   end
+
+  def zuhe(m, n) do
+    mm = fac_map(m, n, %{})
+    nn = fac_map(n, n, %{})
+
+    Map.to_list(nn)
+    |> Enum.reduce(mm, fn {k, v}, acc -> Map.update(acc, k, v, fn y -> y - v end) end)
+    |> Map.to_list()
+    |> Enum.map(fn {k, v} -> pow(k, v) end)
+    |> Enum.reduce(1, fn x, acc -> x * acc end)
+  end
+
+  defp fac_map(_, 0, acc), do: acc
+
+  defp fac_map(n, index, acc) do
+    mp = factorize(n)
+
+    bcc =
+      Map.to_list(mp)
+      |> Enum.reduce(acc, fn {k, v}, acc -> Map.update(acc, k, v, fn y -> y + v end) end)
+
+    fac_map(n - 1, index - 1, bcc)
+  end
+
+  ##### end   计算组合数工具
+
+  def triangle(), do: triangle(1, %{})
+
+  defp triangle(1, _acc), do: triangle(2, %{1 => [1, 0]})
+
+  defp triangle(level, acc) when level > 25, do: acc
+
+  defp triangle(level, acc) do
+    case Map.fetch(acc, level - 1) do
+      {:ok, upper} ->
+        next = level_generate(upper, [level])
+        triangle(level + 1, Map.put(acc, level, next))
+
+      :error ->
+        triangle(level + 1, acc)
+    end
+  end
+
+  defp level_generate([0], acc), do: Enum.reverse([0 | acc])
+  defp level_generate([h1, h2 | t], acc), do: level_generate([h2 | t], [h1 + h2 + 1 | acc])
 
   defp now(), do: :os.system_time(:milli_seconds)
 
-  def run(base) do
+  def run() do
     start = now()
-    {:ok, pid} = Task.start_link(fn -> loop_accept([], start) end)
-    perm(1..26, [], pid, 0, base)
+
+    res =
+      Map.to_list(triangle())
+      |> Enum.map(fn {level, list} -> {level, zuhe(26, level + 1) * Enum.sum(list)} end)
+
+    timeuse = now() - start
+    IO.inspect(res)
+    IO.puts("timeuse => #{timeuse} milliseconds")
   end
 end

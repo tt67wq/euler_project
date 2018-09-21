@@ -3,6 +3,9 @@ defmodule Zuheshu do
   计算组合数
   """
 
+  @doc """
+  乘方
+  """
   def pow(x, n) when is_integer(x) and is_integer(n) and n >= 0, do: pow(x, n, 1)
 
   defp pow(_x, 0, acc), do: acc
