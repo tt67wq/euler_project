@@ -3,6 +3,7 @@ defmodule ModComb do
   快速求排列组合C（m，n）%mod
   """
   require Logger
+  require Integer
 
   # 同余定理
   def pow_mod(m, 1, k), do: Integer.mod(m, k)

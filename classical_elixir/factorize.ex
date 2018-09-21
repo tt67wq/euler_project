@@ -2,6 +2,7 @@ defmodule Factorize do
   @moduledoc """
   质因数分解
   """
+  @spec factorize(Integer) :: map()
   def factorize(num), do: factorize(num, 2, %{})
 
   defp factorize(num, index, acc) when index > num, do: acc
