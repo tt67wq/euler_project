@@ -79,3 +79,4 @@
 * [稳定匹配问题](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/stable_match.ex)
 * [勾股数生成](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/triangles.exs)
 * [三桶分水问题](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/water_split.ex)
+* [计算组合数](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/zuheshu.ex)
