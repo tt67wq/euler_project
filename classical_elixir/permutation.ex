@@ -2,9 +2,29 @@ defmodule Permutation do
   @moduledoc """
   全排列 
   """
+  def loop_accept(acc) do
+    receive do
+      {:ok, digits} ->
+        res = digits |> Enum.map(fn {_index, x} -> x end)
 
-  # 全排列
-  require Logger
+        cond do
+          Enum.member?(acc, res) ->
+            loop_accept(acc)
+
+          :else ->
+            IO.inspect(res)
+            loop_accept([res | acc])
+        end
+    end
+  end
+
+  defp add_index([], _, acc), do: acc
+  defp add_index([h | t], index, acc), do: add_index(t, index + 1, [{index, h} | acc])
+
+  def run() do
+    {:ok, pid} = Task.start_link(fn -> loop_accept([]) end)
+    perm([1, 2, 3, 3] |> add_index(0, []), [], pid, 0, 4)
+  end
 
   def perm(_pool, _digits, _pid, deep, n) when deep > n, do: nil
 
@@ -19,18 +39,5 @@ defmodule Permutation do
     |> Enum.map(fn x -> perm(pool, x, pid, deep + 1, n) end)
 
     :ok
-  end
-
-  def loop_accept() do
-    receive do
-      {:ok, digits} ->
-        Logger.info("#{inspect(digits)}")
-        loop_accept()
-    end
-  end
-
-  def run() do
-    {:ok, pid} = Task.start_link(fn -> loop_accept() end)
-    perm([1, 2, 3, 4], [], pid, 0, 4)
   end
 end
