@@ -51,6 +51,8 @@
 * [基数排序](https://github.com/tt67wq/euler_project/blob/master/classical_clang/radix_sort.c)
 * [布隆过滤器](https://github.com/tt67wq/euler_project/blob/master/classical_clang/bloom_filter)
 * [退火算法](https://github.com/tt67wq/euler_project/blob/master/classical_clang/sa)
+* [递归求乘方](https://github.com/tt67wq/euler_project/blob/master/classical_clang/recursive_power.c)
+* [求组合数](https://github.com/tt67wq/euler_project/blob/master/classical_clang/zuhe)
 
 
 ### 经典算法(Elixir实现)
