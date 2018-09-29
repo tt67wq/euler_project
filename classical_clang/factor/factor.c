@@ -15,25 +15,41 @@
  * =====================================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
-#define TRUE 1
-#define FALSE 0
+// 质因数分解
+void factorize(int num, int (*facs)[2]) {
+        int i;
+        int index = 0;
+        for (i = 2; i <= num; i++) {
+                if (num % i == 0) {
+                        num /= i;
+                        int exists = 0;
+                        for (int j = 0; j < index; j++) {
+                                if (facs[j][0] == i) {
+                                        facs[j][1]++;
+                                        exists = 1;
+                                        break;
+                                }
+                        }
+                        if (!exists) {
+                                facs[index][0] = i;
+                                facs[index][1] = 1;
+                                index++;
+                        }
+                        i--;
+                }
+        }
+}
 
 int main() {
-        int n, i;
-        printf("Plz input int: ");
-        scanf("%d", &n);
-        printf("%d=", n);
-        for (i = 2; i <= n; i++)
-                while (n % i == 0) {
-                        printf("%d", i);
-                        n /= i;
-                        if (n != 1)
-                                printf("*");
-                }
-        printf("\n");
+        int facs[10][2] = {{0}};
+        int len = 10;
+
+        factorize(24, facs);
+
+        for (int i = 0; i < len; i++) {
+                if (facs[i][1] > 0)
+                        printf("%d => %d\n", facs[i][0], facs[i][1]);
+        }
+
         return 0;
 }

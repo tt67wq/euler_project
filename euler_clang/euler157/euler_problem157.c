@@ -52,7 +52,6 @@ int multis_by1(int num, int (*ms)[2]) {
 void factorize(ull num, int (*facs)[2]) {
         int i;
         int index = 0;
-        /* ull tmp = num; */
         for (i = 2; i <= num; i++) {
                 if (num % i == 0) {
                         num /= i;
