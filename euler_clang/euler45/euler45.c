@@ -1,3 +1,4 @@
+
 /*
  * =====================================================================================
  *
@@ -15,46 +16,83 @@
  * =====================================================================================
  */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 #define MAXNUM 1000000
 
-int f1(int n) { return (int)((sqrt(8 * n + 1) - 1) / 2); }
-int f2(int n) { return (int)((sqrt(24 * n + 1) + 1) / 6); }
-int f3(int n) { return (int)(n * (2 * n - 1)); }
+long long f1(int n) {
+        long long t = n;
+        return t * (t + 1) / 2;
+}
+long long f2(int n) {
+        long long t = n;
+        return t * (3 * t - 1) / 2;
+}
+long long f3(int n) {
+        long long t = n;
+        return t * (2 * t - 1);
+}
 
-// 二分查找
-void binary_search(int low, int high) {
-        // 逃逸
-        if (low + 1 == high) {
-                if (f1(low) == f2(low))
-                        printf("%d\n", low);
+int max(long long *data) {
+        if (data[0] >= data[1] && data[0] >= data[2])
+                return 0;
+
+        if (data[1] >= data[0] && data[1] >= data[2])
+                return 1;
+
+        if (data[2] >= data[0] && data[2] >= data[1])
+                return 2;
+        return 0;
+}
+
+int min(long long *data) {
+        if (data[0] <= data[1] && data[0] <= data[2])
+                return 0;
+
+        if (data[1] <= data[0] && data[1] <= data[2])
+                return 1;
+
+        if (data[2] <= data[0] && data[2] <= data[1])
+                return 2;
+        return 0;
+}
+
+void race(int *indexs, long long *datas) {
+        int max_index = max(datas);
+        int min_index = min(datas);
+
+        if (max_index == min_index)
                 return;
+
+        if (min_index == 0) {
+                indexs[0]++;
+                datas[0] = f1(indexs[0]);
+                race(indexs, datas);
         }
-        // 二分
-        int mid = (low + high) / 2;
-        int mid_value1 = f1(mid);
-        int mid_value2 = f2(mid);
 
-        int low1 = f1(low);
-        int low2 = f2(low);
-
-        int high1 = f1(high);
-        int high2 = f2(high);
-
-        if ((low1 <= low2 && mid_value1 >= mid_value2) ||
-            (low1 >= low2 && mid_value1 <= mid_value2))
-                binary_search(low, mid);
-        if ((mid_value1 <= mid_value2 && high1 >= high2) ||
-            (mid_value1 >= mid_value2 && high1 <= high2))
-                binary_search(mid, high);
+        if (min_index == 1) {
+                indexs[1]++;
+                datas[1] = f2(indexs[1]);
+                race(indexs, datas);
+        }
+        if (min_index == 2) {
+                indexs[2]++;
+                datas[2] = f3(indexs[2]);
+                race(indexs, datas);
+        }
 }
 
 int main() {
-        /* binary_search(1, MAXNUM); */
-	printf("%d\n", f2(40755));
+        clock_t begin = clock();
+        int indexs[3] = {285, 165, 144};
+        long long datas[3] = {f1(285), f2(165), f3(144)};
+        race(indexs, datas);
+        long long res = datas[0];
+        clock_t end = clock();
+        double timespent = end - begin;
+        printf("result => %lld time use => %lfs\n", res, (double)(timespent / CLOCKS_PER_SEC));
+
         return 0;
 }
