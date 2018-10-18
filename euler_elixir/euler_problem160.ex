@@ -2,44 +2,32 @@ defmodule Euler160 do
   @moduledoc """
   https://projecteuler.net/problem=160
   """
-  @m 1_000_000
-
-  # =============== prime check ===============
   require Integer
-  def prime?(n) when n < 2, do: false
-  def prime?(2), do: true
-  def prime?(n) when Integer.is_even(n), do: false
 
-  def prime?(n), do: fermat_check(n, get_u(n - 1), 3)
+  @m 100_000
 
-  defp fermat_check(_, _, 0), do: true
+  # 质因数分解
+  @spec factorize(Integer) :: map()
+  def factorize(num), do: factorize(num, 2, %{})
 
-  defp fermat_check(n, u, s) do
-    a = Enum.random(2..(n - 1))
-    x = pow_mod(a, u, n)
-    {flag, nx} = double_check(u, n, x)
+  defp factorize(num, index, acc) when index > num, do: acc
 
-    case flag do
-      true ->
-        case nx do
-          1 -> fermat_check(n, u, s - 1)
-          _ -> false
-        end
-
-      false ->
-        false
+  defp factorize(num, index, acc) do
+    case rem(num, index) do
+      0 -> factorize(div(num, index), index, Map.update(acc, index, 1, fn x -> x + 1 end))
+      _ -> factorize(num, index + 1, acc)
     end
   end
 
-  defp double_check(tu, n, x) when tu >= n, do: {true, x}
+  defp iter([], acc), do: acc
 
-  defp double_check(tu, n, x) do
-    y = Integer.mod(x * x, n)
+  defp iter([h | t], acc) do
+    nacc =
+      factorize(h)
+      |> Map.to_list()
+      |> Enum.reduce(acc, fn {k, v}, acc -> Map.update(acc, k, v, fn x -> x + v end) end)
 
-    cond do
-      y == 1 and x != 1 and x != n - 1 -> {false, 0}
-      :else -> double_check(tu * 2, n, y)
-    end
+    iter(t, nacc)
   end
 
   # 同余定理
@@ -64,41 +52,24 @@ defmodule Euler160 do
     end
   end
 
-  defp get_u(u) do
-    case rem(u, 2) do
-      1 -> get_u(div(u, 2))
-      _ -> u
-    end
-  end
-
-  # =============== prime check ===============
-
-  @spec factorize(Integer) :: map()
-  def factorize(num), do: factorize(num, 2, %{})
-
-  defp factorize(num, index, acc) when index > num, do: acc
-
-  defp factorize(num, index, acc) do
-    case rem(num, index) do
-      0 -> factorize(div(num, index), index, Map.update(acc, index, 1, fn x -> x + 1 end))
-      _ -> factorize(num, index + 1, acc)
-    end
-  end
-
-  defp iter([], acc), do: acc
-
-  defp iter([h | t], acc) do
-    nacc =
-      factorize(h)
-      |> Map.to_list()
-      |> Enum.reduce(acc, fn {k, v}, acc -> Map.update(acc, k, v, fn x -> x + v end) end)
-
-    iter(t, nacc)
-  end
-
   defp now(), do: :os.system_time(:milli_seconds)
 
+  defp multi_mod([], _, acc), do: acc
+  defp multi_mod([h | t], k, acc), do: multi_mod(t, k, rem(acc * h, k))
+
   def run(x) do
-    1..x |> Enum.to_list() |> iter(%{})
+    mp =
+      1..x
+      |> Enum.to_list()
+      |> iter(%{})
+
+    d = Map.fetch!(mp, 2) - Map.fetch!(mp, 5)
+
+    mp
+    |> Map.put(2, d)
+    |> Map.drop([5])
+    |> Map.to_list()
+    |> Enum.map(fn {p, d} -> pow_mod(p, d, @m) end)
+    |> multi_mod(@m, 1)
   end
 end
