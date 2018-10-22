@@ -4,7 +4,7 @@ defmodule Euler160 do
   """
   require Integer
 
-  @m 100_000
+  @m 100000
 
   # 质因数分解
   @spec factorize(Integer) :: map()
@@ -65,7 +65,7 @@ defmodule Euler160 do
 
     d = Map.fetch!(mp, 2) - Map.fetch!(mp, 5)
 
-    IO.puts(d)
+    # IO.puts(d)
 
     mp
     |> Map.put(2, d)
@@ -74,8 +74,6 @@ defmodule Euler160 do
     |> Enum.map(fn {p, d} -> pow_mod(p, d, @m) end)
     |> multi_mod(@m, 1)
   end
-
-  ### test end ###
 
   defp ride_of(0, _), do: 0
 
@@ -86,4 +84,26 @@ defmodule Euler160 do
     end
   end
 
+  def run(a, b) do
+    a..b
+    |> Enum.map(fn x -> ride_of(x, 2) end)
+    |> Enum.map(fn x -> ride_of(x, 5) end)
+    |> Enum.reduce(1, fn x, acc -> rem(x * acc, @m) end)
+  end
+
+  def no_name(tc) do
+    1..@m
+    |> Enum.filter(fn x -> rem(x, 5) != 0 end)
+    |> ride_of_2_mod(tc, 0, 1)
+  end
+
+  defp ride_of_2_mod(list, total, index, acc) when index == total,
+    do: list |> Enum.reduce(acc, fn x, bcc -> rem(x * bcc, @m) end)
+
+  defp ride_of_2_mod([h | t], total, index, acc) do
+    case rem(h, 2) do
+      0 -> ride_of_2_mod([div(h, 2) | t], total, index + 1, acc)
+      _ -> ride_of_2_mod(t, total, index, rem(acc * h, @m))
+    end
+  end
 end
