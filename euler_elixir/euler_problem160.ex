@@ -52,18 +52,20 @@ defmodule Euler160 do
     end
   end
 
-  defp now(), do: :os.system_time(:milli_seconds)
+  # defp now(), do: :os.system_time(:milli_seconds)
 
   defp multi_mod([], _, acc), do: acc
   defp multi_mod([h | t], k, acc), do: multi_mod(t, k, rem(acc * h, k))
 
-  def run(x) do
+  def test(x) do
     mp =
       1..x
       |> Enum.to_list()
       |> iter(%{})
 
     d = Map.fetch!(mp, 2) - Map.fetch!(mp, 5)
+
+    IO.puts(d)
 
     mp
     |> Map.put(2, d)
@@ -72,4 +74,16 @@ defmodule Euler160 do
     |> Enum.map(fn {p, d} -> pow_mod(p, d, @m) end)
     |> multi_mod(@m, 1)
   end
+
+  ### test end ###
+
+  defp ride_of(0, _), do: 0
+
+  defp ride_of(n, p) do
+    case rem(n, p) do
+      0 -> ride_of(div(n, p), p)
+      _ -> n
+    end
+  end
+
 end
