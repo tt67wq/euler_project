@@ -1,6 +1,8 @@
 defmodule Euler160 do
   @moduledoc """
   https://projecteuler.net/problem=160
+
+  https://stackoverflow.com/questions/23685544/project-euler-number-160-attempt-in-c#23709084
   """
   require Integer
   require Logger
