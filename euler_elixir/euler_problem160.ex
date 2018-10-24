@@ -3,8 +3,11 @@ defmodule Euler160 do
   https://projecteuler.net/problem=160
   """
   require Integer
+  require Logger
 
-  @m 100000
+  @m 100_000
+
+  def now(), do: :os.system_time(:milli_seconds)
 
   # 质因数分解
   @spec factorize(Integer) :: map()
@@ -52,7 +55,13 @@ defmodule Euler160 do
     end
   end
 
-  # defp now(), do: :os.system_time(:milli_seconds)
+  def pow(_, 0), do: 1
+  def pow(x, n) when Integer.is_odd(n), do: x * pow(x, n - 1)
+
+  def pow(x, n) do
+    result = pow(x, div(n, 2))
+    result * result
+  end
 
   defp multi_mod([], _, acc), do: acc
   defp multi_mod([h | t], k, acc), do: multi_mod(t, k, rem(acc * h, k))
@@ -65,8 +74,6 @@ defmodule Euler160 do
 
     d = Map.fetch!(mp, 2) - Map.fetch!(mp, 5)
 
-    # IO.puts(d)
-
     mp
     |> Map.put(2, d)
     |> Map.drop([5])
@@ -75,23 +82,11 @@ defmodule Euler160 do
     |> multi_mod(@m, 1)
   end
 
-  defp ride_of(0, _), do: 0
-
-  defp ride_of(n, p) do
-    case rem(n, p) do
-      0 -> ride_of(div(n, p), p)
-      _ -> n
-    end
-  end
-
-  def run(a, b) do
-    a..b
-    |> Enum.map(fn x -> ride_of(x, 2) end)
-    |> Enum.map(fn x -> ride_of(x, 5) end)
-    |> Enum.reduce(1, fn x, acc -> rem(x * acc, @m) end)
-  end
+  #############  test  ###############
 
   def no_name(tc) do
+    Logger.info("tc ==> #{tc}")
+
     1..@m
     |> Enum.filter(fn x -> rem(x, 5) != 0 end)
     |> ride_of_2_mod(tc, 0, 1)
@@ -105,5 +100,15 @@ defmodule Euler160 do
       0 -> ride_of_2_mod([div(h, 2) | t], total, index + 1, acc)
       _ -> ride_of_2_mod(t, total, index, rem(acc * h, @m))
     end
+  end
+
+  def f(4096, _), do: 20736
+
+  def f(n, s) do
+    Logger.info("#{n}, #{s}")
+    t = div(n, 5)
+    Logger.info("抽出#{div(t, pow(10, s))}个2")
+    (f(t, s - 1) * pow_mod(no_name(div(t, pow(10, s))), pow(10, s), @m))
+    |> rem(@m)
   end
 end
