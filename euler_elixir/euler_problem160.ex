@@ -56,13 +56,17 @@ defmodule Euler160 do
   # end
 
   def test(n) do
-    res1 = f(n)
-    res2 = rem(a(n) * b(n), @m)
+    # res1 = f(n)
+    # res2 = rem(a(n) * b(n), @m)
 
     # 80000为例子，顺序不同，会导致结果不同
     # 这里需要好好思考下
 
-    IO.puts("res1 = #{res1}, res2 = #{res2}")
+    Enum.shuffle(1..n)
+    |> Enum.reduce({1, 1}, fn x, {acc, bcc} ->
+      Logger.info("x => #{x}, acc => #{acc}, rem_acc => #{rem(acc, @m)}, bcc => #{bcc}")
+      {g(acc * x), rem(g(bcc * x), @m)}
+    end)
   end
 
   def a(n) do
@@ -90,8 +94,8 @@ defmodule Euler160 do
         end
 
       :else ->
-	# 这里不能简单的去除末尾的0
-	# 会导致结果不正确
+        # 这里不能简单的去除末尾的0
+        # 会导致结果不正确
         1..n
         |> Enum.filter(fn x -> rem(x, 2) == 0 or rem(x, 5) == 0 end)
         |> Enum.reduce(1, fn x, acc -> rem(g(acc * x), @m) end)
