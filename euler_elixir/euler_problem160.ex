@@ -12,77 +12,89 @@ defmodule Euler160 do
   def trip_zero(n) do
     cond do
       rem(n, 10) == 0 -> trip_zero(div(n, 10))
-      :else -> rem(n, @m)
+      :else -> n
     end
   end
 
   def g(x), do: trip_zero(x)
 
+  # 同余定理
+  def pow_mod(m, 1, k), do: Integer.mod(m, k)
+  def pow_mod(m, 2, k), do: Integer.mod(m * m, k)
+
+  def pow_mod(m, n, k) do
+    t = Integer.mod(m, k)
+
+    cond do
+      t == 0 ->
+        0
+
+      :else ->
+        cond do
+          Integer.is_even(n) ->
+            pow_mod(m, 2, k) |> pow_mod(div(n, 2), k)
+
+          :else ->
+            ((pow_mod(m, 2, k) |> pow_mod(div(n - 1, 2), k)) * t) |> Integer.mod(k)
+        end
+    end
+  end
+
   def f(0), do: 1
-  def f(1), do: 1  
-  # def f(9), do: 36288
-  # def f(99), do: 16864
-  # def f(999), do: 53472
+  def f(1), do: 1
   def f(n), do: fi(n, 1, 1)
 
   defp fi(n, index, acc) when index == n, do: acc
-  defp fi(n, index, acc), do: fi(n, index + 1, g(acc * g(index + 1)))
+  defp fi(n, index, acc), do: fi(n, index + 1, rem(g(acc * g(index + 1)), @m))
 
-  # 数字长度
-  def num_length(num), do: nl(num, 0)
-  defp nl(0, acc), do: acc
-  defp nl(num, acc), do: nl(div(num, 10), acc + 1)
+  # def run() do
+  #   start = now()
+  #   timeuse = now() - start
+  #   res = rem(a(1_000_000_000_000) * b(1_000_000_000_000), @m)
+  #   IO.inspect(res)
+  #   IO.puts("timeuse => #{timeuse} milliseconds")
+  # end
 
-  def split(n) do
-    # 切分为n = a + b
-    # 满足
-    # a >> b a + b中间至少要有4个0
-    # a = 100000 * k
-    # 找出最大的b
+  def test(n) do
+    res1 = f(n)
+    res2 = rem(a(n) * b(n), @m)
 
-    mk = div(n, @m)
-    iter(n, mk)
+    # 80000为例子，顺序不同，会导致结果不同
+    # 这里需要好好思考下
+
+    IO.puts("res1 = #{res1}, res2 = #{res2}")
   end
 
-  defp iter(n, 0), do: {n, 0}
-
-  defp iter(n, k) do
-    a = k * @m
-    b = n - a
-    # Logger.info("#{a}, #{b}, #{n}")
-    d = num_length(a) - num_length(b)
-
-    case d do
-      0 -> {n, 0}
-      1 -> {n, 0}
-      2 -> {n, 0}
-      3 -> {n, 0}
-      4 -> {n, 0}
-      _ -> {a, b}
-    end
-  end
-
-  def fast_f(n) do
-    {a, b} = split(n)
-
+  def a(n) do
     cond do
-      a <= @m ->
-        g(f(a) * f(b))
-
-      b == 0 ->
-        g(fast_f(a - 1) * g(a))
+      n > @m ->
+        case rem(n, @m) do
+          0 -> pow_mod(a(@m), div(n, @m), @m)
+          _ -> rem(pow_mod(a(@m), div(n, @m), @m) * a(rem(n, @m)), @m)
+        end
 
       :else ->
-        Logger.info("#{a}, #{b}, #{n}")
-        g(fast_f(a) * f(b))
+        1..n
+        |> Enum.filter(fn x -> rem(x, 2) != 0 end)
+        |> Enum.filter(fn x -> rem(x, 5) != 0 end)
+        |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
     end
   end
 
-  def run() do
-    start = now()
-    timeuse = now() - start
-    res = fast_f(1_000_000_000_000)
-    IO.inspect(res)
-    IO.puts("timeuse => #{timeuse} milliseconds")
+  def b(n) do
+    cond do
+      n > @m ->
+        case rem(n, @m) do
+          0 -> pow_mod(b(@m), div(n, @m), @m)
+          _ -> rem(pow_mod(b(@m), div(n, @m), @m) * b(rem(n, @m)), @m)
+        end
+
+      :else ->
+	# 这里不能简单的去除末尾的0
+	# 会导致结果不正确
+        1..n
+        |> Enum.filter(fn x -> rem(x, 2) == 0 or rem(x, 5) == 0 end)
+        |> Enum.reduce(1, fn x, acc -> rem(g(acc * x), @m) end)
+    end
   end
 end
