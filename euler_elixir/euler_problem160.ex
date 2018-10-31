@@ -9,14 +9,13 @@ defmodule Euler160 do
 
   def now(), do: :os.system_time(:milli_seconds)
 
+  # 拔除末尾的0
   def trip_zero(n) do
     cond do
       rem(n, 10) == 0 -> trip_zero(div(n, 10))
       :else -> n
     end
   end
-
-  def g(x), do: trip_zero(x)
 
   # 同余定理
   def pow_mod(m, 1, k), do: Integer.mod(m, k)
@@ -40,12 +39,36 @@ defmodule Euler160 do
     end
   end
 
-  def f(0), do: 1
-  def f(1), do: 1
-  def f(n), do: fi(n, 1, 1)
+  # 质因数分解
+  @spec factorize(Integer) :: map()
+  def factorize(num), do: factorize(num, 2, %{})
 
-  defp fi(n, index, acc) when index == n, do: acc
-  defp fi(n, index, acc), do: fi(n, index + 1, rem(g(acc * g(index + 1)), @m))
+  defp factorize(num, index, acc) when index > num, do: acc
+
+  defp factorize(num, index, acc) do
+    case rem(num, index) do
+      0 -> factorize(div(num, index), index, Map.update(acc, index, 1, fn x -> x + 1 end))
+      _ -> factorize(num, index + 1, acc)
+    end
+  end
+
+  def pow_factorize(num) do
+    1..num
+    |> Enum.map(fn x -> factorize(x) end)
+    |> Enum.reduce(%{}, fn x, acc -> Map.merge(acc, x, fn _k, v1, v2 -> v1 + v2 end) end)
+  end
+
+  def f(n) do
+    mp = pow_factorize(n)
+    c2 = Map.get(mp, 2, 0)
+    c5 = Map.get(mp, 5, 0)
+
+    Map.drop(mp, [5])
+    |> Map.put(2, c2 - c5)
+    |> Map.to_list()
+    |> Enum.map(fn {v, c} -> pow_mod(v, c, @m) end)
+    |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
+  end
 
   # def run() do
   #   start = now()
@@ -54,51 +77,4 @@ defmodule Euler160 do
   #   IO.inspect(res)
   #   IO.puts("timeuse => #{timeuse} milliseconds")
   # end
-
-  def test(n) do
-    # res1 = f(n)
-    # res2 = rem(a(n) * b(n), @m)
-
-    # 80000为例子，顺序不同，会导致结果不同
-    # 这里需要好好思考下
-
-    Enum.shuffle(1..n)
-    |> Enum.reduce({1, 1}, fn x, {acc, bcc} ->
-      Logger.info("x => #{x}, acc => #{acc}, rem_acc => #{rem(acc, @m)}, bcc => #{bcc}")
-      {g(acc * x), rem(g(bcc * x), @m)}
-    end)
-  end
-
-  def a(n) do
-    cond do
-      n > @m ->
-        case rem(n, @m) do
-          0 -> pow_mod(a(@m), div(n, @m), @m)
-          _ -> rem(pow_mod(a(@m), div(n, @m), @m) * a(rem(n, @m)), @m)
-        end
-
-      :else ->
-        1..n
-        |> Enum.filter(fn x -> rem(x, 2) != 0 end)
-        |> Enum.filter(fn x -> rem(x, 5) != 0 end)
-        |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
-    end
-  end
-
-  def b(n) do
-    cond do
-      n > @m ->
-        case rem(n, @m) do
-          0 -> pow_mod(b(@m), div(n, @m), @m)
-          _ -> rem(pow_mod(b(@m), div(n, @m), @m) * b(rem(n, @m)), @m)
-        end
-
-      :else ->
-        # 这里不能简单的去除末尾的0
-        # 会导致结果不正确
-        1..n
-        |> Enum.filter(fn x -> rem(x, 2) == 0 or rem(x, 5) == 0 end)
-        |> Enum.reduce(1, fn x, acc -> rem(g(acc * x), @m) end)
-    end
-  end
 end
