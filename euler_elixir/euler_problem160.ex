@@ -70,11 +70,67 @@ defmodule Euler160 do
     |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
   end
 
-  # def run() do
-  #   start = now()
-  #   timeuse = now() - start
-  #   res = rem(a(1_000_000_000_000) * b(1_000_000_000_000), @m)
-  #   IO.inspect(res)
-  #   IO.puts("timeuse => #{timeuse} milliseconds")
+  def fast_f(n) when n < @m, do: f(n)
+  def fast_f(n), do: rem(a(n) * fast_b(n), @m)
+
+  # 1..n中所有不能被2和5整除的数字
+  def a(n) when n > @m do
+    case rem(n, @m) do
+      0 -> pow_mod(a(@m), div(n, @m), @m)
+      v -> rem(pow_mod(a(@m), div(n, @m), @m) * a(v), @m)
+    end
+  end
+
+  def a(n) do
+    1..n
+    |> Enum.filter(fn x -> rem(x, 2) != 0 end)
+    |> Enum.filter(fn x -> rem(x, 5) != 0 end)
+    |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
+  end
+
+  # 1..n中所有能被2或5整除的数字
+  # def b(n) do
+  #   mp =
+  #     1..n
+  #     |> Enum.filter(fn x -> rem(x, 2) == 0 or rem(x, 5) == 0 end)
+  #     |> Enum.map(fn x -> factorize(x) end)
+  #     |> Enum.reduce(%{}, fn x, acc -> Map.merge(acc, x, fn _k, v1, v2 -> v1 + v2 end) end)
+
+  #   c2 = Map.get(mp, 2, 0)
+  #   c5 = Map.get(mp, 5, 0)
+
+  #   Map.drop(mp, [5])
+  #   |> Map.put(2, c2 - c5)
+  #   |> Map.to_list()
+  #   |> Enum.map(fn {v, c} -> pow_mod(v, c, @m) end)
+  #   |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
   # end
+
+  def fast_b(n) do
+    a = fast_f(div(n, 5))
+    b = c(div(n, 2))
+    c = pow_mod(2, div(n, 5), @m)
+    rem(a * b * c, @m)
+  end
+
+  def c(n) when n > @m do
+    case rem(n, @m) do
+      0 -> pow_mod(c(@m), div(n, @m), @m)
+      v -> rem(pow_mod(c(@m), div(n, @m), @m) * c(v), @m)
+    end
+  end
+
+  def c(n) do
+    1..n
+    |> Enum.filter(fn x -> rem(x, 5) != 0 end)
+    |> Enum.reduce(1, fn x, acc -> rem(acc * x, @m) end)
+  end
+
+  def run() do
+    start = now()
+    timeuse = now() - start
+    res = fast_f(1_000_000_000_000)
+    IO.puts(res)
+    IO.puts("timeuse => #{timeuse} milliseconds")
+  end
 end
