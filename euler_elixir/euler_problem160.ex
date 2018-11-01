@@ -127,9 +127,9 @@ defmodule Euler160 do
   end
 
   def run() do
-    start = now()
-    timeuse = now() - start
+    start = now()    
     res = fast_f(1_000_000_000_000)
+    timeuse = now() - start
     IO.puts(res)
     IO.puts("timeuse => #{timeuse} milliseconds")
   end
