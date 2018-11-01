@@ -8,12 +8,10 @@
 
 ![image](https://projecteuler.net/profile/clearlove.png)
 
-致敬777777
-
 
 ### 欧拉计划
-* [C语言(做的比较少)](https://github.com/tt67wq/euler_project/tree/master/euler_clang)
-* [Elixir语言(做的比较烂)](https://github.com/tt67wq/euler_project/tree/master/euler_elixir)
+* [C语言](https://github.com/tt67wq/euler_project/tree/master/euler_clang)
+* [Elixir](https://github.com/tt67wq/euler_project/tree/master/euler_elixir)
 
 
 
