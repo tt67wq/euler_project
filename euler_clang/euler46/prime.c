@@ -15,10 +15,7 @@
  * =====================================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
+#include "prime.h"
 
 int modMultiply(int a, int b, int m) { return a * b % m; }
 
@@ -47,6 +44,8 @@ int witness(int a, int n) {
 int random2(int high) { return (int)(high * (rand() / (double)RAND_MAX)); }
 
 int probablyPrime(int n, int k) {
+        if (n == 1)
+                return 0;
         if (n == 2 || n == 3)
                 return 1;
         if (n < 2 || n % 2 == 0)
@@ -55,16 +54,4 @@ int probablyPrime(int n, int k) {
                 if (witness(random2(n - 3) + 2, n))
                         return 0;
         return 1;
-}
-
-int main() {
-        int t;
-        scanf("%d", &t);
-
-        while (t-- > 0) {
-                int n;
-                scanf("%llu", &n);
-                printf("prime?: %d\n", probablyPrime(n, 3));
-        }
-        return 0;
 }
