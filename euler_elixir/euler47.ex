@@ -2,8 +2,10 @@ defmodule Euler47 do
   @moduledoc """
   https://projecteuler.net/problem=47
   """
-
+  require Logger
   require Integer
+
+
   def prime?(n) when n < 2, do: false
   def prime?(2), do: true
   def prime?(n) when Integer.is_even(n), do: false
@@ -69,7 +71,6 @@ defmodule Euler47 do
     end
   end
 
-  
   @spec factorize(Integer) :: map()
   def factorize(num), do: factorize(num, 2, %{})
 
@@ -82,18 +83,27 @@ defmodule Euler47 do
     end
   end
 
+  def now(), do: :os.system_time(:milli_seconds)
 
   @doc """
   找到四个连续的有四个质因数的数字
   """
-  def run(), do: find(647, [])
-  defp find(_index, acc) when length(acc) == 4, do: acc
-  defp find(index, acc) do
-    size = factorize(index) |> Map.to_list() |> length()
-    case size do
-      4 -> find(index+1, [index|acc])
-      _ -> find(index+1, [])
-    end
+  def run() do
+    start = now()
+    res = find(647, [])
+    timeuse = now() - start
+    IO.inspect(res)
+    IO.puts("timeuse => #{timeuse} milliseconds")
   end
 
+  defp find(_index, acc) when length(acc) == 4, do: acc
+
+  defp find(index, acc) do
+    size = factorize(index) |> Map.to_list() |> length()
+
+    case size do
+      4 -> find(index + 1, [index | acc])
+      _ -> find(index + 1, [])
+    end
+  end
 end
