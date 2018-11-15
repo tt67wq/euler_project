@@ -1,6 +1,8 @@
 defmodule Euler161 do
   @moduledoc """
   https://projecteuler.net/problem=161
+
+  https://oeis.org/A215826
   """
   require Logger
 
@@ -14,9 +16,9 @@ defmodule Euler161 do
     [{0, 0}, {1, 0}, {2, 0}]
   ]
 
-  @xlimit 11
+  @xlimit 3
   @ylimit 8
-  @ilimit 36
+  @ilimit 12
 
   def now(), do: :os.system_time(:milli_seconds)
 
@@ -42,7 +44,7 @@ defmodule Euler161 do
         @triominos
         |> Enum.map(fn tr -> add_triominos(state, {a, b}, tr) end)
         |> Enum.filter(fn {flag, _} -> flag == :ok end)
-        |> Enum.map(fn {_, nst} -> state_iter(nst, index + 1, pid) end)
+        |> Enum.each(fn {_, nst} -> state_iter(nst, index + 1, pid) end)
     end
   end
 
@@ -93,8 +95,10 @@ defmodule Euler161 do
   def loop_accept(acc) do
     receive do
       {:ok} ->
-        Logger.info("sum now ==> #{acc + 1}")
         loop_accept(acc + 1)
+
+      {:finish} ->
+        IO.puts(acc)
 
       {:error} ->
         loop_accept(acc)
@@ -102,6 +106,7 @@ defmodule Euler161 do
   end
 
   def run() do
+    start = now()
     {:ok, pid} = Task.start_link(fn -> loop_accept(0) end)
 
     # 初始状态
@@ -113,6 +118,8 @@ defmodule Euler161 do
       |> Enum.reduce(%{}, fn {x, y}, acc -> Map.put(acc, {x, y}, 0) end)
 
     state_iter(init_state, 0, pid)
-    {:ok}
+    send(pid, {:finish})
+    timeuse = now() - start
+    IO.puts("timeuse => #{timeuse} milliseconds")
   end
 end
