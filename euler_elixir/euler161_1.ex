@@ -1,9 +1,8 @@
 defmodule Euler161 do
   @moduledoc """
   https://projecteuler.net/problem=161
-
-  https://oeis.org/A215826
   """
+
   require Logger
 
   @triominos [
@@ -17,31 +16,6 @@ defmodule Euler161 do
   ]
 
   def now(), do: :os.system_time(:milli_seconds)
-
-  @doc """
-  状态机变换
-  问题核心
-  采用从下至上，从左至右的原则填错避免重复
-  每个阶段要过滤掉不合格的状态
-  """
-  def state_iter(state, pid) do
-    w = Map.get(state, :wide)
-    l = Map.get(state, :length)
-
-    {flag, a, b} = position_find(state, w, l, 0, 0)
-
-    case flag do
-      :error ->
-        send(pid, {:ok, 1})
-
-      :ok ->
-        # 塞入积木
-        @triominos
-        |> Enum.map(fn tr -> add_triominos(state, w, l, {a, b}, tr) end)
-        |> Enum.filter(fn {flag, _} -> flag == :ok end)
-        |> Enum.each(fn {_, nst} -> state_iter(nst, pid) end)
-    end
-  end
 
   defp position_find(_state, w, _l, a, _b) when a > w, do: {:error, 0, 0}
   defp position_find(state, w, l, a, b) when b > l, do: position_find(state, w, l, a + 1, 0)
@@ -84,37 +58,57 @@ defmodule Euler161 do
     end
   end
 
-  @doc """
-  状态机收集
-  """
-  def loop_accept(acc) do
-    receive do
-      {:ok, n} ->
-        loop_accept(acc + n)
+  # 计算填充state共有多少种path
+  def calculate_path(state) do
+    w = Map.get(state, :wide)
+    l = Map.get(state, :length)
 
-      {:finish, pid} ->
-        send(pid, {:ok, acc})
+    # search cache
+    scode = state_encode(state, w, l)
 
-      {:error} ->
-        loop_accept(acc)
+    case :ets.lookup(:euler161, scode) do
+      [{^scode, value}] ->
+        value
+
+      [] ->
+        # miss
+        {flag, a, b} = position_find(state, w, l, 0, 0)
+
+        case flag do
+          :error ->
+            1
+
+          :ok ->
+            # 塞入积木
+            v =
+              @triominos
+              |> Enum.map(fn tr -> add_triominos(state, w, l, {a, b}, tr) end)
+              |> Enum.filter(fn {flag, _} -> flag == :ok end)
+              |> Enum.map(fn {_, nst} -> calculate_path(nst) end)
+              |> Enum.sum()
+
+            # add to cache
+            :ets.insert(:euler161, {scode, v})
+            v
+        end
     end
   end
 
-  def calculate_path(state) do
-    {:ok, pid} = Task.start_link(fn -> loop_accept(0) end)
-
-    state_iter(state, pid)
-    send(pid, {:finish, self()})
-
-    receive do
-      {:ok, res} ->
-        res
+  defp state_encode(state, w, l) do
+    for x <- 0..w,
+        y <- 0..l do
+      {x, y}
     end
+    |> Enum.map(fn pos -> Map.get(state, pos) end)
+    |> Enum.join()
   end
 
   def run() do
     start = now()
-    wide = 4
+
+    :ets.new(:euler161, [:named_table])
+
+    wide = 11
     length = 8
 
     # 初始状态
@@ -132,6 +126,7 @@ defmodule Euler161 do
       |> calculate_path()
 
     IO.puts(res)
+
     timeuse = now() - start
     IO.puts("timeuse => #{timeuse} milliseconds")
   end
