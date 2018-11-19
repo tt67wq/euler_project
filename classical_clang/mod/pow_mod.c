@@ -30,10 +30,9 @@ int pow_mod(int m, int n, int k) {
 
         int b = pow_mod(m, 2, k);
         if (n % 2 == 0) {
-
                 return pow_mod(b, n / 2, k);
         } else {
-                return pow_mod(b, (n - 1) / 2, k) % k;
+                return (m * pow_mod(b, (n - 1) / 2, k)) % k;
         }
 }
 
