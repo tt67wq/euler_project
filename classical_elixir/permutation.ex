@@ -36,8 +36,6 @@ defmodule Permutation do
     pool
     |> Enum.filter(fn x -> not Enum.member?(digits, x) end)
     |> Enum.map(fn x -> [x | digits] end)
-    |> Enum.map(fn x -> perm(pool, x, pid, deep + 1, n) end)
-
-    :ok
+    |> Enum.each(fn x -> perm(pool, x, pid, deep + 1, n) end)
   end
 end
