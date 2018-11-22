@@ -1,5 +1,5 @@
 CC = gcc
-INFILE = euler50.c prime.c
+INFILE = euler50.c
 OUTFILE = euler50.o
 FLAGS = -Wall
 

@@ -48,7 +48,7 @@ int fac_nums(int n, int (*facs)[2]) {
 
 int main() {
 
-clock_t begin = clock();
+	clock_t begin = clock();
         int index = 2;
         int res = 0;
 
