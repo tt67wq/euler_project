@@ -19,41 +19,78 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int modMultiply(int a, int b, int m) { return a * b % m; }
+// 计算 m^n % k
+int pow_mod(int m, int n, int k) {
+        if (n == 1)
+                return m % k;
+        if (n == 2)
+                return (m * m) % k;
 
-int modPow(int a, int b, int m) {
-        int v = 1;
-        for (int p = a % m; b > 0; b >>= 1, p = modMultiply(p, p, m))
-                if (b & 1)
-                        v = modMultiply(v, p, m);
-        return v;
-}
-
-int witness(int a, int n) {
-        int n1 = n - 1, s2 = n1 & -n1, x = modPow(a, n1 / s2, n);
-        if (x == 1 || x == n1)
+        if (m % k == 0)
                 return 0;
-        for (; s2 > 1; s2 >>= 1) {
-                x = modMultiply(x, x, n);
-                if (x == 1)
-                        return 1;
-                if (x == n1)
-                        return 0;
+
+        int b = pow_mod(m, 2, k);
+        if (n % 2 == 0) {
+                return pow_mod(b, n >> 1, k);
+        } else {
+                return (m * pow_mod(b, (n - 1) >> 1, k)) % k;
         }
-        return 1;
 }
 
-int random2(int high) { return (int)(high * (rand() / (double)RAND_MAX)); }
+int random2(int high) {
+        if (high == 2)
+                return 2;
+        return rand() % (high - 2) + 2;
+}
 
-int probablyPrime(int n, int k) {
-        if (n == 2 || n == 3)
-                return 1;
-        if (n < 2 || n % 2 == 0)
+// 二次探测
+int double_check(int tu, int n, int x) {
+        /* printf("tu => %d, n => %d, x =>%d\n", tu, n, x); */
+        if (tu >= n)
+                return x;
+        int y = x * x % n;
+        /* printf("y => %d\n", y); */
+
+        if (y == 1 && x != 1 && x != n - 1)
                 return 0;
-        while (k-- > 0)
-                if (witness(random2(n - 3) + 2, n))
+        else
+                return double_check(tu << 1, n, y);
+}
+
+int get_u(int u) {
+        while (1) {
+                if (u % 2 == 1)
+                        break;
+                u = u >> 1;
+        }
+        return u;
+}
+
+// 费马检测
+int fermat_check(int n, int u, int s) {
+        if (s == 0)
+                return 1;
+        int a = random2(n - 1);
+        int x = pow_mod(a, u, n);
+        int flag = double_check(u, n, x);
+        /* printf("n => %d, u => %d, s => %d, x => %d, flag => %d\n", n, u, s, x, flag); */
+        if (flag > 0) {
+                if (flag == 1)
+                        return fermat_check(n, u, s - 1);
+                else
                         return 0;
-        return 1;
+        } else
+                return 0;
+}
+
+int probablyPrime(int n, int times) {
+        if (n == 1)
+                return 0;
+        if (n == 2)
+                return 1;
+        if (n % 2 == 0)
+                return 0;
+        return fermat_check(n, get_u(n - 1), times);
 }
 
 // 用于比较效果用的
@@ -78,5 +115,6 @@ int main() {
                         break;
                 index++;
         }
+        /* printf("%d\n", probablyPrime(46349, 3)); */
         return 0;
 }
