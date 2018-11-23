@@ -66,10 +66,11 @@ defmodule Euler47 do
 
   defp get_u(u) do
     case rem(u, 2) do
-      1 -> get_u(div(u, 2))
-      _ -> u
+      0 -> get_u(div(u, 2))
+      1 -> u
     end
   end
+
 
   @spec factorize(Integer) :: map()
   def factorize(num), do: factorize(num, 2, %{})
