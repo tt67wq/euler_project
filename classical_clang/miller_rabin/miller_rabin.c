@@ -15,10 +15,9 @@
  * =====================================================================================
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-
 
 int modMultiply(int a, int b, int m) { return a * b % m; }
 
@@ -57,14 +56,27 @@ int probablyPrime(int n, int k) {
         return 1;
 }
 
-int main() {
-        int t;
-        scanf("%d", &t);
+// 用于比较效果用的
+int isPrime(int n) {
+        if (n == 1)
+                return 0;
+        for (int i = 2; i <= sqrt(n); i++) {
+                if (n % i == 0)
+                        return 0;
+        }
+        return 1;
+}
 
-        while (t-- > 0) {
-                int n;
-                scanf("%llu", &n);
-                printf("prime?: %d\n", probablyPrime(n, 3));
+int main() {
+        int index = 1;
+        while (1) {
+                int res1 = probablyPrime(index, 3);
+                int res2 = isPrime(index);
+
+                printf("%d => <%d, %d>\n", index, res1, res2);
+                if (res1 != res2)
+                        break;
+                index++;
         }
         return 0;
 }

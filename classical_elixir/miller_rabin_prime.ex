@@ -9,7 +9,7 @@ defmodule MillerRabin do
   def prime?(2), do: true
   def prime?(n) when Integer.is_even(n), do: false
 
-  def prime?(n), do: fermat_check(n, get_u(n - 1), 3)
+  def prime?(n), do: fermat_check(n, get_u(n - 1), 5)
 
   defp fermat_check(_, _, 0), do: true
 
@@ -65,8 +65,32 @@ defmodule MillerRabin do
 
   defp get_u(u) do
     case rem(u, 2) do
-      1 -> get_u(div(u, 2))
-      _ -> u
+      0 -> get_u(div(u, 2))
+      1 -> u
+    end
+  end
+
+  # ======== check =========
+  def prime2?(1), do: false
+  def prime2?(2), do: true
+  def prime2?(n), do: prime2?(n, 2)
+
+  defp prime2?(n, index) when index * index > n, do: true
+
+  defp prime2?(n, index) do
+    case rem(n, index) do
+      0 -> false
+      _ -> prime2?(n, index + 1)
+    end
+  end
+
+  def check(n) do
+    cond do
+      prime?(n) == prime2?(n) ->
+        check(n + 1)
+
+      :else ->
+        IO.puts("#{n}, check wrong, res => #{prime?(n)}")
     end
   end
 end
