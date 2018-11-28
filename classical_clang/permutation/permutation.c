@@ -23,13 +23,13 @@
 
 void perm(int deep, int n, int *array, int *results, int *is_used) {
         int i;
-        if (deep > n) // 越界递归结束
-        {
+        // 越界递归结束
+        if (deep > n)
                 return;
-        }
 
-        if (deep == n) // 找到结果，打印，递归结束
-        {
+        if (deep == n) {
+                // 找到结果，打印，递归结束
+                // 也可以结果保存在一个数组里面
                 for (i = 0; i < n; i++) {
                         printf("%d ", results[i]);
                 }
