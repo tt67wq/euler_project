@@ -2,7 +2,7 @@ defmodule Euler163 do
   @moduledoc """
   https://projecteuler.net/problem=163
   """
-  @size 2
+  @size 1
 
   @tr :math.sqrt(3)
   @br 1 / @tr
@@ -14,20 +14,11 @@ defmodule Euler163 do
         1..@size |> Enum.map(fn x -> {0, @tr * (x - 1)} end)
 
       30 ->
-        case rem(@size, 2) do
-          1 ->
-            gene_seq(0, @size * 2 - 1, @br * 2, -div(@size - 1, 2) * 2 * @br, [])
-
-          0 ->
-            gene_seq(0, @size * 2 - 1, @br * 2, -(div(@size, 2) - 1) * 2 * @br, [])
-        end
+        gene_seq(0, @size * 2 - 1, @br * 2, (2 - @size) * @br, [])
         |> Enum.map(fn x -> {0.5, x} end)
 
       60 ->
-        case rem(@size, 2) do
-          1 -> gene_seq(0, @size, @tr * 2, -div(@size - 1, 2) * @tr, [])
-          0 -> gene_seq(0, @size, @tr * 2, -(div(@size, 2) - 1) * @tr, [])
-        end
+        gene_seq(0, @size, @tr * 2, (2 - @size) * @tr, [])
         |> Enum.map(fn x -> {@tr, x} end)
 
       90 ->
@@ -35,20 +26,11 @@ defmodule Euler163 do
         |> Enum.map(fn x -> {"∞", x} end)
 
       120 ->
-        case rem(@size, 2) do
-          1 -> gene_seq(0, @size, @tr * 2, -div(@size - 1, 2) * @tr, [])
-          0 -> gene_seq(0, @size, @tr * 2, -(div(@size, 2) - 1) * @tr, [])
-        end
+        gene_seq(0, @size, @tr * 2, (2 - @size) * @tr, [])
         |> Enum.map(fn x -> {-@tr, x} end)
 
       150 ->
-        case rem(@size, 2) do
-          1 ->
-            gene_seq(0, @size * 2 - 1, @br * 2, -div(@size - 1, 2) * 2 * @br, [])
-
-          0 ->
-            gene_seq(0, @size * 2 - 1, @br * 2, -(div(@size, 2) - 1) * 2 * @br, [])
-        end
+        gene_seq(0, @size * 2 - 1, @br * 2, (2 - @size) * @br, [])
         |> Enum.map(fn x -> {-0.5, x} end)
     end
   end
@@ -113,12 +95,12 @@ defmodule Euler163 do
   def cross_points([l1, l2, l3]), do: [get_cross(l1, l2), get_cross(l1, l3), get_cross(l2, l3)]
 
   # 是否超出区域
-  def over_range({x, 0}), do: x > @size or x < -@size
-  def over_range({0, y}), do: y < 0 or y > @size * @tr
-  def over_range({x, 0.0}), do: x > @size or x < -@size
-  def over_range({0.0, y}), do: y < 0 or y > @size * @tr
 
   def over_range({_, y}) when y < 0, do: true
+  def over_range({x, 0}), do: x > @size or x < -@size
+  def over_range({0, y}), do: y > @size * @tr
+  def over_range({x, 0.0}), do: x > @size or x < -@size
+  def over_range({0.0, y}), do: y > @size * @tr
 
   def over_range({x, y}) do
     border1 = {-@tr, @tr * @size}
@@ -144,7 +126,6 @@ defmodule Euler163 do
     |> permutation(3)
     |> Enum.filter(fn x -> not has_parallel(x) end)
     |> Enum.map(fn x -> cross_points(x) end)
-    |> Enum.filter(fn [a, b, c] -> not (a == b and a == c) end)
-    |> Enum.filter(fn x -> no_or(x) end)
+    # |> Enum.filter(fn x -> no_or(x) end)
   end
 end
