@@ -2,7 +2,7 @@ defmodule Euler163 do
   @moduledoc """
   https://projecteuler.net/problem=163
   """
-  @size 1
+  @size 2
 
   @tr :math.sqrt(3)
   @br 1 / @tr
@@ -15,7 +15,7 @@ defmodule Euler163 do
 
       30 ->
         gene_seq(0, @size * 2 - 1, @br * 2, (2 - @size) * @br, [])
-        |> Enum.map(fn x -> {0.5, x} end)
+        |> Enum.map(fn x -> {@br, x} end)
 
       60 ->
         gene_seq(0, @size, @tr * 2, (2 - @size) * @tr, [])
@@ -31,7 +31,7 @@ defmodule Euler163 do
 
       150 ->
         gene_seq(0, @size * 2 - 1, @br * 2, (2 - @size) * @br, [])
-        |> Enum.map(fn x -> {-0.5, x} end)
+        |> Enum.map(fn x -> {-@br, x} end)
     end
   end
 
@@ -126,6 +126,7 @@ defmodule Euler163 do
     |> permutation(3)
     |> Enum.filter(fn x -> not has_parallel(x) end)
     |> Enum.map(fn x -> cross_points(x) end)
-    # |> Enum.filter(fn x -> no_or(x) end)
+    |> Enum.filter(fn [a, b, c] -> not (a == b or a == c or b == c) end)
+    |> Enum.filter(fn x -> no_or(x) end)
   end
 end
