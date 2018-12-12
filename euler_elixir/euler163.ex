@@ -6,7 +6,7 @@ defmodule Euler163 do
 
   @tr :math.sqrt(3)
   @br 1 / @tr
-  @limit 0.001
+  @limit 0.01
 
   # 获得直线方程
   def get_lines(angle) do
@@ -89,9 +89,7 @@ defmodule Euler163 do
   def get_cross({"∞", c1}, {k2, c2}), do: {c1, c1 * k2 + c2}
   def get_cross({k2, c2}, {"∞", c1}), do: {c1, c1 * k2 + c2}
 
-  def get_cross({k1, c1}, {k2, c2}) do
-    {(c1 - c2) / (k2 - k1), (k1 * c2 - k2 * c1) / (k1 - k2)}
-  end
+  def get_cross({k1, c1}, {k2, c2}), do: {(c1 - c2) / (k2 - k1), (k1 * c2 - k2 * c1) / (k1 - k2)}
 
   # 是否三线共点
   def cross_points([l1, l2, l3]), do: [get_cross(l1, l2), get_cross(l1, l3), get_cross(l2, l3)]
@@ -135,7 +133,6 @@ defmodule Euler163 do
       [0, 30, 60, 90, 120, 150]
       |> Enum.reduce([], fn x, acc -> acc ++ get_lines(x) end)
       |> permutation(3)
-      # |> Enum.filter(fn x -> not has_parallel(x) end)
       |> Enum.map(fn x -> cross_points(x) end)
       |> Enum.filter(fn [a, b, c] ->
         not (almost_equal_point(a, b) or almost_equal_point(a, c))
