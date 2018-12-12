@@ -6,7 +6,8 @@ defmodule Euler163 do
 
   @tr :math.sqrt(3)
   @br 1 / @tr
-  @limit 0.01
+  @limit 0.001
+  @limit2 0.054
 
   # 获得直线方程
   def get_lines(angle) do
@@ -97,11 +98,11 @@ defmodule Euler163 do
   # 是否超出区域
 
   def over_range({_, y}) when y < 0, do: true
-  def over_range({x, 0}), do: x - @size > @limit or -@size - x > @limit
-  def over_range({x, 0.0}), do: x - @size > @limit or -@size - x > @limit
+  def over_range({x, 0}), do: x - @size > @limit2 or -@size - x > @limit2
+  def over_range({x, 0.0}), do: x - @size > @limit2 or -@size - x > @limit2
 
-  def over_range({0, y}), do: y - @size * @tr > @limit
-  def over_range({0.0, y}), do: y - @size * @tr > @limit
+  def over_range({0, y}), do: y - @size * @tr > @limit2
+  def over_range({0.0, y}), do: y - @size * @tr > @limit2
 
   def over_range({x, y}) do
     border1 = {-@tr, @tr * @size}
@@ -111,15 +112,22 @@ defmodule Euler163 do
     cond do
       x > 0 ->
         {x1, _} = get_cross(border1, l)
-        x - x1 > @limit
+        x - x1 > @limit2
 
       x < 0 ->
         {x1, _} = get_cross(border2, l)
-        x1 - x > @limit
+        x1 - x > @limit2
     end
   end
 
-  def no_or(ps), do: Enum.filter(ps, fn x -> over_range(x) end) |> Enum.count() == 0
+  def no_or([]), do: true
+
+  def no_or([h | t]) do
+    cond do
+      over_range(h) -> false
+      :else -> no_or(t)
+    end
+  end
 
   defp almost_equal(a, b), do: abs(a - b) <= @limit
   def almost_equal_point({a1, b1}, {a2, b2}), do: almost_equal(a1, a2) and almost_equal(b1, b2)
@@ -134,13 +142,11 @@ defmodule Euler163 do
       |> Enum.reduce([], fn x, acc -> acc ++ get_lines(x) end)
       |> permutation(3)
       |> Enum.map(fn x -> cross_points(x) end)
-      |> Enum.filter(fn [a, b, c] ->
-        not (almost_equal_point(a, b) or almost_equal_point(a, c))
-      end)
+      |> Enum.filter(fn [a, b, _c] -> not almost_equal_point(a, b) end)
       |> Enum.filter(fn x -> no_or(x) end)
       |> Enum.count()
 
-    IO.puts(res)
+    IO.puts("#{@limit2} => #{res}")
     timeuse = now() - start
     IO.puts("timeuse => #{timeuse} milliseconds")
   end
