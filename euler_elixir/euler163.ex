@@ -6,7 +6,7 @@ defmodule Euler163 do
 
   @tr :math.sqrt(3)
   @br 1 / @tr
-  @limit 0.005
+  @limit 0.001
 
   # 获得直线方程
   def get_lines(angle) do
@@ -48,6 +48,7 @@ defmodule Euler163 do
         loop_accept(MapSet.put(acc, digits))
 
       {:finish, pid} ->
+        IO.puts("finish !!!!")
         send(pid, {:ok, acc})
     end
   end
@@ -59,6 +60,7 @@ defmodule Euler163 do
   def perm(pool, digits, pid, deep, n) do
     pool
     |> Enum.filter(fn x -> not Enum.member?(digits, x) end)
+    |> Enum.filter(fn x -> not parallel?(x, digits) end)
     |> Enum.map(fn x -> [x | digits] end)
     |> Enum.each(fn x -> perm(pool, x, pid, deep + 1, n) end)
   end
@@ -79,10 +81,9 @@ defmodule Euler163 do
   # --------- 组合工具 end   -----------
 
   # 是否有平行
-  def has_parallel(lines) do
-    [a, b, c] = lines |> Enum.map(fn {x, _} -> x end)
-    a == b or a == c or b == c
-  end
+  defp parallel?(_l, []), do: false
+  defp parallel?({k, _}, [{k1, _b} | _t]) when k == k1, do: true
+  defp parallel?(l, [_ | t]), do: parallel?(l, t)
 
   # 计算两线交点
   def get_cross({"∞", c1}, {k2, c2}), do: {c1, c1 * k2 + c2}
@@ -134,7 +135,7 @@ defmodule Euler163 do
       [0, 30, 60, 90, 120, 150]
       |> Enum.reduce([], fn x, acc -> acc ++ get_lines(x) end)
       |> permutation(3)
-      |> Enum.filter(fn x -> not has_parallel(x) end)
+      # |> Enum.filter(fn x -> not has_parallel(x) end)
       |> Enum.map(fn x -> cross_points(x) end)
       |> Enum.filter(fn [a, b, c] ->
         not (almost_equal_point(a, b) or almost_equal_point(a, c))
