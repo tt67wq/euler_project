@@ -2,12 +2,12 @@ defmodule Euler163 do
   @moduledoc """
   https://projecteuler.net/problem=163
   """
-  @size 36
+  @size 3
 
   @tr :math.sqrt(3)
   @br 1 / @tr
-  @limit 0.001
-  @limit2 0.054
+  @limit 0.00001
+  @limit2 0.00001
 
   # 获得直线方程
   def get_lines(angle) do
