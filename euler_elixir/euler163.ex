@@ -2,7 +2,7 @@ defmodule Euler163 do
   @moduledoc """
   https://projecteuler.net/problem=163
   """
-  @size 3
+  @size 36
 
   @tr :math.sqrt(3)
   @br 1 / @tr
