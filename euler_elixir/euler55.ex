@@ -4,20 +4,20 @@ defmodule Euler55 do
   """
   @limit 50
 
-  @spec palindrome?(Integer) :: boolean
+  @spec palindrome?(integer()) :: boolean
   def palindrome?(number), do: number_reverse(number) == number
 
 
-  @spec number_reverse(Integer) :: Integer
+  @spec number_reverse(integer()) :: integer()
   def number_reverse(number), do: nr(number, 0)
   defp nr(0, acc), do: acc
   defp nr(num, acc), do: nr(div(num, 10), acc * 10 + rem(num, 10))
 
 
-  @spec reverse_sum(Integer) :: Integer
+  @spec reverse_sum(integer()) :: integer()
   def reverse_sum(number), do: number + number_reverse(number)
 
-  @spec lychrel?(Integer) :: boolean()
+  @spec lychrel?(integer()) :: boolean()
   def lychrel?(number), do: lychrel(number, 1)
   defp lychrel(_number, index) when index == @limit, do: true
 
@@ -30,7 +30,7 @@ defmodule Euler55 do
     end
   end
 
-  @spec now() :: Integer
+  @spec now() :: integer()
   def now(), do: :os.system_time(:milli_seconds)
 
   def run() do
