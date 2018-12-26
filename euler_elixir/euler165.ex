@@ -3,7 +3,7 @@ defmodule Euler165 do
   https://projecteuler.net/problem=165
   """
 
-  @limit 0.005
+  @limit 0.000001
 
   def bbShub(n), do: bbs(n, 0, 290_797, [])
   defp bbs(n, index, _, acc) when index > n, do: Enum.reverse(acc) |> Enum.slice(1..-1)
@@ -34,9 +34,11 @@ defmodule Euler165 do
   def almost_equal_point({a1, b1}, {a2, b2}), do: almost_equal(a1, a2) and almost_equal(b1, b2)
 
   # 判断两点是否real 相交
-  def real_cross?({{x1, y1}, {x2, y2}}, {{x1, y1}, {x2, y2}}), do: false
+  def real_cross({{x1, y1}, {x2, y2}}, {{x1, y1}, {x2, y2}}), do: :error
   # 这里默认 x1 < x2, x3 < x4
-  def real_cross?({{x1, y1}, {x2, y2}}, {{x3, y3}, {x4, y4}}) do
+  def real_cross({_, {x2, _y2}}, {{x3, _y3}, _}) when x2 < x3, do: :error
+
+  def real_cross({{x1, y1}, {x2, y2}}, {{x3, y3}, {x4, y4}}) do
     k1 =
       case x2 - x1 do
         0 -> "∞"
@@ -51,7 +53,7 @@ defmodule Euler165 do
 
     cond do
       k1 == k2 ->
-        false
+        :error
 
       :else ->
         b1 =
@@ -70,48 +72,55 @@ defmodule Euler165 do
 
         cond do
           almost_equal_point({x5, y5}, {x1, y1}) ->
-            false
+            :error
 
           almost_equal_point({x5, y5}, {x2, y2}) ->
-            false
+            :error
 
           almost_equal_point({x5, y5}, {x3, y3}) ->
-            false
+            :error
 
           almost_equal_point({x5, y5}, {x4, y4}) ->
-            false
+            :error
 
           x5 < x1 or x5 > x2 ->
-            false
+            :error
 
           x5 < x3 or x5 > x4 ->
-            false
+            :error
 
           :else ->
             cond do
-              k1 == "∞" and y5 > max(y1, y2) -> false
-              k2 == "∞" and y5 > max(y3, y4) -> false
-              k1 == "∞" and y5 < min(y1, y2) -> false
-              k2 == "∞" and y5 < min(y3, y4) -> false
-              :else -> true
+              k1 == "∞" and y5 > max(y1, y2) -> :error
+              k2 == "∞" and y5 > max(y3, y4) -> :error
+              k1 == "∞" and y5 < min(y1, y2) -> :error
+              k2 == "∞" and y5 < min(y3, y4) -> :error
+              :else -> {x5, y5}
             end
         end
     end
   end
 
+  def now(), do: :os.system_time(:milli_seconds)
+
   def run() do
+    start = now()
+
     lines =
       bbShub(20000)
       |> gene_line()
 
-    for l1 <- lines,
-        l2 <- lines,
-        l1 != l2 do
-      [l1, l2]
-    end
-    # |> Enum.uniq()
-    |> Enum.filter(fn [l1, l2] -> real_cross?(l1, l2) end)
-    |> Enum.count()
-    |> div(2)
+    res =
+      for l1 <- lines,
+          l2 <- lines,
+          l1 != l2 do
+      end
+      |> Enum.map(fn [l1, l2] -> real_cross(l1, l2) end)
+      |> Enum.filter(fn x -> x != :error end)
+      |> Enum.uniq_by(fn {x, y} -> {round(x * 100_000_000), round(y * 100_000_000)} end)
+      |> Enum.count()
+
+    IO.puts(res)
+    IO.puts("timeuse => #{now() - start} milliseconds")
   end
 end
