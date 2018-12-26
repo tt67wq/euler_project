@@ -3,7 +3,7 @@ defmodule Euler165 do
   https://projecteuler.net/problem=165
   """
 
-  @limit 0.0001
+  @limit 0.005
 
   def bbShub(n), do: bbs(n, 0, 290_797, [])
   defp bbs(n, index, _, acc) when index > n, do: Enum.reverse(acc) |> Enum.slice(1..-1)
@@ -56,26 +56,45 @@ defmodule Euler165 do
       :else ->
         b1 =
           case k1 do
-            "∞" -> 0
+            "∞" -> x1
             _ -> (x2 * y1 - x1 * y2) / (x2 - x1)
           end
 
         b2 =
           case k2 do
-            "∞" -> 0
+            "∞" -> x3
             _ -> (x4 * y3 - x3 * y4) / (x4 - x3)
           end
 
         {x5, y5} = get_cross({k1, b1}, {k2, b2})
 
         cond do
-          x5 < x1 or x5 > x2 -> false
-          x5 < x3 or x5 > x4 -> false
-          almost_equal_point({x5, y5}, {x1, y1}) -> false
-          almost_equal_point({x5, y5}, {x2, y2}) -> false
-          almost_equal_point({x5, y5}, {x3, y3}) -> false
-          almost_equal_point({x5, y5}, {x4, y4}) -> false
-          :else -> true
+          almost_equal_point({x5, y5}, {x1, y1}) ->
+            false
+
+          almost_equal_point({x5, y5}, {x2, y2}) ->
+            false
+
+          almost_equal_point({x5, y5}, {x3, y3}) ->
+            false
+
+          almost_equal_point({x5, y5}, {x4, y4}) ->
+            false
+
+          x5 < x1 or x5 > x2 ->
+            false
+
+          x5 < x3 or x5 > x4 ->
+            false
+
+          :else ->
+            cond do
+              k1 == "∞" and y5 > max(y1, y2) -> false
+              k2 == "∞" and y5 > max(y3, y4) -> false
+              k1 == "∞" and y5 < min(y1, y2) -> false
+              k2 == "∞" and y5 < min(y3, y4) -> false
+              :else -> true
+            end
         end
     end
   end
@@ -86,10 +105,12 @@ defmodule Euler165 do
       |> gene_line()
 
     for l1 <- lines,
-        l2 <- lines do
-      {l1, l2}
+        l2 <- lines,
+        l1 != l2 do
+      [l1, l2]
     end
-    |> Enum.filter(fn {l1, l2} -> real_cross?(l1, l2) end)
+    # |> Enum.uniq()
+    |> Enum.filter(fn [l1, l2] -> real_cross?(l1, l2) end)
     |> Enum.count()
     |> div(2)
   end
