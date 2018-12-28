@@ -163,7 +163,7 @@ defmodule Euler166 do
 
     0..9
     |> Enum.map(fn x -> [x | acc] end)
-    |> Enum.filter(fn x -> check(x, deep + 1) end)
+    |> Enum.filter(fn x -> check(Enum.reverse(x), deep + 1) end)
     |> Enum.each(fn x -> bfs(pid, deep + 1, x) end)
   end
 
