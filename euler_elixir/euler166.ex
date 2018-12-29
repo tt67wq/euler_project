@@ -147,9 +147,48 @@ defmodule Euler166 do
 
   defp check(grid, l) when l == 8 or l == 12 do
     # check row
-    take_rows(grid)
-    |> Enum.map(fn x -> Enum.sum(x) end)
-    |> equal_seq?()
+    rs =
+      take_rows(grid)
+      |> Enum.map(fn x -> Enum.sum(x) end)
+
+    row_pass = equal_seq?(rs)
+
+    cond do
+      row_pass ->
+        cs = take_columns(grid) |> Enum.map(fn x -> Enum.sum(x) end)
+
+        cond do
+          Enum.max(cs) > List.first(rs) -> false
+          :else -> true
+        end
+
+      :else ->
+        false
+    end
+  end
+
+  defp check(grid, l) when l > 4 and l < 8 do
+    # Logger.info("#{inspect(grid)}, #{l}")
+
+    [_, _, s2, s1] =
+      take_rows(grid)
+      |> Enum.map(fn x -> Enum.sum(x) end)
+
+    cond do
+      s2 > s1 -> false
+      :else -> true
+    end
+  end
+
+  defp check(grid, l) when l > 8 and l < 12 do
+    [_, s3, _, s1] =
+      take_rows(grid)
+      |> Enum.map(fn x -> Enum.sum(x) end)
+
+    cond do
+      s3 > s1 -> false
+      :else -> true
+    end
   end
 
   defp check(_, _), do: true
@@ -159,7 +198,7 @@ defmodule Euler166 do
   defp bfs(pid, 16, acc), do: send(pid, {:ok, acc})
 
   defp bfs(pid, deep, acc) do
-    Logger.info("#{inspect(acc)}")
+    Logger.info("#{inspect(acc)}, #{deep}")
 
     0..9
     |> Enum.map(fn x -> [x | acc] end)
