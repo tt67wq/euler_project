@@ -4,7 +4,7 @@ defmodule Euler166 do
   """
   require Logger
 
-  @upper 8
+  @upper 9
 
   def bfs(pid, s, 8, %{0 => a0, 4 => a4} = acc) do
 
