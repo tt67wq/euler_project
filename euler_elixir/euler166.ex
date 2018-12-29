@@ -4,206 +4,59 @@ defmodule Euler166 do
   """
   require Logger
 
-  # 是否为同一元素序列
-  defp equal_seq?([]), do: true
-  defp equal_seq?([_]), do: true
-
-  defp equal_seq?([h | t]) do
-    case Enum.find(t, fn x -> x != h end) do
-      nil -> true
-      _ -> false
-    end
-  end
-
-  # 获取行
-  def take_rows(grid), do: trow(Enum.with_index(grid), 0, [])
-  defp trow(_, 4, acc), do: acc
-
-  defp trow(grid, index, acc) do
-    bcc =
-      grid
-      |> Enum.filter(fn {_x, i} -> div(i, 4) == index end)
-      |> Enum.map(fn {x, _} -> x end)
-
-    trow(grid, index + 1, [bcc | acc])
-  end
-
-  # 获取列
-  def take_columns(grid), do: tcol(Enum.with_index(grid), 0, [])
-
-  defp tcol(_, 4, acc), do: acc
-
-  defp tcol(grid, index, acc) do
-    bcc =
-      grid
-      |> Enum.filter(fn {_x, i} -> rem(i, 4) == index end)
-      |> Enum.map(fn {x, _} -> x end)
-
-    tcol(grid, index + 1, [bcc | acc])
-  end
-
-  # 获取对角线
-  def take_diagonal(grid) do
-    grid_with_index = Enum.with_index(grid)
-
-    d1 =
-      grid_with_index
-      |> Enum.filter(fn {_, i} -> rem(i, 3) == 0 and rem(i, 5) != 0 end)
-      |> Enum.map(fn {x, _} -> x end)
-
-    d2 =
-      grid_with_index
-      |> Enum.filter(fn {_, i} -> rem(i, 5) == 0 end)
-      |> Enum.map(fn {x, _} -> x end)
-
-    [d1, d2]
-  end
-
-  ## 检查方阵是否满足条件 BEGIN
-  defp check(grid, 16) do
-    # check row
-    rs =
-      take_rows(grid)
-      |> Enum.map(fn x -> Enum.sum(x) end)
-
-    row_pass = equal_seq?(rs)
-
-    cond do
-      row_pass ->
-        # check column
-        cs =
-          take_columns(grid)
-          |> Enum.map(fn x -> Enum.sum(x) end)
-
-        col_pass = equal_seq?([List.first(rs) | cs])
-
-        cond do
-          col_pass ->
-            # check diagonal
-            ds =
-              take_diagonal(grid)
-              |> Enum.map(fn x -> Enum.sum(x) end)
-
-            equal_seq?([List.first(rs) | ds])
-
-          :else ->
-            false
-        end
-
-      :else ->
-        false
-    end
-  end
-
-  defp check(grid, l) when l > 13 do
-    rs =
-      Enum.take(grid, 4)
-      |> Enum.sum()
-
-    # check column
-    cs =
-      take_columns(grid)
-      |> Enum.filter(fn x -> Enum.count(x) == 4 end)
-      |> Enum.map(fn x -> Enum.sum(x) end)
-
-    col_pass = equal_seq?([rs | cs])
-
-    cond do
-      col_pass ->
-        true
-
-      :else ->
-        false
-    end
-  end
-
-  defp check(grid, 13) do
-    rs =
-      Enum.take(grid, 4)
-      |> Enum.sum()
-
-    # check column
-    cs =
-      take_columns(grid)
-      |> Enum.filter(fn x -> Enum.count(x) == 4 end)
-      |> Enum.map(fn x -> Enum.sum(x) end)
-
-    col_pass = equal_seq?([rs | cs])
-
-    cond do
-      col_pass ->
-        # check diagonal
-        [d1, _] = take_diagonal(grid)
-
-        cond do
-          Enum.sum(d1) == rs -> true
-          :else -> false
-        end
-
-      :else ->
-        false
-    end
-  end
-
-  defp check(grid, l) when l == 8 or l == 12 do
-    # check row
-    rs =
-      take_rows(grid)
-      |> Enum.map(fn x -> Enum.sum(x) end)
-
-    row_pass = equal_seq?(rs)
-
-    cond do
-      row_pass ->
-        cs = take_columns(grid) |> Enum.map(fn x -> Enum.sum(x) end)
-
-        cond do
-          Enum.max(cs) > List.first(rs) -> false
-          :else -> true
-        end
-
-      :else ->
-        false
-    end
-  end
-
-  defp check(grid, l) when l > 4 and l < 8 do
-    # Logger.info("#{inspect(grid)}, #{l}")
-
-    [_, _, s2, s1] =
-      take_rows(grid)
-      |> Enum.map(fn x -> Enum.sum(x) end)
-
-    cond do
-      s2 > s1 -> false
-      :else -> true
-    end
-  end
-
-  defp check(grid, l) when l > 8 and l < 12 do
-    [_, s3, _, s1] =
-      take_rows(grid)
-      |> Enum.map(fn x -> Enum.sum(x) end)
-
-    cond do
-      s3 > s1 -> false
-      :else -> true
-    end
-  end
-
-  defp check(_, _), do: true
-
-  ## 检查方阵是否满足条件 END
-
-  defp bfs(pid, 16, acc), do: send(pid, {:ok, acc})
-
-  defp bfs(pid, deep, acc) do
-    Logger.info("#{inspect(acc)}, #{deep}")
-
+  def bfs(pid, s, 10, acc) do
     0..9
-    |> Enum.map(fn x -> [x | acc] end)
-    |> Enum.filter(fn x -> check(Enum.reverse(x), deep + 1) end)
-    |> Enum.each(fn x -> bfs(pid, deep + 1, x) end)
+    |> Enum.map(fn x -> Map.put(acc, 10, x) end)
+    |> Enum.map(fn %{2 => a2, 6 => a6, 10 => a10} = x -> Map.put(x, 14, s - a2 - a6 - a10) end)
+    |> Enum.filter(fn %{14 => a14} -> a14 >= 0 and a14 <= 9 end)
+    |> Enum.map(fn %{8 => a8, 9 => a9, 10 => a10} = x -> Map.put(x, 11, s - a8 - a9 - a10) end)
+    |> Enum.filter(fn %{11 => a11} -> a11 >= 0 and a11 <= 9 end)
+    |> Enum.map(fn %{0 => a0, 5 => a5, 10 => a10} = x -> Map.put(x, 15, s - a0 - a5 - a10) end)
+    |> Enum.filter(fn %{15 => a15} -> a15 >= 0 and a15 <= 9 end)
+    |> Enum.filter(fn %{12 => a12, 13 => a13, 14 => a14, 15 => a15} ->
+      s == a12 + a13 + a14 + a15
+    end)
+    |> Enum.filter(fn %{3 => a3, 7 => a7, 11 => a11, 15 => a15} ->
+      s == a3 + a7 + a11 + a15
+    end)
+    |> Enum.each(fn x -> send(pid, {:ok, x}) end)
+  end
+
+  def bfs(pid, s, 8, acc) do
+    0..9
+    |> Enum.map(fn x -> Map.put(acc, 8, x) end)
+    |> Enum.map(fn %{0 => a0, 4 => a4, 8 => a8} = x -> Map.put(x, 12, s - a0 - a4 - a8) end)
+    |> Enum.filter(fn %{12 => a12} -> a12 >= 0 and a12 <= 9 end)
+    |> Enum.map(fn %{3 => a3, 6 => a6, 12 => a12} = x -> Map.put(x, 9, s - a3 - a6 - a12) end)
+    |> Enum.filter(fn %{9 => a9} -> a9 >= 0 and a9 <= 9 end)
+    |> Enum.map(fn %{1 => a1, 5 => a5, 9 => a9} = x -> Map.put(x, 13, s - a1 - a5 - a9) end)
+    |> Enum.filter(fn %{13 => a13} -> a13 >= 0 and a13 <= 9 end)
+    |> Enum.each(fn x -> bfs(pid, s, 10, x) end)
+  end
+
+  def bfs(pid, s, 6, acc) do
+    0..9
+    |> Enum.map(fn x -> Map.put(acc, 6, x) end)
+    |> Enum.map(fn %{4 => a4, 5 => a5, 6 => a6} = x -> Map.put(x, 7, s - a4 - a5 - a6) end)
+    |> Enum.filter(fn %{7 => a7} -> a7 >= 0 and a7 <= 9 end)
+    |> Enum.each(fn x -> bfs(pid, s, 8, x) end)
+  end
+
+  def bfs(pid, _, 3, acc) do
+    0..9
+    |> Enum.map(fn x -> Map.put(acc, 3, x) end)
+    |> Enum.each(fn x -> bfs(pid, get_s(x), 4, x) end)
+  end
+
+  def bfs(pid, s, deep, acc) do
+    0..9
+    |> Enum.map(fn x -> Map.put(acc, deep, x) end)
+    |> Enum.each(fn x -> bfs(pid, s, deep + 1, x) end)
+  end
+
+  defp get_s(mp) do
+    %{0 => a0, 1 => a1, 2 => a2, 3 => a3} = mp
+    a0 + a1 + a2 + a3
   end
 
   def loop_accept(acc) do
@@ -219,7 +72,8 @@ defmodule Euler166 do
 
   def run() do
     {:ok, pid} = Task.start(fn -> loop_accept([]) end)
-    bfs(pid, 0, [])
+    bfs(pid, 0, 0, %{})
+
     send(pid, {:finish, self()})
 
     receive do
