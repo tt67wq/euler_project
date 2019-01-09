@@ -1,12 +1,13 @@
 defmodule Euler167 do
   @moduledoc """
   https://projecteuler.net/problem=167
+  http://oeis.org/search?q=126%2C126%2C1778%2C6510&language=english&go=Search
   """
   require Logger
 
-  @top 3000
+  @top 6000
   @prefix_limit 20
-  @periodic_limit 500
+  @periodic_limit 2000
 
   # 硬算序列
   def ulam(a, b), do: ulam_iter(MapSet.new([a + b]), MapSet.new(), 0, [b, a])
