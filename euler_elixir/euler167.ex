@@ -5,9 +5,9 @@ defmodule Euler167 do
   """
   require Logger
 
-  @top 6000
+  @top 3000
   @prefix_limit 20
-  @periodic_limit 2000
+  @periodic_limit 500
 
   # 硬算序列
   def ulam(a, b), do: ulam_iter(MapSet.new([a + b]), MapSet.new(), 0, [b, a])
@@ -38,8 +38,15 @@ defmodule Euler167 do
   defp cons_diff([h1, h2 | t], acc), do: cons_diff([h2 | t], [h2 - h1 | acc])
 
   # 寻找周期串 返回前缀部分 和 周期串
-  @spec search_periodic_part(integer()) :: {[integer()], [integer()]}
-  def search_periodic_part([_h | t]), do: search(t, 1)
+  def search_periodic_part([_h | t] = list) do
+    case search(t, 1) do
+      {pl, periodic} ->
+        {Enum.take(list, pl), periodic}
+
+      _ ->
+        nil
+    end
+  end
 
   defp search(_, @prefix_limit), do: nil
 
