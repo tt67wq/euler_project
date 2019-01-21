@@ -5,44 +5,48 @@ defmodule Euler169 do
 
   require Integer
 
-  defp starts_with_0?([]), do: true
-  defp starts_with_0?([h | _]), do: h == 0
+  defp iter([], _), do: []
+  defp iter([h], _), do: [h]
 
-  defp ends_with_0?([]), do: true
-
-  defp ends_with_0?(list) do
-    [h | _] = Enum.reverse(list)
-    h == 0
-  end
-
-  def split(list) do
-    0..Enum.count(list)
-    |> Enum.map(fn x -> Enum.split(list, x) end)
-    |> Enum.filter(fn {h, _t} -> ends_with_0?(h) end)
-    |> Enum.filter(fn {_h, t} -> not starts_with_0?(t) end)
-  end
-
-  defp iter([h]), do: [h]
-
-  defp iter([a, b | t]) do
+  defp iter([a, b | t], index) do
     case a do
       0 ->
-        [0 | iter([b | t])]
+        [0 | iter([b | t], index)]
 
       _ ->
         case b do
-          0 -> [a - 1, 2 | t]
-          _ -> [a | iter([b | t])]
+          0 ->
+            case index do
+              0 -> [a - 1, 2 | t]
+              _ -> [a | iter([b | t], index - 1)]
+            end
+
+          _ ->
+            [a | iter([b | t], index)]
         end
     end
   end
 
-  def cluster(list), do: get_cluster(list, [])
+  def cluster(list) do
+    acc = get_cluster(list, 0, [])
+    cluster(1, acc)
+  end
 
-  defp get_cluster(list, acc) do
+  defp cluster(index, acc) do
+    nacc =
+      Enum.reduce(acc, [], fn x, bcc -> bcc ++ get_cluster(x, index, []) end)
+      |> Enum.uniq()
+
+    cond do
+      Enum.count(nacc) == Enum.count(acc) -> acc
+      :else -> cluster(index + 1, nacc)
+    end
+  end
+
+  defp get_cluster(list, index, acc) do
     cond do
       Enum.member?(acc, list) -> acc
-      :else -> get_cluster(iter(list), [list | acc])
+      :else -> get_cluster(iter(list, index), index, [list | acc])
     end
   end
 
@@ -59,12 +63,10 @@ defmodule Euler169 do
   defp d2b(num, acc), do: d2b(div(num, 2), [rem(num, 2) | acc])
 
   def run(x) do
-    # pow(10, x)
-    # |> decimal2binary()
-    # |> split()
-    # |> Enum.map(fn {h, t} -> {h, cluster(t)} end)
-    # |> Enum.reduce([], fn {h, c}, acc -> acc ++ Enum.map(c, fn x -> h ++ x end) end)
+    pow(10, x)
+    |> decimal2binary()
+    |> cluster()
     # |> Enum.uniq()
-    # |> Enum.count()
+    |> Enum.count()
   end
 end
