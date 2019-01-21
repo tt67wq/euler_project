@@ -69,11 +69,60 @@ defmodule Euler169 do
   defp d2b(0, acc), do: acc
   defp d2b(num, acc), do: d2b(div(num, 2), [rem(num, 2) | acc])
 
-  def run(x) do
-    # pow(10, x)
+  def real(x) do
     decimal2binary(x)
     |> cluster()
     |> Enum.uniq()
     |> Enum.count()
+  end
+
+  defp get_d(0), do: 0
+  defp get_d(1), do: 1
+
+  defp get_d(n) do
+    case :ets.lookup(:euler169, n) do
+      [{_, v}] ->
+        v
+
+      [] ->
+        k = div(get_d(n - 2), get_d(n - 1))
+        v = (2 * k + 1) * get_d(n - 1) - get_d(n - 2)
+        :ets.insert(:euler169, {n, v})
+        v
+    end
+  end
+
+  def f(x) when x < 100, do: real(x)
+
+  def f(x) do
+    case :ets.lookup(:euler169_2, x) do
+      [{_, v}] ->
+        v
+
+      [] ->
+        Logger.info(x)
+
+        v =
+          cond do
+            rem(x, 2) == 0 ->
+              y = div(x, 2)
+              f(y) + f(y - 1)
+
+            :else ->
+              y = div(x - 1, 2)
+              f(x - 1) - get_d(y)
+          end
+
+        :ets.insert(:euler169_2, {x, v})
+        v
+    end
+  end
+
+  def run() do
+    :ets.new(:euler169, [:named_table])
+    :ets.new(:euler169_2, [:named_table])
+
+    pow(10, 25)
+    |> f()
   end
 end
