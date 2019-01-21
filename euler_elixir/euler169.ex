@@ -82,9 +82,11 @@ defmodule Euler169 do
   defp get_d(n) do
     case :ets.lookup(:euler169, n) do
       [{_, v}] ->
+        Logger.info("get_d, #{n}, #{v}")
         v
 
       [] ->
+        Logger.info("get_d, #{n}")
         k = div(get_d(n - 2), get_d(n - 1))
         v = (2 * k + 1) * get_d(n - 1) - get_d(n - 2)
         :ets.insert(:euler169, {n, v})
@@ -92,11 +94,22 @@ defmodule Euler169 do
     end
   end
 
-  def f(x) when x < 100, do: real(x)
+  def f(x) when x < 10 do
+    case :ets.lookup(:euler169_2, x) do
+      [{_, v}] ->
+        v
+
+      [] ->
+        v = real(x)
+        :ets.insert(:euler169_2, {x, v})
+        v
+    end
+  end
 
   def f(x) do
     case :ets.lookup(:euler169_2, x) do
       [{_, v}] ->
+        Logger.info("#{x}, #{v}")
         v
 
       [] ->
@@ -118,11 +131,14 @@ defmodule Euler169 do
     end
   end
 
-  def run() do
+  def init() do
     :ets.new(:euler169, [:named_table])
     :ets.new(:euler169_2, [:named_table])
+  end
 
-    pow(10, 25)
-    |> f()
+  def run(x) do
+    1..x |> Enum.map(fn x -> get_d(x) end)
+    # pow(10, x)
+    # |> f()
   end
 end
