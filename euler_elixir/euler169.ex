@@ -76,57 +76,52 @@ defmodule Euler169 do
     |> Enum.count()
   end
 
-  defp get_d(0), do: 0
-  defp get_d(1), do: 1
-
-  defp get_d(n) do
-    case :ets.lookup(:euler169, n) do
-      [{_, v}] ->
-        Logger.info("get_d, #{n}, #{v}")
-        v
-
-      [] ->
-        Logger.info("get_d, #{n}")
-        k = div(get_d(n - 2), get_d(n - 1))
-        v = (2 * k + 1) * get_d(n - 1) - get_d(n - 2)
-        :ets.insert(:euler169, {n, v})
-        v
-    end
-  end
-
-  def f(x) when x < 10 do
-    case :ets.lookup(:euler169_2, x) do
-      [{_, v}] ->
-        v
-
-      [] ->
-        v = real(x)
-        :ets.insert(:euler169_2, {x, v})
-        v
-    end
-  end
+  def f(x) when x < 10, do: real(x)
 
   def f(x) do
     case :ets.lookup(:euler169_2, x) do
       [{_, v}] ->
-        Logger.info("#{x}, #{v}")
         v
 
       [] ->
-        Logger.info(x)
-
         v =
           cond do
             rem(x, 2) == 0 ->
+              # 偶数
               y = div(x, 2)
               f(y) + f(y - 1)
 
             :else ->
-              y = div(x - 1, 2)
-              f(x - 1) - get_d(y)
+              # 奇数
+              y = div(x + 1, 2)
+              a(y)
           end
 
         :ets.insert(:euler169_2, {x, v})
+        v
+    end
+  end
+
+  def a(0), do: 0
+  def a(1), do: 1
+
+  def a(n) do
+    case :ets.lookup(:euler169, n) do
+      [{_, v}] ->
+        v
+
+      [] ->
+        v =
+          cond do
+            rem(n, 2) == 0 ->
+              a(div(n, 2))
+
+            rem(n, 2) == 1 ->
+              m = div(n - 1, 2)
+              a(m) + a(m + 1)
+          end
+
+        :ets.insert(:euler169, {n, v})
         v
     end
   end
@@ -136,9 +131,17 @@ defmodule Euler169 do
     :ets.new(:euler169_2, [:named_table])
   end
 
-  def run(x) do
-    1..x |> Enum.map(fn x -> get_d(x) end)
-    # pow(10, x)
-    # |> f()
+  def now(), do: :os.system_time(:milli_seconds)
+
+  def run() do
+    start = now()
+    init()
+
+    res =
+      pow(10, 25)
+      |> f()
+
+    IO.puts(res)
+    IO.puts("timeuse => #{now() - start} milliseconds")
   end
 end
