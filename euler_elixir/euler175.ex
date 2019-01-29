@@ -1,24 +1,15 @@
-defmodule Euler169 do
+defmodule Euler175 do
   @moduledoc """
-  https://projecteuler.net/problem=169
+  https://projecteuler.net/problem=175
   """
-
-  require Integer
   require Logger
-
-  def pow(_, 0), do: 1
-  def pow(x, n) when Integer.is_odd(n), do: x * pow(x, n - 1)
-
-  def pow(x, n) do
-    result = pow(x, div(n, 2))
-    result * result
-  end
+  require Integer
 
   def f(1), do: 1
   def f(2), do: 2
 
   def f(x) do
-    case :ets.lookup(:euler169_2, x) do
+    case :ets.lookup(:euler175_2, x) do
       [{_, v}] ->
         v
 
@@ -36,7 +27,7 @@ defmodule Euler169 do
               a(y)
           end
 
-        :ets.insert(:euler169_2, {x, v})
+        :ets.insert(:euler175_2, {x, v})
         v
     end
   end
@@ -45,7 +36,7 @@ defmodule Euler169 do
   def a(1), do: 1
 
   def a(n) do
-    case :ets.lookup(:euler169, n) do
+    case :ets.lookup(:euler175, n) do
       [{_, v}] ->
         v
 
@@ -60,27 +51,28 @@ defmodule Euler169 do
               a(m) + a(m + 1)
           end
 
-        :ets.insert(:euler169, {n, v})
+        :ets.insert(:euler175, {n, v})
         v
     end
   end
 
   def init() do
-    :ets.new(:euler169, [:named_table])
-    :ets.new(:euler169_2, [:named_table])
+    :ets.new(:euler175, [:named_table])
+    :ets.new(:euler175_2, [:named_table])
   end
 
   def now(), do: :os.system_time(:milli_seconds)
 
-  def run() do
-    start = now()
-    init()
+  def g(n) do
+    a = f(2 * n + 1)
+    b = f(2 * n)
+    s = Integer.gcd(a, b)
+    {div(a, s), div(b, s), div(b, s) - div(a, s)}
+  end
 
-    res =
-      pow(10, 25)
-      |> f()
-
-    IO.puts(res)
-    IO.puts("timeuse => #{now() - start} milliseconds")
+  def test() do
+    1..1000
+    |> Enum.map(fn x -> {x, g(x)} end)
+    |> Enum.filter(fn {_, {_, _, x}} -> x == 4 end)
   end
 end
