@@ -63,16 +63,28 @@ defmodule Euler175 do
 
   def now(), do: :os.system_time(:milli_seconds)
 
+  def shortened_binary_expansion(n),
+    do: sbe(Integer.to_string(n, 2) |> String.to_charlist(), 1, [])
+
+  defp sbe([_], x, acc), do: Enum.reverse([x | acc])
+
+  defp sbe([h1, h2 | t], bcc, acc) do
+    cond do
+      h1 == h2 -> sbe([h2 | t], bcc + 1, acc)
+      :else -> sbe([h2 | t], 1, [bcc | acc])
+    end
+  end
+
   def g(n) do
     a = f(2 * n + 1)
     b = f(2 * n)
     s = Integer.gcd(a, b)
-    {div(a, s), div(b, s), div(b, s) - div(a, s)}
+    {div(a, s), div(b, s), shortened_binary_expansion(2 * n + 1)}
   end
 
   def test() do
     1..1000
     |> Enum.map(fn x -> {x, g(x)} end)
-    |> Enum.filter(fn {_, {_, _, x}} -> x == 4 end)
+    |> Enum.filter(fn {_, {a, b, _}} -> rem(b, a) == 1 end)
   end
 end
