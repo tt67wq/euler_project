@@ -2,7 +2,7 @@ defmodule Triangles do
   @moduledoc """
   生成勾股数
   """
-  @limit 100
+  @limit 500
   require Logger
 
   @doc """
