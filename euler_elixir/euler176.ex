@@ -76,37 +76,6 @@ defmodule Euler176 do
 
   ##### prime check end
 
-  defp iter(t, t, 2, _, acc), do: acc
-  defp iter(t, m, n, flag, acc) when n == m, do: iter(t, m + 1, 1, flag, acc)
-
-  defp iter(t, m, n, flag, acc) do
-    case rem(m + n, 2) do
-      0 ->
-        iter(t, m, n + 1, flag, acc)
-
-      _ ->
-        cond do
-          Integer.gcd(m, n) != 1 ->
-            iter(t, m, n + 1, flag, acc)
-
-          :else ->
-            case flag do
-              :a ->
-                case rem(t, 2 * m * n) do
-                  0 -> iter(t, m, n + 1, :a, [{m, n, div(t, 2 * m * n)} | acc])
-                  _ -> iter(t, m, n + 1, :a, acc)
-                end
-
-              :b ->
-                case rem(t, m * m - n * n) do
-                  0 -> iter(t, m, n + 1, :b, [{m, n, div(t, m * m - n * n)} | acc])
-                  _ -> iter(t, m, n + 1, :b, acc)
-                end
-            end
-        end
-    end
-  end
-
   @spec factorize(Integer) :: map()
   def factorize(num),
     do:
@@ -122,16 +91,6 @@ defmodule Euler176 do
       0 -> factorize(div(num, index), index, Map.update(acc, index, 1, fn x -> x + 1 end))
       _ -> factorize(num, index + 1, acc)
     end
-  end
-
-  def _count_a(n) do
-    list = iter(n, 2, 1, :a, [])
-    {n, factorize(n), list, list |> Enum.count()}
-  end
-
-  def _count_b(n) do
-    list = iter(n, 2, 1, :b, [])
-    {n, factorize(n), list, list |> Enum.count()}
   end
 
   def count(n) do
@@ -151,7 +110,8 @@ defmodule Euler176 do
   defp count_b([h, _]), do: h
 
   defp count_b([h | t]) do
-    r = count_b(t)
-    3 * h + r
+    r1 = count_b(t)
+    r2 = 3 * r1 + 1
+    r2 + (h - 1) * (2 * r1 + 1)
   end
 end
