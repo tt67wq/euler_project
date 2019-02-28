@@ -79,3 +79,4 @@
 * [三桶分水问题(Water Split Problem)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/water_split.ex)
 * [计算组合数](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/zuheshu.ex)
 * [Dijkstra算法(Dijkstra)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/dijkstra.ex)
+* [最小生成树Kruskal算法(kruskal)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/kruskal.ex)
