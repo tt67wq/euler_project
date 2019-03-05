@@ -10,14 +10,18 @@ defmodule Euler180 do
 
   def all, do: all(1, 2, [])
 
-  defp all(1, b, acc) when b > @top, do: acc
+  defp all(1, b, acc) when b > @top, do: Enum.uniq(acc)
   defp all(a, b, acc) when a == b, do: all(1, b + 1, acc)
 
   # defp all(a, b, acc), do: all(a + 1, b, [{a, b} | acc])
+
   defp all(a, b, acc) do
     cond do
-      Integer.gcd(a, b) > 1 -> all(a + 1, b, acc)
-      :else -> all(a + 1, b, [{a, b} | acc])
+      Integer.gcd(a, b) > 1 ->
+        all(a + 1, b, acc)
+
+      :else ->
+        all(a + 1, b, [{a, b} | acc])
     end
   end
 
@@ -43,19 +47,12 @@ defmodule Euler180 do
     {b, a}
   end
 
-  def frac_pow({a, b}, n) do
-    g = Integer.gcd(a, b)
-    {pow(div(a, g), n), pow(div(b, g), n)}
-  end
-
-  # def test(n) do
-  #   candidates = all()
-  #   calculate(candidates, n)
-  # end
+  def frac_pow({a, b}, n), do: {pow(a, n), pow(b, n)}
 
   defp calculate(candidates, n) do
-    r = Enum.map(candidates, fn x -> frac_pow(x, n) end)
+    # r = Enum.map(candidates, fn x -> frac_pow(x, n) end)
     mp = Enum.reduce(candidates, %{}, fn x, acc -> Map.put(acc, frac_pow(x, n), x) end)
+    r = Map.keys(mp)
 
     for x <- candidates,
         y <- candidates do
@@ -63,15 +60,28 @@ defmodule Euler180 do
     end
     |> Enum.filter(fn {_, _, z} -> Enum.member?(r, z) end)
     |> Enum.map(fn {x, y, z} -> {x, y, Map.get(mp, z)} end)
+    |> Enum.map(fn {x, y, z} -> add(x, y) |> add(z) end)
   end
 
+  def test(n) do
+    candidates = all()
+    calculate(candidates, n)
+  end
+
+  def now(), do: :os.system_time(:milli_seconds)
+
   def run() do
+    start = now()
     candidates = all()
 
-    (calculate(candidates, 1) ++
-       calculate(candidates, -1) ++ calculate(candidates, 2) ++ calculate(candidates, -2))
-    |> Enum.uniq()
-    |> Enum.map(fn {x, y, z} -> add(x, y) |> add(z) end)
-    |> Enum.reduce({0, 1}, fn x, acc -> add(x, acc) end)
+    {m, n} =
+      (calculate(candidates, 1) ++
+         calculate(candidates, -1) ++ calculate(candidates, 2) ++ calculate(candidates, -2))
+      |> Enum.uniq()
+      |> Enum.reduce({0, 1}, fn x, acc -> add(x, acc) end)
+
+    result = m + n
+    IO.puts(result)
+    IO.puts("timeuse => #{now() - start} milliseconds")
   end
 end
