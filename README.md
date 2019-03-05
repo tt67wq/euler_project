@@ -80,3 +80,4 @@
 * [计算组合数](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/zuheshu.ex)
 * [Dijkstra算法(Dijkstra)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/dijkstra.ex)
 * [最小生成树Kruskal算法(kruskal)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/kruskal.ex)
+* [换硬币问题(Coin Change Problem)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/coin-change.ex)
