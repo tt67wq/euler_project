@@ -1,38 +1,45 @@
 defmodule Euler181 do
+  ## 83735848679360670
   require Logger
 
-  # defp choose(%{B: 0, W: 0}, acc), do: acc
+  defp search(%{B: 0, W: 0}, _), do: 1
 
-  defp choose(rest, acc) do
+  defp search(rest, {bh, _wh} = head) do
+    # Logger.info("#{inspect(rest)}, #{bh}, #{wh}")
     %{B: b, W: w} = rest
 
-    Enum.map(acc, fn x -> {x, get_candidates(rest, x)} end)
-    |> Enum.map(fn {bcc, candidats} -> Enum.map(candidates, fn y -> [y | bcc] end) end)
-    |> Enum.concat()
-    |> Enum.map()
-  end
+    case :ets.lookup(:euler181, finger_print(rest, head)) do
+      [{_, v}] ->
+        v
 
-  defp get_candidates(rest, []) do
-    %{B: b, W: w} = rest
+      _ ->
+        v =
+          for x <- 0..min(b, bh),
+              y <- 0..w,
+              x + y > 0 do
+            {x, y}
+          end
+          |> Enum.filter(fn x -> less_equal(x, head) end)
+          |> Enum.map(fn {x, y} -> search(%{B: b - x, W: w - y}, {x, y}) end)
+          |> Enum.sum()
 
-    for x <- 0..b,
-        y <- 0..w,
-        x + y > 0 do
-      {x, y}
+        :ets.insert(:euler181, {finger_print(rest, head), v})
+        v
     end
   end
 
-  defp get_candidates(rest, [{b1, w1} | _t]) do
-    %{B: b, W: w} = rest
+  defp less_equal({a, _b}, {c, _d}) when a < c, do: true
+  defp less_equal({a, b}, {a, d}) when b <= d, do: true
+  defp less_equal(_, _), do: false
 
-    for x <- 0..min(b, b1),
-        y <- 0..min(w, w1),
-        x + y > 0 do
-      {x, y}
-    end
+  defp finger_print(rest, {bh, wh}) do
+    %{B: b, W: w} = rest
+    "#{b}:#{w}:#{bh}:#{wh}"
   end
 
-  def test() do
-    choose(%{B: 3, W: 1}, [])
+  def init(), do: :ets.new(:euler181, [:named_table])
+
+  def run() do
+    search(%{B: 60, W: 40}, {60, 40})
   end
 end
