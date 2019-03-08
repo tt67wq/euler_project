@@ -30,6 +30,8 @@ double log_fact(int x) {
 double log_combination(int n, int r) { return log_fact(n) - log_fact(r) - log_fact(n - r); }
 
 int main() {
+        clock_t begin = clock();
+
         double t = log10(1000000);
         int counter = 0;
         for (int n = 1; n <= 100; n++) {
@@ -39,5 +41,8 @@ int main() {
                 }
         }
         printf("%d\n", counter);
+        clock_t end = clock();
+        double timespent = end - begin;
+        printf("time use => %lfs\n", (double)(timespent / CLOCKS_PER_SEC));
         return 0;
 }
