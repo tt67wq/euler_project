@@ -13,7 +13,7 @@ defmodule Euler61 do
 
   def digit_match(n1, n2), do: rem(n1, 100) == div(n2, 100)
 
-  defp bfs(pid, _, 0, [h | _] = acc) do
+  defp dfs(pid, _, 0, [h | _] = acc) do
     [h1 | _] = Enum.reverse(acc)
 
     cond do
@@ -22,12 +22,12 @@ defmodule Euler61 do
     end
   end
 
-  defp bfs(pid, set, deep, [h | _] = acc) do
+  defp dfs(pid, set, deep, [h | _] = acc) do
     set
     |> Enum.map(fn x -> {x, Enum.filter(x, fn y -> digit_match(h, y) end)} end)
     |> Enum.filter(fn {_x, y} -> Enum.count(y) > 0 end)
     |> Enum.each(fn {x, y} ->
-      Enum.each(y, fn z -> bfs(pid, MapSet.delete(set, x), deep - 1, [z | acc]) end)
+      Enum.each(y, fn z -> dfs(pid, MapSet.delete(set, x), deep - 1, [z | acc]) end)
     end)
   end
 
@@ -78,7 +78,7 @@ defmodule Euler61 do
 
     {:ok, pid} = Task.start(fn -> loop_accept() end)
 
-    ts |> Enum.each(fn x -> bfs(pid, MapSet.new([ss, ps, hexs, heps, os]), 5, [x]) end)
+    ts |> Enum.each(fn x -> dfs(pid, MapSet.new([ss, ps, hexs, heps, os]), 5, [x]) end)
     IO.puts("timeuse => #{now() - start} milliseconds")
   end
 end
