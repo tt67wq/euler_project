@@ -34,14 +34,17 @@ defmodule Euler184 do
     # group_points(points, %{})
     # mp = group_points(points, %{})
     # base_ps = Map.keys(mp)
-    around_point(points, 0)
+    around_point(points, points, 0)
   end
 
-  defp around_point([_], acc), do: acc
+  defp around_point([], _, acc), do: acc
 
-  defp around_point([h | t], acc) do
-    Enum.filter(t, fn x -> vector_cross(h, t) <= 0 end)
-    around_point(t, acc)
+  defp around_point([h | t], ps, acc) do
+    n =
+      Enum.filter(ps, fn x -> vector_cross(h, x) <= 0 end)
+      |> Enum.count()
+
+    around_point(t, ps, acc + div(n * (n - 1), 2))
   end
 
   def test(n) do
