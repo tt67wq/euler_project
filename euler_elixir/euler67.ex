@@ -24,12 +24,12 @@ defmodule Euler67 do
     |> with_index()
   end
 
-  def bfs(tr, @limit, j) do
+  def dfs(tr, @limit, j) do
     Map.get(tr, @limit)
     |> Map.get(j)
   end
 
-  def bfs(tr, i, j) do
+  def dfs(tr, i, j) do
     n =
       Map.get(tr, i)
       |> Map.get(j)
@@ -39,8 +39,8 @@ defmodule Euler67 do
         value
 
       [] ->
-        lm = bfs(tr, i + 1, j)
-        rm = bfs(tr, i + 1, j + 1)
+        lm = dfs(tr, i + 1, j)
+        rm = dfs(tr, i + 1, j + 1)
         v = max(lm, rm) + n
         :ets.insert(:euler67, {{i, j}, v})
         v
@@ -56,7 +56,7 @@ defmodule Euler67 do
 
     res =
       get_datas()
-      |> bfs(0, 0)
+      |> dfs(0, 0)
 
     IO.puts(res)
     IO.puts("timeuse => #{now() - start} milliseconds")
