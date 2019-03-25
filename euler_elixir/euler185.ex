@@ -14,7 +14,7 @@ defmodule Euler185 do
     |> Enum.reduce(%{}, fn x, acc -> Map.put(acc, x, init_set) end)
   end
 
-  def inference(mp, _, []) do
+  def dfs(mp, _, []) do
     Map.values(mp)
     |> Enum.map(fn x ->
       [h] = MapSet.to_list(x)
@@ -24,22 +24,22 @@ defmodule Euler185 do
     |> IO.puts()
   end
 
-  def inference(mp, size, [{num, 0} | t]) do
+  def dfs(mp, size, [{num, 0} | t]) do
     ds = num2digits(num)
 
     [choose([], ds, 1, mp)]
     |> Enum.filter(fn x -> x != nil end)
-    |> Enum.map(fn x -> inference(x, size, t) end)
+    |> Enum.map(fn x -> dfs(x, size, t) end)
   end
 
-  def inference(mp, size, [{num, hits} | t]) do
+  def dfs(mp, size, [{num, hits} | t]) do
     ds = num2digits(num)
 
     lazy_combine(size, hits)
     |> Enum.to_list()
     |> Enum.map(fn x -> choose(x, ds, 1, mp) end)
     |> Enum.filter(fn x -> x != nil end)
-    |> Enum.each(fn x -> inference(x, size, t) end)
+    |> Enum.each(fn x -> dfs(x, size, t) end)
   end
 
   defp choose(_, [], _, mp), do: mp
@@ -107,11 +107,32 @@ defmodule Euler185 do
   end
 
   def test do
-    Stream.unfold(5, fn
-      0 -> nil
-      5 -> {10, 4}
-      n -> {n, n - 1}
-    end)
-    |> Enum.to_list()
+    traces = [
+      {5_616_185_650_518_293, 2},
+      {3_847_439_647_293_047, 1},
+      {5_855_462_940_810_587, 3},
+      {9_742_855_507_068_353, 3},
+      {4_296_849_643_607_543, 3},
+      {3_174_248_439_465_858, 1},
+      {4_513_559_094_146_117, 2},
+      {7_890_971_548_908_067, 3},
+      {8_157_356_344_118_483, 1},
+      {2_615_250_744_386_899, 2},
+      {8_690_095_851_526_254, 3},
+      {6_375_711_915_077_050, 1},
+      {6_913_859_173_121_360, 1},
+      {6_442_889_055_042_768, 2},
+      {2_321_386_104_303_845, 0},
+      {2_326_509_471_271_448, 2},
+      {5_251_583_379_644_322, 2},
+      {1_748_270_476_758_276, 3},
+      {4_895_722_652_190_306, 1},
+      {3_041_631_117_224_635, 3},
+      {1_841_236_454_324_589, 3},
+      {2_659_862_637_316_867, 2}
+    ]
+
+    mp = init_mp(16)
+    dfs(mp, 16, traces)
   end
 end
