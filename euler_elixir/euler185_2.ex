@@ -63,10 +63,8 @@ defmodule Euler185 do
   # 自然选择, 适应度越高，有越大的可能能活下去
   def selection(cluster) do
     cluster
-    |> Enum.map(fn x -> {x, fitness(x)} end)
-    |> Enum.sort_by(fn {_, x} -> x end)
+    |> Enum.sort_by(fn x -> fitness(x) end)
     |> Enum.take(5000)
-    |> Enum.map(fn {x, _} -> x end)
     |> Enum.uniq()
   end
 
@@ -79,7 +77,7 @@ defmodule Euler185 do
   defp mpy([h1, h2 | t], acc) do
     # 随机生下若干个后代
     children =
-      1..Enum.random(1..50)
+      1..Enum.random(1..30)
       |> Enum.map(fn _ -> gene_exchange(h1, h2, []) end)
 
     mpy(t, children ++ acc)
