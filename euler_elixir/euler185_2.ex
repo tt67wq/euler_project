@@ -65,21 +65,9 @@ defmodule Euler185 do
     cluster
     |> Enum.map(fn x -> {x, fitness(x)} end)
     |> Enum.sort_by(fn {_, x} -> x end)
-    |> Enum.uniq()
-    |> Enum.take(2000)
+    |> Enum.take(5000)
     |> Enum.map(fn {x, _} -> x end)
-
-    fits =
-      cluster
-      |> Enum.map(fn x -> fitness(x) end)
-
-    # cluster
-    # |> Enum.map(fn x -> {x, fitness(x), Enum.random(1..max_fit)} end)
-    # |> Enum.filter(fn {_x, y, z} -> y <= z end)
-    # |> Enum.sort_by(fn {_, x, _} -> x end)
-    # |> Enum.map(fn {x, _, _} -> x end)
-    # |> Enum.uniq()
-    # |> Enum.take(2000)
+    |> Enum.uniq()
   end
 
   # 种群繁衍下一代
@@ -91,7 +79,7 @@ defmodule Euler185 do
   defp mpy([h1, h2 | t], acc) do
     # 随机生下若干个后代
     children =
-      1..25
+      1..Enum.random(1..50)
       |> Enum.map(fn _ -> gene_exchange(h1, h2, []) end)
 
     mpy(t, children ++ acc)
