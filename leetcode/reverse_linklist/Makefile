@@ -1,6 +1,6 @@
 CC = gcc
-INFILE = reverse_ll.c
-OUTFILE = reverse_ll.o
+INFILE = part_reverse.c
+OUTFILE = part_reverse.o
 FLAGS = -Wall
 
 build: $(INFILE)
