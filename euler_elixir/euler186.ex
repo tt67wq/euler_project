@@ -1,11 +1,14 @@
 defmodule Euler186 do
-  @moduledoc false
+  @moduledoc """
+  效率太低
+  """
   # 2325629
 
   require Logger
 
   def init_ets do
     :ets.new(:euler, [:named_table])
+    :ets.new(:disjoin_set, [:named_table])
   end
 
   def lagged_fib_generator(n) do
@@ -28,70 +31,69 @@ defmodule Euler186 do
     end
   end
 
+  ####### disjoin set
+  def find(x) do
+    case :ets.lookup(:disjoin_set, x) do
+      [{_, {^x, num}}] ->
+        # root
+        {x, num}
+
+      [{_, {v, _}}] ->
+        # not root
+        {root, num} = find(v)
+
+        if root != v do
+          # zip
+          :ets.insert(:disjoin_set, {x, {root, num}})
+        end
+
+        {root, num}
+
+      [] ->
+        # not in set
+        # add new one
+        :ets.insert(:disjoin_set, {x, {x, 1}})
+        {x, 1}
+    end
+  end
+
+  def join(x, y) do
+    {xroot, xnum} = find(x)
+    {yroot, ynum} = find(y)
+
+    if xroot != yroot do
+      :ets.insert(:disjoin_set, {xroot, {yroot, xnum + ynum}})
+      :ets.insert(:disjoin_set, {yroot, {yroot, xnum + ynum}})
+    end
+
+    :ok
+  end
+
   def caller(n), do: lagged_fib_generator(2 * n - 1)
   def called(n), do: lagged_fib_generator(2 * n)
 
-  defp pm_size(pools) do
-    v = Enum.find(pools, fn x -> MapSet.member?(x, 524_287) end)
+  defp iter(_, suc_time, {_, chain_size}) when chain_size >= 990_000, do: suc_time
 
-    case v do
-      nil -> 0
-      _ -> MapSet.size(v)
-    end
-  end
-
-  defp iter(index, suc_time, pools) do
+  defp iter(index, suc_time, _) do
     m = caller(index)
     n = called(index)
 
-    p = pm_size(pools)
-
     cond do
-      p >= 990_000 ->
-        index
-
       m == n ->
-        Logger.debug("#{index}, #{suc_time}, #{p}")
-        iter(index + 1, suc_time, pools)
+        iter(index + 1, suc_time, find(524_287))
 
       :else ->
-        c1 = Enum.find(pools, fn x -> MapSet.member?(x, m) end)
-        c2 = Enum.find(pools, fn x -> MapSet.member?(x, n) end)
-
-        case {c1, c2} do
-          {nil, nil} ->
-            # add new chain
-            iter(index + 1, suc_time + 1, MapSet.put(pools, MapSet.new([m, n])))
-
-          {nil, _} ->
-            # c2 exists
-            npool =
-              MapSet.delete(pools, c2)
-              |> MapSet.put(MapSet.put(c2, m))
-
-            iter(index + 1, suc_time + 1, npool)
-
-          {_, nil} ->
-            # c1 exists
-            npool =
-              MapSet.delete(pools, c1)
-              |> MapSet.put(MapSet.put(c1, m))
-
-            iter(index + 1, suc_time + 1, npool)
-
-          _ ->
-            # both exists join 2 pool
-            npool =
-              MapSet.delete(pools, c1)
-              |> MapSet.delete(c2)
-              |> MapSet.put(MapSet.union(c1, c2))
-
-            iter(index + 1, suc_time + 1, npool)
-        end
+        join(m, n)
+        iter(index + 1, suc_time + 1, find(524_287))
     end
   end
 
-  def test do
-    iter(1, 0, MapSet.new())
+  def now(), do: :os.system_time(:milli_seconds)
+
+  def run do
+    start = now()
+    res = iter(1, 0, {0, 0})
+    IO.puts(res)
+    IO.puts("timeuse => #{now() - start} milliseconds")
   end
 end
