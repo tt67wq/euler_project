@@ -1,23 +1,22 @@
+
 /*
  * =====================================================================================
  *
- *       Filename:  miller_rabin.c
+ *       Filename:  prime.c
  *
- *    Description:  米勒罗宾素数判断方法
+ *    Description:
  *
  *        Version:  1.0
- *        Created:  2018-08-13
+ *        Created:  2019-04-01
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  wanqiang
+ *         Author:  fangyuan
  *
  * =====================================================================================
  */
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "prime.h"
 
 // 计算 m^n % k
 uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
@@ -97,23 +96,9 @@ int probablyPrime(uint64_t n, int times) {
 int isPrime(uint64_t n) {
         if (n == 1)
                 return 0;
-        for (int i = 2; i <= sqrt(n); i++) {
+        for (int i = 2; i * i <= n; i++) {
                 if (n % i == 0)
                         return 0;
         }
         return 1;
-}
-
-int main() {
-        uint64_t index = 1;
-        while (1) {
-                int res1 = probablyPrime(index, 3);
-                int res2 = isPrime(index);
-
-                printf("%llu => <%d, %d>\n", index, res1, res2);
-                if (res1 != res2)
-                        break;
-                index++;
-        }
-        return 0;
 }
