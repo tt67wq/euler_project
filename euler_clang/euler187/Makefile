@@ -1,5 +1,5 @@
 CC = gcc
-INFILE = euler187.c prime.c
+INFILE = euler187.c
 OUTFILE = euler187.o
 FLAGS = -Wall
 
