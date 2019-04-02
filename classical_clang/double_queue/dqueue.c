@@ -38,11 +38,13 @@ void DisposeQueue(DoubleQueue Q) {
 }
 
 static int RSucc(int X, DoubleQueue Q) {
-        if (++X == Q->Capacity) X = 0;
+        if (++X == Q->Capacity)
+                X = 0;
         return X;
 }
 static int FSucc(int X, DoubleQueue Q) {
-        if (--X == 0) X = Q->Capacity;
+        if (--X == 0)
+                X = Q->Capacity;
         return X;
 }
 
@@ -89,5 +91,6 @@ void PrintQueue(DoubleQueue Q) {
                 puts("Queue is empty\n");
                 exit(EXIT_FAILURE);
         }
-        for (i = Q->Rear; i <= Q->Front; i++) printf("%d\n", Q->Array[i]);
+        for (i = Q->Rear; i <= Q->Front; i++)
+                printf("%d\n", Q->Array[i]);
 }

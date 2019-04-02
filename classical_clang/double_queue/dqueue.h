@@ -17,9 +17,9 @@ void Eject(DoubleQueue Q);
 void PrintQueue(DoubleQueue Q);
 
 struct PtrToNode {
-  int Front;
-  int Rear;
-  int Size;
-  int Capacity;
-  ElementType *Array;
+        int Front;
+        int Rear;
+        int Size;
+        int Capacity;
+        ElementType *Array;
 }
