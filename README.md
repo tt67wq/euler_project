@@ -49,6 +49,7 @@
 * [退火算法(Sa)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/sa)
 * [递归求乘方(Power)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/recursive_power.c)
 * [求组合数(Combination)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/zuhe)
+* [KMP算法](https://github.com/tt67wq/euler_project/blob/master/classical_clang/kmp)
 
 
 ### Classical Algorithm In Elixir
