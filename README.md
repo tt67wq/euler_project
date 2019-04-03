@@ -9,7 +9,7 @@
 
 ### 欧拉计划(Project Euler)
 * [C](https://github.com/tt67wq/euler_project/tree/master/euler_clang)
-* [Elixir](https://github.com/tt67wq/euler_project/tree/master/euler_elixir)
+* [Elixir(芽儿咯，这个破语言不适合撸算法)](https://github.com/tt67wq/euler_project/tree/master/euler_elixir)
 
 
 
