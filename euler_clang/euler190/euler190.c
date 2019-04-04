@@ -31,6 +31,7 @@ typedef kvec_t(double) array;
 #define K 1e10       // 差值接受参数
 
 /* 371048281 */
+/* 357721263 */
 
 // 计算pm
 float log_pm(array *list) {
@@ -45,12 +46,13 @@ float log_pm(array *list) {
 void change(array *list) {
         int pos1 = 0;
         int pos2 = 0;
+        while (pos1 == pos2) {
+                double r1 = ((double)rand()) / (RAND_MAX);
+                double r2 = ((double)rand()) / (RAND_MAX);
 
-        double r1 = ((double)rand()) / (RAND_MAX + 1.0);
-        double r2 = ((double)rand()) / (RAND_MAX + 1.0);
-
-        pos1 = (int)(kv_size(*list) * r1); // 第一个变异点位置
-        pos2 = (int)(kv_size(*list) * r2); // 第二个变异点位置
+                pos1 = (int)(kv_size(*list) * r1); // 第一个变异点位置
+                pos2 = (int)(kv_size(*list) * r2); // 第二个变异点位置
+        }
 
         list->a[pos1] += Delta;
         list->a[pos2] -= Delta;
@@ -107,11 +109,11 @@ int get_biggest_pm(int size) {
 }
 
 int main() {
-        /* int s = 0; */
-        /* for (int i = 2; i < 16; i++) { */
-        /*         s += get_biggest_pm(i); */
-        /* } */
-        /* printf("%d\n", s); */
+        int s = 0;
+        for (int i = 2; i < 16; i++) {
+                s += get_biggest_pm(i);
+        }
+        printf("%d\n", s);
         printf("%d\n", get_biggest_pm(10));
         return 0;
 }
