@@ -23,18 +23,12 @@
 #include <time.h>
 
 typedef kvec_t(double) array;
-#define T0 50000.0   // 初始温度
-#define T_end (1e-8) // 最终温度
-#define Delta (1e-6) // 最小调整步长
-#define q 0.98       // 退火系数
-#define L 10000      // 每个温度的迭代次数
-#define K 1e10       // 差值接受参数
-
-/* 371048281 */
-/* 357721263 */
+#define BeginDelta (1e-1) // 最大迭代步长
+#define EndDelta (1e-6)   // 最小调整步长
+#define L 1000            // 最大不变次数
 
 // 计算pm
-float log_pm(array *list) {
+double log_pm(array *list) {
         double pm = 0.0;
         for (int i = 0; i < kv_size(*list); i++) {
                 pm += (double)(i + 1) * log(kv_A(*list, i));
@@ -43,7 +37,11 @@ float log_pm(array *list) {
 }
 
 // 变异
-void change(array *list) {
+void change(array *list, double delta) {
+        struct timespec time1 = {0, 0};
+        clock_gettime(CLOCK_REALTIME, &time1);
+        srand(time1.tv_nsec);
+
         int pos1 = 0;
         int pos2 = 0;
         while (pos1 == pos2) {
@@ -54,16 +52,12 @@ void change(array *list) {
                 pos2 = (int)(kv_size(*list) * r2); // 第二个变异点位置
         }
 
-        list->a[pos1] += Delta;
-        list->a[pos2] -= Delta;
+        list->a[pos1] += delta;
+        list->a[pos2] -= delta;
 }
 
 // 模拟退火
-int get_biggest_pm(int size) {
-        srand((unsigned)time(NULL)); // 随机种子
-        double r, T;
-
-        T = T0;
+uint64_t get_biggest_pm(int size) {
         array vec;
         array vec_copy;
         kv_init(vec);
@@ -74,46 +68,48 @@ int get_biggest_pm(int size) {
                 kv_push(double, vec, 1.0);
         }
 
-        while (T > T_end) {
+        int no_change_times = 0;
+        double delta = BeginDelta;
+        while (delta > EndDelta) {
 
-                for (int i = 0; i < L; i++) {
-                        // copy
-                        kv_copy(double, vec_copy, vec);
-                        // change
-                        change(&vec);
-                        double df = log_pm(&vec) - log_pm(&vec_copy);
-
-                        if (df <= 0.0) { // worse
-                                r = ((double)rand()) / (RAND_MAX);
-                                /* double p = 1 / (1 + exp(df / T)); */
-                                double p = exp(df * K / T);
-                                if (p < r) {
-                                        // rollback
-                                        kv_copy(double, vec, vec_copy);
-                                } else {
-                                        // accept
-                                }
-                        }
+                if (no_change_times >= L) {
+                        delta /= 10;
+                        no_change_times = 0;
                 }
-                T *= q;
-        }
 
-        for (int i = 0; i < kv_size(vec); i++) {
-                printf("%f ", kv_A(vec, i));
+                // copy
+                kv_copy(double, vec_copy, vec);
+                // change
+                change(&vec, delta);
+                double df = log_pm(&vec) - log_pm(&vec_copy);
+
+                if (df < 0.0) {
+                        // rollback
+                        kv_copy(double, vec, vec_copy);
+                        no_change_times++;
+                } else if (df == 0.0) {
+                        no_change_times++;
+                } else {
+                        // better
+                        no_change_times = 0;
+                }
         }
-        printf("\n");
 
         double res = exp(log_pm(&vec));
-        printf("res => %f\n", res);
-        return floor(res);
+        printf("res => %llu\n", (uint64_t)floor(res));
+        return (uint64_t)floor(res);
 }
 
 int main() {
-        int s = 0;
+        clock_t begin = clock();
+        uint64_t s = 0;
         for (int i = 2; i < 16; i++) {
                 s += get_biggest_pm(i);
         }
-        printf("%d\n", s);
-        printf("%d\n", get_biggest_pm(10));
+        clock_t end = clock();
+        double timespent = end - begin;
+        printf("%llu\n", s);
+        printf("time use => %lfs\n", (double)(timespent / CLOCKS_PER_SEC));
+
         return 0;
 }
