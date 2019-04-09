@@ -17,8 +17,6 @@
 
 #include "bigint.h"
 #include "kvec.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 typedef kvec_t(bigint) array;
@@ -62,12 +60,17 @@ void count2n(array *h, array *k, int n, int index) {
 }
 
 int main() {
+        clock_t begin = clock();
         array h, k;
         kv_init(h);
         kv_init(k);
         count2n(&h, &k, 100, 0);
-	print_bigint(kv_A(h, 99));
+        print_bigint(kv_A(h, 99));
         print_bigint(kv_A(k, 99));
+        clock_t end = clock();
+        double timespent = end - begin;
+
         printf("%d\n", digits_sum(kv_A(h, 99)));
+        printf("time use => %lfs\n", (double)(timespent / CLOCKS_PER_SEC));
         return 1;
 }
