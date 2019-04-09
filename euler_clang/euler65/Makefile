@@ -1,5 +1,5 @@
 CC = gcc
-INFILE = euler65.c
+INFILE = bigint.c euler65.c
 OUTFILE = euler65.o
 FLAGS = -Wall
 
