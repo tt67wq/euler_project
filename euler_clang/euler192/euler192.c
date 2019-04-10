@@ -73,12 +73,20 @@ void count_util(list *h, list *k, array *vec, int index) {
                 nh = an * kv_A(*h, index - 1) + kv_A(*h, index - 2);
                 nk = an * kv_A(*k, index - 1) + kv_A(*k, index - 2);
         }
-        if (nk > 100)
+        if (nk > 10000)
                 return;
 
         kv_push(uint64_t, *h, nh);
         kv_push(uint64_t, *k, nk);
         count_util(h, k, vec, index + 1);
+}
+
+uint64_t gcd(uint64_t m, uint64_t n) {
+        int r;
+        if (m <= 0 || n <= 0)
+                return 0;
+        r = m % n;
+        return r > 0 ? gcd(n, r) : n;
 }
 
 int main() {
@@ -93,7 +101,10 @@ int main() {
         printf("\n");
         count_util(&h, &k, &vec, 0);
         for (int i = 0; i < kv_size(h); i++) {
-                printf("%llu/%llu\n", kv_A(h, i), kv_A(k, i));
+                uint64_t m = kv_A(h, i);
+                uint64_t n = kv_A(k, i);
+                /* uint64_t g = gcd(m, n); */
+                printf("%llu/%llu\n", m, n);
         }
         return 0;
 }
