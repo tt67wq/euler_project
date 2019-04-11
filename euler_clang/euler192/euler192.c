@@ -96,7 +96,9 @@ void approximations(int k, array *ms, array *ns) {
                 // bigger
                 int64_t y0 = niyuan(m, n);
                 int64_t x0 = (m * y0 - 1) / n;
+                /* printf("bigger x0 => %llu, y0 => %llu\n", x0, y0); */
                 for (int64_t i = y0 + n, j = x0 + m;; i += n, j += m) {
+                        /* printf("x => %llu, y => %llu\n", j, i); */
                         double d2 = (double)j / i;
                         if (fabs(d1 * d1 - k) > fabs(d2 * d2 - k)) {
                                 kv_push(int64_t, *ms, j);
@@ -108,7 +110,9 @@ void approximations(int k, array *ms, array *ns) {
                 // smaller
                 int64_t x0 = niyuan(n, m);
                 int64_t y0 = (n * x0 - 1) / m;
+                /* printf("smaller x0 => %llu, y0 => %llu\n", x0, y0); */
                 for (int64_t i = x0 + m, j = y0 + n;; i += m, j += n) {
+                        /* printf("x => %llu, y => %llu\n", i, j); */
                         double d2 = (double)i / j;
                         if (fabs(d1 * d1 - k) > fabs(d2 * d2 - k)) {
                                 kv_push(int64_t, *ms, i);
