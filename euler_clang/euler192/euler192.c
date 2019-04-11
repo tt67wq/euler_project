@@ -16,69 +16,18 @@
  */
 
 #include "kvec.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct Item {
-        int a;
-        int b;
-        int k;
-} item;
-
-typedef kvec_t(item) array;
-typedef kvec_t(uint64_t) list;
+typedef kvec_t(uint64_t) array;
 
 int nearest_sqrt(int n) {
         int i = 1;
         for (; i * i < n; i++)
                 ;
         return i - 1;
-}
-
-void continued_fraction(int n, int a, int b, array *vec) {
-        // check repeatation
-        for (int i = 0; i < kv_size(*vec); i++) {
-                if (kv_A(*vec, i).a == a && kv_A(*vec, i).b == b)
-                        return;
-        }
-
-        int nb = (n - a * a) / b;
-        int k = 1;
-        for (; (k * nb - a) * (k * nb - a) < n; k++)
-                ;
-        k -= 1;
-        int na = nb * k - a;
-        item t = {a, b, k};
-        kv_push(item, *vec, t);
-        continued_fraction(n, na, nb, vec);
-}
-
-int get_an(int n, array *vec) {
-        if (n == 0)
-                return kv_A(*vec, 0).a;
-        return kv_A(*vec, n % kv_size(*vec)).k;
-}
-
-void count_util(list *h, list *k, array *vec, int index) {
-        uint64_t an = (uint64_t)get_an(index, vec);
-        uint64_t nh, nk;
-        if (index == 0) {
-                nh = an;
-                nk = 1;
-        } else if (index == 1) {
-                nh = an * kv_A(*h, 0) + 1;
-                nk = an * kv_A(*k, 0);
-        } else {
-                nh = an * kv_A(*h, index - 1) + kv_A(*h, index - 2);
-                nk = an * kv_A(*k, index - 1) + kv_A(*k, index - 2);
-        }
-        if (nk > 10000)
-                return;
-
-        kv_push(uint64_t, *h, nh);
-        kv_push(uint64_t, *k, nk);
-        count_util(h, k, vec, index + 1);
 }
 
 uint64_t gcd(uint64_t m, uint64_t n) {
@@ -89,22 +38,41 @@ uint64_t gcd(uint64_t m, uint64_t n) {
         return r > 0 ? gcd(n, r) : n;
 }
 
+void best_approximations(array *m, array *n, int k) {
+        for (int i = 1; i < 200; i++) {
+
+                kv_push(uint64_t, *n, i);
+
+                int m1 = (int)floor(sqrt(k) * i);
+                int m2 = (int)ceil(sqrt(k) * i);
+                int t = abs(m1 * m1 - i * i * k) > abs(m2 * m2 - i * i * k) ? m2 : m1;
+                kv_push(uint64_t, *m, t);
+        }
+}
+
 int main() {
-        array vec;
-        list h, k;
-        kv_init(vec);
-        kv_init(h);
-        kv_init(k);
-        continued_fraction(13, nearest_sqrt(13), 1, &vec);
-        for (int i = 0; i < kv_size(vec); i++)
-                printf("%d ", kv_A(vec, i).k);
-        printf("\n");
-        count_util(&h, &k, &vec, 0);
-        for (int i = 0; i < kv_size(h); i++) {
-                uint64_t m = kv_A(h, i);
-                uint64_t n = kv_A(k, i);
-                /* uint64_t g = gcd(m, n); */
-                printf("%llu/%llu\n", m, n);
+        array m, n;
+        kv_init(m);
+        kv_init(n);
+        int k = 13;
+
+        best_approximations(&m, &n, k);
+        double d = 100.0;
+        uint64_t a, b;
+
+        for (int i = 0; i < kv_size(m); i++) {
+                uint64_t mi = kv_A(m, i);
+                uint64_t ni = kv_A(n, i);
+                uint64_t g = gcd(mi, ni);
+
+                double t = fabs((mi * mi) / (double)(ni * ni) - k);
+                if (t < d) {
+                        a = mi / g;
+                        b = ni / g;
+                        d = t;
+                }
+
+                printf("%d ==> %llu/%llu, nearest => %llu/%llu\n", i + 1, mi / g, ni / g, a, b);
         }
         return 0;
 }

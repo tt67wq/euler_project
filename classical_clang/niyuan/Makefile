@@ -1,6 +1,6 @@
 CC = gcc
-INFILE = euler192.c
-OUTFILE = euler192.o
+INFILE = niyuan.c
+OUTFILE = niyuan.o
 FLAGS = -Wall
 
 build: $(INFILE)
