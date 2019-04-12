@@ -23,6 +23,8 @@
 
 #define TOP 1e12
 
+/* 57060635927998344 */
+
 typedef kvec_t(int64_t) array;
 
 int nearest_sqrt(int n) {
@@ -146,15 +148,5 @@ int main() {
                 s += fn;
         }
         printf("%llu\n", s);
-
-        /* kv_init(ms); */
-        /* kv_init(ns); */
-        /* int k = 13; */
-        /* kv_push(int64_t, ns, 1); */
-        /* kv_push(int64_t, ms, 4); */
-        /* approximations(k, &ms, &ns); */
-        /* for (int i = 0; i < kv_size(ms); i++) { */
-        /*         printf("%llu / %llu\n", kv_A(ms, i), kv_A(ns, i)); */
-        /* } */
         return 0;
 }
