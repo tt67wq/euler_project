@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TOP 1e12
+#define TOP 1000
 
 /* 57060635927998344 */
 
@@ -86,7 +86,7 @@ int64_t niyuan(int64_t a, int64_t b) {
 void approximations(int k, array *ms, array *ns) {
         int64_t m = kv_A(*ms, kv_size(*ms) - 1);
         int64_t n = kv_A(*ns, kv_size(*ns) - 1);
-        printf("%llu/%llu\n", m, n);
+
         if (n > TOP) {
                 kv_pop(*ms);
                 kv_pop(*ns);
@@ -94,33 +94,58 @@ void approximations(int k, array *ms, array *ns) {
         }
 
         double d1 = (double)m / n;
+        printf("%llu/%llu", m, n);
         if (d1 * d1 > k) {
+                printf(" bigger\n");
                 // bigger
                 int64_t y0 = niyuan(m, n);
                 int64_t x0 = (m * y0 - 1) / n;
-                /* printf("bigger x0 => %llu, y0 => %llu\n", x0, y0); */
+                printf("x0 -> %llu, y0 -> %llu\n", x0, y0);
                 for (int64_t i = y0 + n, j = x0 + m;; i += n, j += m) {
-                        /* printf("x => %llu, y => %llu\n", j, i); */
                         double d2 = (double)j / i;
-                        if (fabs(d1 * d1 - k) > fabs(d2 * d2 - k)) {
-                                kv_push(int64_t, *ms, j);
-                                kv_push(int64_t, *ns, i);
-                                break;
+                        printf(" -- %llu/%llu\n", j, i);
+                        if (d2 * d2 > k) {
+                                if (d1 > d2) {
+                                        kv_push(int64_t, *ms, j);
+                                        kv_push(int64_t, *ns, i);
+                                        break;
+                                }
+                        } else {
+                                double mid = (d1 + d2) / 2;
+                                if (mid * mid > k) {
+                                        kv_push(int64_t, *ms, j);
+                                        kv_push(int64_t, *ns, i);
+                                        break;
+                                }
                         }
+                        if (i > TOP)
+                                return;
                 }
         } else {
+                printf(" smaller\n");
                 // smaller
                 int64_t x0 = niyuan(n, m);
                 int64_t y0 = (n * x0 - 1) / m;
-                /* printf("smaller x0 => %llu, y0 => %llu\n", x0, y0); */
+                printf("x0 -> %llu, y0 -> %llu\n", x0, y0);
                 for (int64_t i = x0 + m, j = y0 + n;; i += m, j += n) {
-                        /* printf("x => %llu, y => %llu\n", i, j); */
                         double d2 = (double)i / j;
-                        if (fabs(d1 * d1 - k) > fabs(d2 * d2 - k)) {
-                                kv_push(int64_t, *ms, i);
-                                kv_push(int64_t, *ns, j);
-                                break;
+                        printf(" ++ %llu/%llu\n", i, j);
+                        if (d2 * d2 < k) {
+                                if (d2 >= d1) {
+                                        kv_push(int64_t, *ms, i);
+                                        kv_push(int64_t, *ns, j);
+                                        break;
+                                }
+                        } else {
+                                double mid = (d1 + d2) / 2;
+                                if (mid * mid < k) {
+                                        kv_push(int64_t, *ms, i);
+                                        kv_push(int64_t, *ns, j);
+                                        break;
+                                }
                         }
+                        if (j > TOP)
+                                return;
                 }
         }
         approximations(k, ms, ns);
