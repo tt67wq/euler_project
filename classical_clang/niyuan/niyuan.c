@@ -53,7 +53,6 @@ int niyuan(int a, int b) {
 int qpow(int x, int n, int mod) {
         int res = 1;
         while (n) {
-                /* printf(" x = %d, n = %d, res = %d \n", x, n, res); */
                 if (n & 1)
                         res = (res * x) % mod;
                 x = (x * x) % mod;
@@ -85,9 +84,9 @@ int main(int argc, const char *argv[]) {
         array inv_facs;
         kv_init(facs);
         kv_init(inv_facs);
-        fac_niyuan(5, 17, &facs, &inv_facs);
+        fac_niyuan(100, 17, &facs, &inv_facs);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 101; i++) {
                 printf("%d %d\n", kv_A(facs, i), kv_A(inv_facs, i));
         }
 
