@@ -48,14 +48,45 @@ void fillPrimes(uint64_t size, array *vec) {
         }
 }
 
+// 筛出[a, b)中的素数
+void segment_sieve(uint64_t a, uint64_t b, array *vec) {
+        array small_vec;
+        kv_init(small_vec);
+        kv_resize(int, *vec, b - a);
+
+        uint64_t sb = 1;
+        for (; sb * sb < b; sb++)
+                ;
+        sb--;
+        fillPrimes(sb, &small_vec); // find primes in [0 sqrt(b))
+
+        for (uint64_t i = 0; i < sb; i++) {
+                if (!isNotPrime(i, &small_vec)) {
+                        // filter all multiples of i
+                        for (uint64_t k = i; k < b; k += i) {
+                                if (k < a)
+                                        continue;
+                                vec->a[k - a] = 1;
+                        }
+                }
+        }
+}
+
 int main() {
         array vec;
         kv_init(vec);
 
-        fillPrimes(300, &vec);
-        for (int i = 0; i < 300; i++) {
-                if (!isNotPrime(i, &vec))
-                        printf("%d ", i);
+        /* fillPrimes(300, &vec); */
+        /* for (int i = 0; i < 300; i++) { */
+        /*         if (!isNotPrime(i, &vec)) */
+        /*                 printf("%d ", i); */
+        /* } */
+        /* printf("\n"); */
+
+        segment_sieve(10000, 10050, &vec);
+        for (int i = 0; i < 50; i++) {
+                if (vec.a[i] == 0)
+                        printf("%d ", i + 10000);
         }
 
         return 0;
