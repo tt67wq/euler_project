@@ -15,10 +15,8 @@
  * =====================================================================================
  */
 
-#include "kvec.h"
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 long long limit = 1000000000000LL;
@@ -26,7 +24,7 @@ long long limit = 1000000000000LL;
 int a[64];
 long long den[64];
 
-inline int isqrt(int n) {
+int isqrt(int n) {
         int r = (int)floor(sqrt(n));
         while (r * r > n)
                 r--;
