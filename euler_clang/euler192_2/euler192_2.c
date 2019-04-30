@@ -66,7 +66,7 @@ int main(int argc, const char *argv[]) {
         int target = 0;
         uint64_t sum = 0;
 
-        for (target = 2; target < 100001; target++) {
+        for (target = 4097; target < 4098; target++) {
                 uint64_t sq = (uint64_t)floor(sqrt(target));
                 if (sq * sq == target)
                         continue;
