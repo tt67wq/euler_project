@@ -17,6 +17,8 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <time.h>
 
 long long limit = 1000000000000LL;
@@ -86,16 +88,20 @@ long long best(int n) {
         }
 }
 
-int main() {
-        double start, stop;
-        long long sum = 0;
-        int n;
-        start = clock();
-        for (n = 2; n < 100001; n++) {
-                sum += best(n);
-        }
-        stop = clock();
-        printf("%lld\n", sum);
-        printf("%.3lf s\n", (stop - start) / CLOCKS_PER_SEC);
+int main(int argc, const char *argv[]) {
+        /* double start, stop; */
+        /* long long sum = 0; */
+        /* int n; */
+        /* start = clock(); */
+        /* for (n = 2; n < 100001; n++) { */
+        /*         sum += best(n); */
+        /* } */
+        /* stop = clock(); */
+        /* printf("%lld\n", sum); */
+        /* printf("%.3lf s\n", (stop - start) / CLOCKS_PER_SEC); */
+        /* return 0; */
+        int target = 0;
+        target = atoi(argv[1]);
+        printf("%lld\n", best(target));
         return 0;
 }
