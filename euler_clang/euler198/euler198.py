@@ -5,9 +5,10 @@
 # description: ""
 
 
-def p198(M=10**3, z=100, cnt=0):
+def p198(M=10**8, z=100, cnt=0):
     M2 = M/2
     a = m = int(M2**0.5)
+    print(a)
     stack = list(range(z, m))
     while stack:
         b = stack[-1]
