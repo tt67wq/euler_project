@@ -51,6 +51,7 @@
 * [求组合数(Combination)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/zuhe)
 * [KMP算法(kmp)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/kmp)
 * [大数(bigint)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/bigint)
+* [法里数列(farey sequence)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/farey)
 
 
 ### Classical Algorithm In Elixir
@@ -83,3 +84,4 @@
 * [Dijkstra算法(Dijkstra)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/dijkstra.ex)
 * [最小生成树Kruskal算法(kruskal)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/kruskal.ex)
 * [换硬币问题(Coin Change Problem)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/coin-change.ex)
+* [法里数列(farey sequence)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/farey_series.ex)
