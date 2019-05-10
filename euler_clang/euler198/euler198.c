@@ -1,37 +1,52 @@
-/*
- * =====================================================================================
- *
- *       Filename:  euler198.c
- *
- *    Description:  欧拉计划198题
- *
- *        Version:  1.0
- *        Created:  2019-05-07
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  fangyuan
- *
- * =====================================================================================
- */
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
-uint64_t gcd(uint64_t m, uint64_t n) {
-        uint64_t r;
-        if (m <= 0 || n <= 0)
-                return 0;
-        r = m % n;
-        return r > 0 ? gcd(n, r) : n;
-}
+typedef struct rr {
+        int p, q;
+} rr;
 
-int main(int argc, const char *argv[]) {
-        uint64_t counter = 0;
-        for (uint64_t m1 = 101; m1 * m1 < 5 * 1e7; m1++) {
-                for (uint64_t m2 = m1 + 1; m2 * m1 < 5 * 1e7; m2++) {
-                        uint64_t q = m1 * m2 * 2;
+enum { MAX_STACK = 50000000, FRAC = 100, MAX_DENOM = 100000000 };
+
+int stack_hw = 0;
+rr stack[MAX_STACK];
+int last = 0;
+void push(int p, int q) {
+        stack[last].p = p;
+        stack[last].q = q;
+        if (last > stack_hw)
+                stack_hw = last;
+        ++last;
+}
+void pop() { --last; }
+rr *front() { return stack + last - 1; }
+int empty() { return 0 == last; }
+
+int main() {
+        rr *f;
+        long n = 0, m = 1, N = 1, M = FRAC / 2, m_, n_;
+        long p, q, cnt = 0;
+        double start = clock();
+
+        push(N, M);
+        while (!empty()) {
+                f = front();
+                N = f->p;
+                M = f->q;
+                n_ = n + N;
+                m_ = m + M;
+                p = n * M + N * m;
+                q = 2 * m * M;
+                if (q <= MAX_DENOM) {
+                        push(n_, m_);
+                        if (FRAC * p < q)
+                                ++cnt;
+                        continue;
                 }
+                n = N;
+                m = M;
+                pop();
         }
+
+        printf("got %ld in %.3gs (stack high watermark = %d)\n", cnt, (clock() - start) / CLOCKS_PER_SEC, stack_hw);
+        return 0;
 }
