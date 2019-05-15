@@ -4,41 +4,33 @@ defmodule Euler199 do
   """
   require Logger
 
-  def loop_accept(acc) do
-    receive do
-      {:ok, r} ->
-        loop_accept(acc + r)
+  defp add(a, b), do: a + b
 
-      {:finish, pid} ->
-        send(pid, {:ok, acc})
-    end
-  end
+  def create_ag(_c1, _c2, _c3, 5), do: 0
 
-  defp create_ag(_c1, _c2, _c3, 6, _pid), do: nil
-
-  defp create_ag(c1, c2, c3, index, pid) do
+  def create_ag(c1, c2, c3, index) do
     cn = c1 + c2 + c3 + 2 * :math.sqrt(c1 * c2 + c1 * c3 + c2 * c3)
-    send(pid, {:ok, 1 / (cn * cn)})
-    create_ag(c1, c2, cn, index + 1, pid)
-    create_ag(c1, c3, cn, index + 1, pid)
-    create_ag(c2, c3, cn, index + 1, pid)
+
+    (1 / (cn * cn))
+    |> add(create_ag(c1, c2, cn, index + 1))
+    |> add(create_ag(c1, c3, cn, index + 1))
+    |> add(create_ag(c2, c3, cn, index + 1))
   end
 
-  def create_ag(c1, c2, c3) do
-    {:ok, pid} = Task.start(fn -> loop_accept(0.0) end)
-    create_ag(c1, c2, c3, 1, pid)
-    send(pid, {:finish, self()})
+  defp create_ag_out(_c1, _c2, _c3, _c4, 5), do: 0
 
-    receive do
-      {:ok, acc} ->
-        Process.exit(pid, :kill)
-        acc
-    end
+  defp create_ag_out(c1, c2, c3, c4, index) do
+    cn = 2 * (c1 + c2 + c3) - c4
+
+    (1 / (cn * cn))
+    |> add(create_ag(c2, c3, cn, index + 1))
+    |> add(create_ag_out(c1, c2, cn, c3, index + 1))
+    |> add(create_ag_out(c1, c3, cn, c2, index + 1))
   end
 
   def run do
     r = 2.1547005383792515
-    sum = 3 * create_ag(0.4641016151377546, 1, 1) + create_ag(1, 1, 1) + 3
+    sum = create_ag(1, 1, 1, 0) + 3 * create_ag_out(0.4641016151377546, 1, 1, 1, 0) + 3
     1 - sum / (r * r)
   end
 end
