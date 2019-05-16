@@ -28,9 +28,14 @@ defmodule Euler199 do
     |> add(create_ag_out(c1, c3, cn, c2, index - 1))
   end
 
+  def now(), do: :os.system_time(:milli_seconds)
+
   def run do
+    start = now()
     r = 2.1547005383792515
     sum = create_ag(1, 1, 1, 10) + 3 * create_ag_out(0.4641016151377546, 1, 1, 1, 10) + 3
-    1 - sum / (r * r)
+    res = 1 - sum / (r * r)
+    IO.puts(res)
+    IO.puts("timeuse => #{now() - start} milliseconds")
   end
 end
