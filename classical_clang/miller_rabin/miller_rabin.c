@@ -110,9 +110,12 @@ int main() {
                 int res1 = probablyPrime(index, 3);
                 int res2 = isPrime(index);
 
-                printf("%llu => <%d, %d>\n", index, res1, res2);
-                if (res1 != res2)
+                /* printf("%llu => <%d, %d>\n", index, res1, res2); */
+                if (res1 != res2) {
+                        printf("%llu => <%d, %d>\n", index, res1, res2);
                         break;
+                }
+
                 index++;
         }
         return 0;
