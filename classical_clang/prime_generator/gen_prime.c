@@ -78,13 +78,6 @@ int main() {
         array vec;
         kv_init(vec);
 
-        /* fillPrimes(300, &vec); */
-        /* for (int i = 0; i < 300; i++) { */
-        /*         if (vec.a[i] == 0) */
-        /*                 printf("%d ", i); */
-        /* } */
-        /* printf("\n"); */
-
         segment_sieve(10000, 10050, &vec);
         for (int i = 0; i < 50; i++) {
                 if (vec.a[i] == 0)
