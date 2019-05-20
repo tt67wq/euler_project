@@ -23,8 +23,14 @@
 uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
         if (n == 1)
                 return m % k;
-        if (n == 2)
-                return (m * m) % k;
+        if (n == 2) {
+                uint64_t tmp = m;
+                for (uint64_t j = 1; j < tmp; j++) {
+                        m += tmp;
+                        m %= k;
+                }
+                return m;
+        }
 
         if (m % k == 0)
                 return 0;
@@ -48,8 +54,7 @@ int double_check(uint64_t tu, uint64_t n, uint64_t x) {
         /* printf("tu => %d, n => %d, x =>%d\n", tu, n, x); */
         if (tu >= n)
                 return x;
-        int y = x * x % n;
-        /* printf("y => %d\n", y); */
+        uint64_t y = pow_mod(x, 2, n);
 
         if (y == 1 && x != 1 && x != n - 1)
                 return 0;
@@ -110,7 +115,7 @@ int main() {
                 int res1 = probablyPrime(index, 3);
                 int res2 = isPrime(index);
 
-                /* printf("%llu => <%d, %d>\n", index, res1, res2); */
+                printf("%llu => <%d, %d>\n", index, res1, res2);
                 if (res1 != res2) {
                         printf("%llu => <%d, %d>\n", index, res1, res2);
                         break;

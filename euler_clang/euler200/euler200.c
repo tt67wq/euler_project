@@ -53,14 +53,82 @@ void prime_sieve(uint64_t max, big_array *primes) {
         free(sieve);
 }
 
-int isPrime(uint64_t n) {
+// 计算 m^n % k
+uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
+        if (n == 1)
+                return m % k;
+        if (n == 2) {
+                uint64_t tmp = m;
+                for (uint64_t j = 1; j < tmp; j++) {
+                        m += tmp;
+                        m %= k;
+                }
+                return m;
+        }
+
+        if (m % k == 0)
+                return 0;
+
+        uint64_t b = pow_mod(m, 2, k);
+        if (n % 2 == 0) {
+                return pow_mod(b, n >> 1, k);
+        } else {
+                return (m * pow_mod(b, (n - 1) >> 1, k)) % k;
+        }
+}
+
+uint64_t random2(uint64_t high) {
+        if (high == 2)
+                return 2;
+        return rand() % (high - 2) + 2;
+}
+
+// 二次探测
+int double_check(uint64_t tu, uint64_t n, uint64_t x) {
+        if (tu >= n)
+                return x;
+        uint64_t y = pow_mod(x, 2, n);
+
+        if (y == 1 && x != 1 && x != n - 1)
+                return 0;
+        else
+                return double_check(tu << 1, n, y);
+}
+
+uint64_t get_u(uint64_t u) {
+        while (1) {
+                if (u % 2 == 1)
+                        break;
+                u = u >> 1;
+        }
+        return u;
+}
+
+// 费马检测
+int fermat_check(uint64_t n, uint64_t u, int s) {
+        if (s == 0)
+                return 1;
+        uint64_t a = random2(n - 1);
+        uint64_t x = pow_mod(a, u, n);
+        int flag = double_check(u, n, x);
+
+        if (flag > 0) {
+                if (flag == 1)
+                        return fermat_check(n, u, s - 1);
+                else
+                        return 0;
+        } else
+                return 0;
+}
+
+int probablyPrime(uint64_t n, int times) {
         if (n == 1)
                 return 0;
-        for (int i = 2; i * i <= n; i++) {
-                if (n % i == 0)
-                        return 0;
-        }
-        return 1;
+        if (n == 2)
+                return 1;
+        if (n % 2 == 0)
+                return 0;
+        return fermat_check(n, get_u(n - 1), times);
 }
 
 //////////// prime tools //////////////
@@ -91,8 +159,7 @@ int no_prime_in_cluster(uint64_t num) {
                 // only check last one
                 for (int j = 1; j < 10; j += 2) {
                         replace_at(&digits, 0, j);
-                        /* printf("%llu\n", digits2num(&digits)); */
-                        if (isPrime(digits2num(&digits)))
+                        if (probablyPrime(digits2num(&digits), 3))
                                 return 0;
                 }
         } else {
@@ -103,7 +170,7 @@ int no_prime_in_cluster(uint64_t num) {
                                         if (j == origin)
                                                 continue;
                                         replace_at(&digits, i, j);
-                                        if (isPrime(digits2num(&digits)))
+                                        if (probablyPrime(digits2num(&digits), 3))
                                                 return 0;
                                 }
                         } else {
@@ -111,7 +178,7 @@ int no_prime_in_cluster(uint64_t num) {
                                         if (j == origin)
                                                 continue;
                                         replace_at(&digits, i, j);
-                                        if (isPrime(digits2num(&digits)))
+                                        if (probablyPrime(digits2num(&digits), 3))
                                                 return 0;
                                 }
                         }
@@ -149,7 +216,6 @@ int contains200(uint64_t num) {
 int cmp(const void *a, const void *b) {
         const uint64_t *p = a;
         const uint64_t *q = b;
-        /* printf("%llu, %llu, %d\n", *p, *q, *p > *q); */
         return *p > *q ? 1 : -1;
 }
 
@@ -161,14 +227,15 @@ int main(int argc, const char *argv[]) {
         big_array res;
         kv_init(res);
 
-        prime_sieve(200000, &primes);
-        for (int i = 0; i < 3; i++) {
-                for (int j = 3; j < kv_size(primes); j++) {
-                        /* if (j == i) */
-                        /*         continue; */
+        prime_sieve(200, &primes);
+        for (int i = 0; i < kv_size(primes); i++) {
+                for (int j = 0; j < kv_size(primes); j++) {
+                        if (j == i)
+                                continue;
                         uint64_t q = kv_A(primes, i);
                         uint64_t p = kv_A(primes, j);
-                        uint64_t r = p * p * q * q * q;
+                        uint64_t r = p * p * p * q * q;
+                        printf("%llu %llu %llu\n", p, q, r);
                         if (no_prime_in_cluster(r) && contains200(r))
                                 kv_push(uint64_t, res, r);
                 }
