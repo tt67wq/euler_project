@@ -74,11 +74,21 @@ defmodule Euler200 do
   ####### prime check end
 
   ####### Sieve start
-  def sqrt(n), do: n |> :math.sqrt() |> Float.floor() |> round
 
-  def sieve(max, i, acc) when i * i > max, do: acc
+  def sieve(max) do
+    ops = sieve(max, 3, :array.new(max, {:default, 1}))
 
-  def sieve(max, i, acc) do
+    res =
+      3..max
+      |> Enum.filter(fn x -> rem(x, 2) == 1 end)
+      |> Enum.filter(fn x -> in_sieve?(ops, x) end)
+
+    [2 | res]
+  end
+
+  defp sieve(max, i, acc) when i * i > max, do: acc
+
+  defp sieve(max, i, acc) do
     case in_sieve?(acc, i) do
       true ->
         sieve(max, i + 2, remove(i, i * i, max, acc))
@@ -111,15 +121,80 @@ defmodule Euler200 do
     :array.set(i, bor(a, b), sieve)
   end
 
-  def now(), do: :os.system_time(:milli_seconds)
-
   ####### Sieve end
 
-  def num2digits(num), do: n2d(num, [])
-  defp n2d(0, acc), do: acc
-  defp n2d(num, acc), do: n2d(div(num, 10), [rem(num, 10) | acc])
+  def num2digits(num), do: n2d(num, 0, :array.new({:default, 0}))
+  defp n2d(0, _, acc), do: acc
 
-  def digits2num(list), do: d2n(list, 0)
+  defp n2d(num, index, acc),
+    do: n2d(div(num, 10), index + 1, :array.set(index, rem(num, 10), acc))
+
+  def digits2num(digits), do: d2n(:array.to_list(digits) |> Enum.reverse(), 0)
   defp d2n([], acc), do: acc
   defp d2n([h | t], acc), do: d2n(t, acc * 10 + h)
+
+  def num_cluster(num, 0) do
+    vec = num2digits(num)
+    origin = :array.get(0, vec)
+
+    [1, 3, 5, 7, 9]
+    |> Enum.filter(fn x -> x != origin end)
+    |> Enum.map(fn x -> :array.set(0, x, vec) end)
+    |> Enum.map(fn x -> digits2num(x) end)
+  end
+
+  def vec_cluster(vec, pos) do
+    origin = :array.get(pos, vec)
+
+    0..9
+    |> Enum.filter(fn x -> x != origin end)
+    |> Enum.map(fn x -> :array.set(pos, x, vec) end)
+    |> Enum.map(fn x -> digits2num(x) end)
+  end
+
+  def prime_in_cluster?(num) when rem(num, 2) == 0 do
+    num_cluster(num, 0)
+    |> Enum.any?(fn x -> prime?(x) end)
+  end
+
+  def prime_in_cluster(num) do
+    vec = num2digits(num)
+    pos_check(vec, :array.size(vec), 0)
+  end
+
+  defp pos_check(_, size, index) when index > size, do: false
+
+  defp pos_check(vec, size, index) do
+    ps = vec_cluster(vec, index)
+
+    case Enum.any?(ps, fn x -> prime?(x) end) do
+      true -> true
+      _ -> pos_check(vec, size, index + 1)
+    end
+  end
+
+  def contains200?(num) do
+    num
+    |> Integer.to_string()
+    |> String.contains?("200")
+  end
+
+  def now(), do: :os.system_time(:milli_seconds)
+
+  def run(max) do
+    ps = sieve(max)
+
+    Stream.flat_map(ps, fn i ->
+      Stream.flat_map(ps, fn j ->
+        [{i, j}]
+      end)
+    end)
+    |> Stream.map(fn {p, q} -> p * p * p * q * q end)
+    |> Stream.filter(fn x -> contains200?(x) end)
+    |> Stream.filter(fn x -> not prime_in_cluster(x) end)
+    |> Enum.sort()
+    |> Enum.take(200)
+    |> Enum.to_list()
+
+  end
 end

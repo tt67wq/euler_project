@@ -91,8 +91,8 @@ int no_prime_in_cluster(uint64_t num) {
                 // only check last one
                 for (int j = 1; j < 10; j += 2) {
                         replace_at(&digits, 0, j);
-                        printf("%llu\n", digits2num(&digits));
-                        if (probablyPrime(digits2num(&digits), 3))
+                        /* printf("%llu\n", digits2num(&digits)); */
+                        if (isPrime(digits2num(&digits)))
                                 return 0;
                 }
         } else {
@@ -103,7 +103,7 @@ int no_prime_in_cluster(uint64_t num) {
                                         if (j == origin)
                                                 continue;
                                         replace_at(&digits, i, j);
-                                        if (probablyPrime(digits2num(&digits), 3))
+                                        if (isPrime(digits2num(&digits)))
                                                 return 0;
                                 }
                         } else {
@@ -111,7 +111,7 @@ int no_prime_in_cluster(uint64_t num) {
                                         if (j == origin)
                                                 continue;
                                         replace_at(&digits, i, j);
-                                        if (probablyPrime(digits2num(&digits), 3))
+                                        if (isPrime(digits2num(&digits)))
                                                 return 0;
                                 }
                         }
