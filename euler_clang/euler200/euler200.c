@@ -25,6 +25,7 @@
 #include <string.h>
 #include <time.h>
 
+#define BIGLIM (1ull << 38)
 typedef kvec_t(int) array;
 typedef kvec_t(uint64_t) big_array;
 
@@ -53,76 +54,14 @@ void prime_sieve(uint64_t max, big_array *primes) {
         free(sieve);
 }
 
-// 计算 m^n % k
-uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
-        if (n == 1)
-                return m % k;
-        if (n == 2)
-                return (m * m) % k;
-
-        if (m % k == 0)
+static int isprime(uint64_t x) {
+        uint64_t i;
+        if (x % 2 == 0)
                 return 0;
-
-        uint64_t b = pow_mod(m, 2, k);
-        if (n % 2 == 0) {
-                return pow_mod(b, n >> 1, k);
-        } else {
-                return (m * pow_mod(b, (n - 1) >> 1, k)) % k;
-        }
-}
-
-uint64_t random2(uint64_t high) {
-        if (high == 2)
-                return 2;
-        return rand() % (high - 2) + 2;
-}
-
-// 二次探测
-int double_check(uint64_t tu, uint64_t n, uint64_t x) {
-        if (tu >= n)
-                return x;
-        uint64_t y = pow_mod(x, 2, n);
-
-        if (y == 1 && x != 1 && x != n - 1)
-                return 0;
-        else
-                return double_check(tu << 1, n, y);
-}
-
-uint64_t get_u(uint64_t u) {
-        while (1) {
-                if (u % 2 == 1)
-                        break;
-                u = u >> 1;
-        }
-        return u;
-}
-
-// 费马检测
-int fermat_check(uint64_t n, uint64_t u, int s) {
-        if (s == 0)
-                return 1;
-        uint64_t a = random2(n - 1);
-        uint64_t x = pow_mod(a, u, n);
-        int flag = double_check(u, n, x);
-
-        if (flag > 0) {
-                if (flag == 1)
-                        return fermat_check(n, u, s - 1);
-                else
+        for (i = 3; i * i <= x; i++)
+                if (x % i == 0)
                         return 0;
-        } else
-                return 0;
-}
-
-int probablyPrime(uint64_t n, int times) {
-        if (n == 1)
-                return 0;
-        if (n == 2)
-                return 1;
-        if (n % 2 == 0)
-                return 0;
-        return fermat_check(n, get_u(n - 1), times);
+        return 1;
 }
 
 //////////// prime tools //////////////
@@ -142,44 +81,21 @@ uint64_t digits2num(array *digits) {
         return num;
 }
 
-void replace_at(array *digits, int index, int target) { digits->a[index] = target; }
-
-int no_prime_in_cluster(uint64_t num) {
-        array digits;
-        kv_init(digits);
-        num2digits(num, &digits);
-
-        if (num % 2 == 0) {
-                // only check last one
-                for (int j = 1; j < 10; j += 2) {
-                        replace_at(&digits, 0, j);
-                        if (probablyPrime(digits2num(&digits), 3))
-                                return 0;
-                }
-        } else {
-                for (int i = 0; i < kv_size(digits); i++) {
-                        int origin = kv_A(digits, i);
-                        if (i) {
-                                for (int j = 1; j < 10; j += 2) {
-                                        if (j == origin)
-                                                continue;
-                                        replace_at(&digits, i, j);
-                                        if (probablyPrime(digits2num(&digits), 3))
-                                                return 0;
-                                }
-                        } else {
-                                for (int j = 0; j < 10; j++) {
-                                        if (j == origin)
-                                                continue;
-                                        replace_at(&digits, i, j);
-                                        if (probablyPrime(digits2num(&digits), 3))
-                                                return 0;
+static int ispp(uint64_t x) {
+        uint64_t digit[21], scale[21], xtmp;
+        int i, j, top;
+        for (i = scale[0] = 1; i < 21; i++)
+                scale[i] = 10 * scale[i - 1];
+        for (top = -1, xtmp = x; xtmp; xtmp /= 10) {
+                digit[++top] = xtmp % 10;
+        }
+        for (i = 0; i < top; i++)
+                for (j = 0; j < 10; j++)
+                        if (j != digit[i]) {
+                                if (isprime(x + scale[i] * (j - digit[i]))) {
+                                        return 0;
                                 }
                         }
-                        replace_at(&digits, i, origin);
-                }
-        }
-        kv_destroy(digits);
         return 1;
 }
 
@@ -198,13 +114,24 @@ char *num2str(uint64_t num) {
         return str;
 }
 
-int contains200(uint64_t num) {
-
-        char *str = num2str(num);
-        char *substr = "200";
-        if (strstr(str, substr))
-                return 1;
-        return 0;
+int contains200(uint64_t sq) {
+        int t = 0;
+        while (sq) {
+                int r = sq % 10;
+                if (t < 2) {
+                        if (r == 0)
+                                t++;
+                        else
+                                t = 0;
+                } else if (t == 2) {
+                        if (r == 2)
+                                t = 3;
+                        else if (r)
+                                t = 0;
+                }
+                sq /= 10;
+        }
+        return t >= 3;
 }
 
 int cmp(const void *a, const void *b) {
@@ -221,17 +148,21 @@ int main(int argc, const char *argv[]) {
         big_array res;
         kv_init(res);
 
-        prime_sieve(2000, &primes);
+        prime_sieve(200000, &primes);
         for (int i = 0; i < kv_size(primes); i++) {
                 for (int j = 0; j < kv_size(primes); j++) {
                         if (j == i)
                                 continue;
-                        uint64_t q = kv_A(primes, i);
-                        uint64_t p = kv_A(primes, j);
+
+                        uint64_t p = kv_A(primes, i);
+                        uint64_t q = kv_A(primes, j);
                         uint64_t r = p * p * q * q * q;
+                        if (r > BIGLIM)
+                                continue;
+
                         if (!contains200(r))
                                 continue;
-                        if (!no_prime_in_cluster(r))
+                        if (!ispp(r))
                                 continue;
 
                         kv_push(uint64_t, res, r);
