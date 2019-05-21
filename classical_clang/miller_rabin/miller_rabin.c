@@ -23,14 +23,9 @@
 uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
         if (n == 1)
                 return m % k;
-        if (n == 2) {
-                uint64_t tmp = m;
-                for (uint64_t j = 1; j < tmp; j++) {
-                        m += tmp;
-                        m %= k;
-                }
-                return m;
-        }
+        if (n == 2) 
+                return (m * m) % k;
+        
 
         if (m % k == 0)
                 return 0;

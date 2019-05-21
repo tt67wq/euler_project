@@ -57,14 +57,8 @@ void prime_sieve(uint64_t max, big_array *primes) {
 uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
         if (n == 1)
                 return m % k;
-        if (n == 2) {
-                uint64_t tmp = m;
-                for (uint64_t j = 1; j < tmp; j++) {
-                        m += tmp;
-                        m %= k;
-                }
-                return m;
-        }
+        if (n == 2)
+                return (m * m) % k;
 
         if (m % k == 0)
                 return 0;
@@ -227,17 +221,20 @@ int main(int argc, const char *argv[]) {
         big_array res;
         kv_init(res);
 
-        prime_sieve(200, &primes);
+        prime_sieve(2000, &primes);
         for (int i = 0; i < kv_size(primes); i++) {
                 for (int j = 0; j < kv_size(primes); j++) {
                         if (j == i)
                                 continue;
                         uint64_t q = kv_A(primes, i);
                         uint64_t p = kv_A(primes, j);
-                        uint64_t r = p * p * p * q * q;
-                        printf("%llu %llu %llu\n", p, q, r);
-                        if (no_prime_in_cluster(r) && contains200(r))
-                                kv_push(uint64_t, res, r);
+                        uint64_t r = p * p * q * q * q;
+                        if (!contains200(r))
+                                continue;
+                        if (!no_prime_in_cluster(r))
+                                continue;
+
+                        kv_push(uint64_t, res, r);
                 }
         }
 
