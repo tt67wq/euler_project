@@ -1,22 +1,42 @@
 defmodule Euler201 do
   @moduledoc false
 
-  @pool 1..50 |> Enum.map(fn x -> x * x end)
+  require Logger
 
-  def count_path(num), do: cpath(num, 0, [], 0)
+  @pool 1..100 |> Enum.map(fn x -> x * x end)
+  # @pool [1, 3, 6, 8, 10, 11]
 
-  defp cpath(num, 50, _, bcc) when bcc == num, do: 1
-  defp cpath(_, 50, _, _), do: 0
+  defp iter(_, [t], acc), do: Enum.reverse([t | acc])
 
-  defp cpath(num, index, acc, bcc) do
-    @pool
-    |> Enum.filter(fn x -> not Enum.member?(acc, x) end)
-    |> Enum.filter(fn x -> x + bcc <= num end)
-    |> Enum.map(fn x -> cpath(num, index + 1, [x | acc], bcc + x) end)
-    |> Enum.sum()
+  defp iter(n, [mp1, mp2 | t], acc) do
+    nmp1 =
+      Map.to_list(mp2)
+      |> Enum.map(fn {k, v} -> {k + n, v} end)
+      |> Enum.reduce(mp1, fn {x, v}, acc ->
+        Map.update(
+          acc,
+          x,
+          if v == 2 do
+            2
+          else
+            1
+          end,
+          fn _ -> 2 end
+        )
+      end)
+
+    iter(n, [mp2 | t], [nmp1 | acc])
   end
 
   def run do
+    state = [%{0 => 0} | List.duplicate(%{}, 50)] |> Enum.reverse()
+
     @pool
+    |> Enum.reduce(state, fn x, acc -> iter(x, acc, []) end)
+    |> List.first()
+    |> Map.to_list()
+    |> Enum.filter(fn {_k, v} -> v == 1 end)
+    |> Enum.map(fn {k, _v} -> k end)
+    |> Enum.sum()
   end
 end
