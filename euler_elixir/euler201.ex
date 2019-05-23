@@ -4,7 +4,6 @@ defmodule Euler201 do
   require Logger
 
   @pool 1..100 |> Enum.map(fn x -> x * x end)
-  # @pool [1, 3, 6, 8, 10, 11]
 
   defp iter(_, [t], acc), do: Enum.reverse([t | acc])
 
