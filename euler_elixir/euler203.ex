@@ -79,7 +79,9 @@ defmodule Euler203 do
   def run do
     ps = prime_sieve(11_243_248)
     tr = pascal()
-    iter(ps, tr, 0, [])
+
+    iter(ps, tr,x 0, [])
+    |> Enum.sum()
   end
 
   defp iter(_, _, 51, acc), do: Enum.uniq(acc)
