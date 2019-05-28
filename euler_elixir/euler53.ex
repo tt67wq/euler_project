@@ -1,4 +1,4 @@
-edefmodule Euler53 do
+defmodule Euler53 do
   @moduledoc """
   http://pe-cn.github.io/53/
   """
