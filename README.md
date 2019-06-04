@@ -54,6 +54,7 @@
 * [法里数列(farey sequence)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/farey)
 
 
+
 ### Classical Algorithm In Elixir
 * [二叉树广度搜索(BFS Of Btree)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/btree_bfs)
 * [鸡尾酒排序(Cocktail Sort)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/cocktail_sort)
@@ -85,3 +86,4 @@
 * [最小生成树Kruskal算法(kruskal)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/kruskal.ex)
 * [换硬币问题(Coin Change Problem)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/coin-change.ex)
 * [法里数列(farey sequence)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/farey_series.ex)
+* [线性散列(line hash)](https://github.com/tt67wq/euler_project/blob/master/classical_elixir/line_hash.ex)
