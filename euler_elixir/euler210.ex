@@ -1,8 +1,9 @@
 defmodule Euler210 do
   @moduledoc false
 
-  @r 4
+  @r 8
 
+  # 1598174770174689500
   require Logger
 
   def all do
@@ -31,5 +32,48 @@ defmodule Euler210 do
     else
       false
     end
+  end
+
+  ######### real shit #########
+
+  def none_circle_part(r) do
+    s = 1..r |> Enum.sum()
+    h = div(4 * s - r, 2) - div(r, 2)
+    h + div(h, 2)
+  end
+
+  def circle_part(4), do: 0
+
+  def circle_part(r) do
+    e = Float.floor(r * (1 / :math.sqrt(2) - 1 / 2) / 4) |> round()
+
+    shan =
+      if e == 0 do
+        0
+      else
+        r8 = div(r, 8)
+        r32 = div(r * r, 32)
+
+        p =
+          1..e
+          |> Enum.map(fn x -> count_y(x, r8, r32) end)
+          |> Enum.sum()
+
+        p * 4
+      end
+
+    r4 = div(r, 4) + 1
+    r4 * r4 - r4 - 2 + shan
+  end
+
+  defp count_y(x, r8, r32) do
+    t = x + r8
+    m = r32 - t * t
+    n = Float.ceil(r8 - :math.sqrt(m)) |> round()
+    (r8 - n) * 2 + 1
+  end
+
+  def run(r) do
+    none_circle_part(r) + circle_part(r)
   end
 end
