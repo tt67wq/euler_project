@@ -63,7 +63,7 @@ defmodule Euler210 do
       end
 
     r4 = div(r, 4) + 1
-    r4 * r4 - r4 - 2 + shan
+    r4 * r4 - r4 - 4 + shan
   end
 
   defp count_y(x, r8, r32) do
