@@ -69,7 +69,8 @@ defmodule Euler210 do
   defp count_y(x, r8, r32) do
     t = x + r8
     m = r32 - t * t
-    n = Float.ceil(r8 - :math.sqrt(m)) |> round()
+    sq = :math.sqrt(m)
+    n = round(Float.ceil(r8 - sq))
     (r8 - n) * 2 + 1
   end
 
