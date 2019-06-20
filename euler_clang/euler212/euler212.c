@@ -134,7 +134,7 @@ void iter() {
                                 }
                         }
                 }
-                printf("level: %d, size: %d\n", level, index);
+                printf("level: %d, size: %d, volume: %lu\n", level, index, TOTAL_VOLUMN);
                 MSIZE = index;
                 index = 0;
                 memcpy(mcubes, buffer, sizeof(cube) * MSIZE);
@@ -151,6 +151,7 @@ int main(int argc, const char *argv[]) {
         iter();
 
         printf("%lu\n", TOTAL_VOLUMN);
+        printf("328968937309");
 
         return 0;
 }
