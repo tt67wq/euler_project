@@ -116,6 +116,7 @@ defmodule Euler212 do
     lv2 = pre(cubes, [])
     dv = lv2 |> Enum.map(fn {_, x} -> volumn(x) end) |> Enum.sum()
 
+    IO.puts(Enum.count(lv2))
     out_iter(lv2, 0, cubes, vs - dv)
   end
 end
