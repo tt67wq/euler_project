@@ -26,7 +26,6 @@
 
 #define N 300000l
 #define M 50000
-#define T 100000
 
 typedef unsigned long ul;
 
@@ -36,15 +35,15 @@ typedef struct _cube {
         ul x1, y1, z1;
 } cube;
 
-ul fib_cache[N];
+ul fib_cache[N+1];
 
 cube cubes[M + 1];
-cube mcubes[T];
+cube mcubes[100000];
 int MSIZE = 0;
 ul TOTAL_VOLUMN = 0;
 
 void lagged_fibonacci() {
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= N; i++) {
                 if (i < 56) {
                         fib_cache[i] = (100003l - 200003l * i + 300007l * i * i * i) % 1000000l;
                 } else {
@@ -108,17 +107,17 @@ void pre() {
                         }
                 }
         }
+        printf("level: 1, size: %d, volume: %lu\n", index, TOTAL_VOLUMN);
         MSIZE = index;
         return;
 }
 
 void iter() {
         int index = 0;
-        int flag = 0;
+        int flag = 1;
         int level = 2;
-        cube buffer[T];
+        cube buffer[MSIZE];
         while (MSIZE) {
-
                 for (int i = 0; i < MSIZE; i++) {
                         cube a = mcubes[i];
                         for (int j = a.bp + 1; j <= M; j++) {
@@ -127,18 +126,15 @@ void iter() {
                                         tmp.bp = j;
                                         buffer[index] = tmp;
                                         index++;
-                                        if (flag)
-                                                TOTAL_VOLUMN -= volume(tmp);
-                                        else
-                                                TOTAL_VOLUMN += volume(tmp);
+                                        TOTAL_VOLUMN += flag * volume(tmp);
                                 }
                         }
                 }
                 printf("level: %d, size: %d, volume: %lu\n", level, index, TOTAL_VOLUMN);
                 MSIZE = index;
                 index = 0;
-                memcpy(mcubes, buffer, sizeof(cube) * MSIZE);
-                flag = flag == 0 ? 1 : 0;
+                memcpy(mcubes, buffer, sizeof(cube) * (MSIZE));
+                flag = flag * -1;
                 level++;
         }
         return;
