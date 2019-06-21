@@ -147,7 +147,6 @@ int main(int argc, const char *argv[]) {
         iter();
 
         printf("%lu\n", TOTAL_VOLUMN);
-        printf("328968937309");
 
         return 0;
 }
