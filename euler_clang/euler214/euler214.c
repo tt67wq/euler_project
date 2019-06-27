@@ -26,9 +26,9 @@
 typedef unsigned long ull;
 typedef kvec_t(ull) array;
 
-//////////// prime tools
+ull PHI_SIEVE[MAX + 1] = {0};
+
 static inline int is_in_sieve(char *sieve, ull idx) { return !(sieve[idx / 16] & (1 << (idx % 16 / 2))); }
-/* remove the odd number idx from the sieve */
 static inline void remove_from_sieve(char *sieve, ull idx) { sieve[idx / 16] |= (1 << (idx % 16 / 2)); }
 
 void prime_sieve(ull max, array *primes) {
@@ -51,39 +51,62 @@ void prime_sieve(ull max, array *primes) {
         free(sieve);
 }
 
-ull gcd(ull m, ull n) {
-        ull r;
-        if (m <= 0 || n <= 0)
-                return 0;
-        r = m % n;
-        return r > 0 ? gcd(n, r) : n;
+void pre() {
+        for (ull i = 1; i <= MAX; i++)
+                PHI_SIEVE[i] = i;
+        return;
 }
 
-ull phi(ull n, array *ps) {
-        if (n == 2)
-                return 1;
-        ull res = n;
-        for (int i = 0;; i++) {
-                ull p = kv_A(*ps, i);
-                if (p > n)
-                        break;
-                if (res % p == 0) {
-                        res -= res / p;
+char is_prime(ull n) {
+        for (ull i = 2; i * i <= n; i++) {
+                if (n % i == 0)
+                        return 0;
+        }
+        return 1;
+}
+
+void phi_sieve() {
+        ull i = 2;
+        for (; i * i <= MAX; i++) {
+                if (is_prime(i)) {
+                        for (ull j = i; j <= MAX; j += i) {
+                                PHI_SIEVE[j] -= PHI_SIEVE[j] / i;
+                        }
                 }
         }
-        return res;
+        for (; i <= MAX; i++) {
+                if (PHI_SIEVE[i] == i) {
+                        // prime
+                        for (ull j = i; j <= MAX; j += i) {
+                                PHI_SIEVE[j] -= PHI_SIEVE[j] / i;
+                        }
+                }
+        }
 }
 
-int chain_len(ull n, array *ps) {
+ull phi(ull n, array *primes) {
+        for (int i = 0;; i++) {
+                ull p = kv_A(*primes, i);
+                if (p > n)
+                        break;
+                if (n % p == 0)
+                        n -= n / p;
+        }
+        return n;
+}
+
+int chain_len(ull n) {
         if (n == 1)
                 return 1;
         if (n == 2)
                 return 2;
+
         int res = 1;
         int over = 0;
         int cn = n;
         while (cn > 1) {
-                cn = phi(cn, ps);
+                cn = PHI_SIEVE[cn];
+
                 res++;
                 if (res > 24) {
                         over = 1;
@@ -92,28 +115,47 @@ int chain_len(ull n, array *ps) {
         }
         if (over)
                 return 10000;
+
         return res;
+}
+
+void print_phi_chain(ull n, array *primes) {
+        while (n > 1) {
+                printf("%ld => ", n);
+                /* n = SIEVE[n]; */
+                n = phi(n, primes);
+        }
+        printf("1\n");
 }
 
 int main(int argc, const char *argv[]) {
         array primes;
         kv_init(primes);
 
+        prime_sieve(MAX, &primes);
+        pre();
+        phi_sieve();
+
         ull sum = 0;
 
-        prime_sieve(MAX, &primes);
-        for (int j = kv_size(primes) - 1;; j--) {
+        for (int j = 0; j < kv_size(primes); j++) {
                 ull p = kv_A(primes, j);
-                int l = chain_len(kv_A(primes, j) - 1, &primes);
+                int l = chain_len(p - 1);
                 if (l == 24) {
                         sum += p;
-                        printf("chain_len of %lu = %d, now sum is %lu\n", p, l, sum);
+                        if (sum < 1677366278943ll)
+                                printf("chain_len of %lu = %d, now sum is %lu\n", p - 1, l, sum);
                 }
         }
         printf("%lu\n", sum);
-        printf("%lu\n", 1677366278943ll);
 
-        /* printf("%lu\n", chain_len(19, &primes)); */
+        /* ull m; */
+
+        /* while (1) { */
+        /*         printf("Enter a number: "); */
+        /*         scanf("%ld", &m); */
+        /*         print_phi_chain(m, &primes); */
+        /* } */
 
         return EXIT_SUCCESS;
 }
