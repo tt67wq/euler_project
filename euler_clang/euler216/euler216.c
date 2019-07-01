@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 50000000LL
+#define MAX 100LL
 
 typedef unsigned long long ull;
 
