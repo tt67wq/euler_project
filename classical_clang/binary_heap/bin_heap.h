@@ -1,5 +1,3 @@
-/* 二叉堆声明文件 */
-
 struct HeapStruct;
 typedef struct HeapStruct *PriorityQueue;
 typedef int ElementType;
@@ -17,7 +15,7 @@ int IsFull(PriorityQueue H);
 void HeapSort(ElementType A[], int N);
 
 struct HeapStruct {
-  int Capacity;
-  int Size;
-  ElementType *Elements;
+        int Capacity;
+        int Size;
+        ElementType *Elements;
 };

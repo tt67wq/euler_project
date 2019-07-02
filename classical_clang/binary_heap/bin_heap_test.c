@@ -24,13 +24,13 @@
 #define FALSE 0
 
 int main(void) {
-  int a[] = {12, 52, 65, 64, 74, 23, 85, 73, 90};
-  printf("排序前: ");
-  for (int i = 0; i < LENGTH(a); i++)
-    printf("%d ", a[i]);
-  printf("\n");
-  HeapSort(a, LENGTH(a));
-  printf("排序后: ");
-  for (int j = 0; j < LENGTH(a); j++)
-    printf("%d ", a[j]);
+        int a[] = {12, 52, 65, 64, 74, 23, 85, 73, 90};
+        printf("排序前: ");
+        for (int i = 0; i < LENGTH(a); i++)
+                printf("%d ", a[i]);
+        printf("\n");
+        HeapSort(a, LENGTH(a));
+        printf("排序后: ");
+        for (int j = 0; j < LENGTH(a); j++)
+                printf("%d ", a[j]);
 }

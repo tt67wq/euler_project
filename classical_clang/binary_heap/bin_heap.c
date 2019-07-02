@@ -1,3 +1,20 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  bin_heap.c
+ *
+ *    Description:  二叉堆
+ *
+ *        Version:  1.0
+ *        Created:  2019-07-02
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  fangyuan
+ *
+ * =====================================================================================
+ */
+
 #include "bin_heap.h"
 #include <stdio.h>
 #include <stdlib.h>
