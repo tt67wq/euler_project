@@ -59,7 +59,6 @@
 * [二叉树广度搜索(BFS Of Btree)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/btree_bfs)
 * [鸡尾酒排序(Cocktail Sort)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/cocktail_sort)
 * [爱因斯坦思考题(Einstein Equation)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/einstein_problem)
-* [堆(Heap)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/heap)
 * [图论(Graph)(Shameless copy from others' code)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/libgraph)
 * [合并排序(Merge Sort)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/merge_sort)
 * [PAT树(Patricia Tree)](https://github.com/tt67wq/euler_project/tree/master/classical_elixir/patricia)
