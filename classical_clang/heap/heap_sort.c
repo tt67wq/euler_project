@@ -60,7 +60,7 @@ void sort(heap *pq) {
 
         // 将堆顶元素与堆尾部交换
         for (int j = kv_size(*pq) - 1; j > 0; j--) {
-                // swap pq[0] and pq[tail]
+                // swap pq[0] and pq[j]
                 int tmp = kv_A(*pq, j);
                 pq->a[j] = pq->a[0];
                 pq->a[0] = tmp;
