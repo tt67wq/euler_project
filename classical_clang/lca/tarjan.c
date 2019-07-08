@@ -85,7 +85,7 @@ void dfs(bt *tree, int (*pair)[3]) {
                                 // pass
                                 ;
                         } else {
-                                pair[i][3] = find(pair[i][1]);
+                                pair[i][2] = find(pair[i][1]);
                         }
                 }
                 if (pair[i][1] == val) {
@@ -93,7 +93,7 @@ void dfs(bt *tree, int (*pair)[3]) {
                                 // pass
                                 ;
                         } else {
-                                pair[i][3] = find(pair[i][0]);
+                                pair[i][2] = find(pair[i][0]);
                         }
                 }
         }
@@ -110,5 +110,8 @@ int main() {
         create_tree(NULL, &tree);
         printf("create binary tree finished\n");
         dfs(tree, pair);
+        for (int i = 0; i < 2; i++) {
+                printf("pair[%d][2] = %d\n", i, pair[i][2]);
+        }
         return 0;
 }
