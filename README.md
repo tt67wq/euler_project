@@ -52,6 +52,7 @@
 * [KMP算法(kmp)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/kmp)
 * [大数(bigint)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/bigint)
 * [法里数列(farey sequence)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/farey)
+* [Tarjan算法求lca(Tarjan)](https://github.com/tt67wq/euler_project/blob/master/classical_clang/lca)
 
 
 
