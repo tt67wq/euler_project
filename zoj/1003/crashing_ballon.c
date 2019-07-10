@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// http://www.acmsearch.com/article/show/15
 typedef unsigned long ul;
 
 char possible_comb(ul n, int m, char *buff) {
