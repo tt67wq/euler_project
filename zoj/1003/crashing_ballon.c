@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// http://www.acmsearch.com/article/show/15
+ /* http://www.acmsearch.com/article/show/15 */
 typedef unsigned long ul;
 
 char possible_comb(ul n, int m, char *buff) {
@@ -36,7 +36,7 @@ char possible_comb(ul n, int m, char *buff) {
         return 0;
 }
 
-int all_possible_comb(ul n, char *res[100]) {
+int all_possible_comb(ul n, char *res[1000]) {
         int m;
         int index = 0;
         for (m = 1; m < 101; m++) {
@@ -50,7 +50,7 @@ int all_possible_comb(ul n, char *res[100]) {
         return index;
 }
 
-void free_res(int counter, char *res[100]) {
+void free_res(int counter, char *res[1000]) {
         int i;
         for (i = 0; i < counter; i++)
                 free(res[i]);
@@ -58,8 +58,13 @@ void free_res(int counter, char *res[100]) {
 
 int main() {
 
+        /* FILE *fp; */
+        /* fp = fopen("test.txt", "r"); */
+
         ul a, b, l, h, winner;
         int i, j, z, counter1, counter2;
+        /* while (fscanf(fp, "%ld %ld", &a, &b) != EOF) { */
+        /*         printf("%ld %ld\n", a, b); */
         while (scanf("%ld %ld", &a, &b) != EOF) {
                 if (a == b) {
                         winner = a;
@@ -70,8 +75,8 @@ int main() {
                 l = a > b ? b : a;
                 h = a > b ? a : b;
 
-                char *res1[100] = {NULL};
-                char *res2[100] = {NULL};
+                char *res1[1000] = {NULL};
+                char *res2[1000] = {NULL};
                 counter1 = all_possible_comb(l, res1);
                 if (counter1 == 0) {
                         winner = h;
@@ -118,6 +123,6 @@ int main() {
                 free_res(counter1, res1);
                 free_res(counter2, res2);
         }
-
+        /* fclose(fp); */
         return 0;
 }
