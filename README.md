@@ -2,6 +2,9 @@
 
 ---- 
 
+### note
+    欧拉的题目在200以后都过于变态了，很多需要特定的数学知识，考验的更多是数学而非代码了，最近转向比较简单的zoj，保持下熟练度
+
 [欧拉计划(euler_project)](https://projecteuler.net/progress=clearlove)
 
 ![image](https://projecteuler.net/profile/clearlove.png)
@@ -10,7 +13,6 @@
 ### 欧拉计划(Project Euler)
 * [C](https://github.com/tt67wq/euler_project/tree/master/euler_clang)
 * [Elixir(芽儿咯，这个破语言不适合撸算法)](https://github.com/tt67wq/euler_project/tree/master/euler_elixir)
-
 
 
 ### Classical Algorithm In C
