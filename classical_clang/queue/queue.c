@@ -1,56 +1,101 @@
-#include "queue.h"
-#include "apue.h"
+/*
+ * =====================================================================================
+ *
+ *       Filename:  queue.c
+ *
+ *    Description:  循环队列
+ *
+ *        Version:  1.0
+ *        Created:  2019-07-17
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  fangyuan
+ *
+ * =====================================================================================
+ */
 
-int IsEmpty(Queue Q) { return Q->Size == 0; }
-int IsFull(Queue Q) { return Q->Size == Q->Capacity; }
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-Queue CreateQueue(int MaxElements) {
-        Queue Q;
-        if (MaxElements < MinQueueSize) err_sys("size too small");
-        Q = malloc(sizof(struct QueueRecord));
-        if (Q == NULL) err_sys("malloc error");
-        Q->Array = malloc(sizeof(ElementType) * MaxElements);
-        if (Q->Array == NULL) err_sys("malloc error");
-        MakeEmpty(Q);
-        Q->Capacity = MaxElements;
-        return Q;
+#define MAX 1000
+
+typedef struct _queue {
+        int front;
+        int rear;
+        int size;
+        int *buff;
+} queue;
+
+void init(queue *q) {
+        q->front = 0;
+        q->rear = 0;
+        q->size = 0;
+        q->buff = (int *)calloc(MAX, sizeof(int));
 }
 
-void DisposeQueue(Queue Q) {
-        if (Q != NULL) {
-                free(Q->Array);
-                free(Q);
+void drop(queue *q) { free(q->buff); }
+
+bool is_full(queue *q) { return q->size == MAX; }
+bool is_empty(queue *q) { return q->size == 0; }
+
+bool enqueue(queue *q, int elem) {
+        if (is_full(q))
+                return false;
+        q->buff[q->rear] = elem;
+        q->rear = (q->rear + 1) % MAX;
+        q->size++;
+        return true;
+}
+
+bool dequeue(queue *q, int *elem) {
+        if (is_empty(q))
+                return false;
+        *elem = q->buff[q->front];
+        q->front = (q->front + 1) % MAX;
+        q->size--;
+        return true;
+}
+
+void print_queue(queue *q) {
+        int i;
+        i = q->front;
+	printf("front -> ");
+        while (1) {
+                if (i == q->rear)
+                        break;
+                printf("%d -> ", q->buff[i]);
+                i++;
+                if (i > MAX)
+                        i %= MAX;
         }
+        printf("end\n");
 }
 
-void MakeEmpty(Queue Q) {
-        Q->Size = 0;
-        Q->Front = 1;
-        Q->Rear = 0;
-}
+int main() {
+        char *cmd = (char *)calloc(5, sizeof(char));
+        queue q;
+        int elem;
+        init(&q);
+        while (scanf("%s", cmd) != EOF) {
+                if (!strcmp(cmd, "print")) {
+                        print_queue(&q);
+                        continue;
+                }
+                if (!strcmp(cmd, "push")) {
+                        scanf("%d", &elem);
+                        if (!enqueue(&q, elem))
+                                perror("enqueue error");
 
-static int Succ(int Value, Queue Q) {
-        if (++Value == Q->Capacity) Value = 0;
-        return Value;
-}
-
-void Enqueue(ElementType X, Queue Q) {
-        if (IsFull(Q))
-                err_sys("queue is full");
-        else {
-                Q->Size++;
-                Q->Rear = Succ(Q->Rear, Q);
-                Q->Array[Q->Rear] = X;
+                        continue;
+                }
+                if (!strcmp(cmd, "pop")) {
+                        if (!dequeue(&q, &elem))
+                                perror("dequeue error");
+                        continue;
+                }
         }
-}
-
-ElementType Front(Queue Q) {
-        if (IsEmpty(Q)) err_sys("empty Queue");
-        return Q->Array[Q->Front];
-}
-
-void Dequeue(Queue Q) {
-        if (IsEmpty(Q)) err_sys("empty queue");
-        Q->Size--;
-        Q->Front = Succ(Q->Front, Q);
+        return 0;
 }
