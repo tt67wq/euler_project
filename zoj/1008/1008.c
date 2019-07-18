@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 1000
 
 typedef struct _box {
         int top;
@@ -25,22 +24,12 @@ typedef struct _box {
         int bottom;
         int left;
         char used;
+        int num;
 } box;
 
 int size;
 box *boxes;
 char *res;
-
-unsigned int js_hash(char *str, unsigned int len) {
-        unsigned int hash = 1315423911;
-        unsigned int i = 0;
-
-        for (i = 0; i < len; str++, i++) {
-                hash ^= ((hash << 5) + (*str) + (hash >> 2));
-        }
-
-        return hash;
-}
 
 char dfs(char *buff, int index) {
         int i;
@@ -107,9 +96,10 @@ char dfs(char *buff, int index) {
 }
 
 int main() {
-        int i, j = 0;
+        int i, j, k = 0;
         int t, r, b, l;
         char *buff;
+        char repeat;
         res = (char *)calloc(100, sizeof(char));
         while (scanf("%d", &size) != EOF) {
                 if (!size)
@@ -118,20 +108,32 @@ int main() {
                 buff = (char *)calloc(size * size, sizeof(char));
                 for (i = 0; i < size * size; i++) {
                         scanf("%d %d %d %d", &t, &r, &b, &l);
-                        boxes[i].top = t;
-                        boxes[i].right = r;
-                        boxes[i].bottom = b;
-                        boxes[i].left = l;
-                        boxes[i].used = 0;
+                        repeat = 0;
+                        for (j = 0; j < i; j++) {
+                                if (boxes[j].top == t && boxes[j].right == r && boxes[j].bottom == b && boxes[j].left == l) {
+                                        boxes[j].num += 1;
+                                        repeat = 1;
+                                        break;
+                                }
+                        }
+                        if (!repeat) {
+                                boxes[i].top = t;
+                                boxes[i].right = r;
+                                boxes[i].bottom = b;
+                                boxes[i].left = l;
+                                boxes[i].used = 0;
+                                boxes[i].num = 1;
+                        }
                 }
-                for (i = 0; i < MAX; i++)
-                        ;
-                res[j++] = dfs(buff, 0);
+                for (i = 0; i < size * size; i++)
+                        printf("%d %d %d %d: %d\n", boxes[i].top, boxes[i].right, boxes[i].bottom, boxes[i].left, boxes[i].num);
+
+                res[k++] = dfs(buff, 0);
                 free(boxes);
                 free(buff);
         }
 
-        for (i = 0; i < j; i++) {
+        for (i = 0; i < k; i++) {
                 if (res[i])
                         printf("Game %d: Possible\n", i + 1);
                 else
