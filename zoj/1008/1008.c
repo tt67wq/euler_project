@@ -23,7 +23,6 @@ typedef struct _box {
         int right;
         int bottom;
         int left;
-        char used;
         int num;
 } box;
 
@@ -31,63 +30,63 @@ int size;
 box *boxes;
 char *res;
 
-char dfs(char *buff, int index) {
+char dfs(char *buff, int total, int index) {
         int i;
         if (index == size * size)
                 return 1;
         else if (index == 0) {
-                for (i = 0; i < size * size; i++) {
+                for (i = 0; i < total; i++) {
                         buff[0] = i;
-                        boxes[i].used = 1;
-                        if (dfs(buff, 1))
+                        boxes[i].num--;
+                        if (dfs(buff, total, 1))
                                 return 1;
                         else {
                                 buff[0] = 0;
-                                boxes[i].used = 0;
+                                boxes[i].num++;
                         }
                 }
         } else if (index > 0 && index < size) {
-                for (i = 0; i < size * size; i++) {
-                        if (boxes[i].used)
+                for (i = 0; i < total; i++) {
+                        if (!boxes[i].num)
                                 continue;
                         if (boxes[i].left == boxes[(int)buff[index - 1]].right) {
                                 buff[index] = i;
-                                boxes[i].used = 1;
-                                if (dfs(buff, index + 1))
+                                boxes[i].num--;
+                                if (dfs(buff, total, index + 1))
                                         return 1;
                                 else {
                                         buff[index] = 0;
-                                        boxes[i].used = 0;
+                                        boxes[i].num++;
                                 }
                         }
                 }
         } else if (index % size == 0) {
-                for (i = 0; i < size * size; i++) {
-                        if (boxes[i].used)
+                for (i = 0; i < total; i++) {
+                        if (!boxes[i].num)
                                 continue;
                         if (boxes[i].top == boxes[(int)buff[index - size]].bottom) {
                                 buff[index] = i;
-                                boxes[i].used = 1;
-                                if (dfs(buff, index + 1))
+                                boxes[i].num--;
+                                if (dfs(buff, total, index + 1))
                                         return 1;
                                 else {
-                                        boxes[i].used = 0;
+                                        boxes[i].num++;
                                         buff[index] = 0;
                                 }
                         }
                 }
         } else {
-                for (i = 0; i < size * size; i++) {
-                        if (boxes[i].used)
+                for (i = 0; i < total; i++) {
+                        if (!boxes[i].num)
                                 continue;
                         if ((boxes[i].top == boxes[(int)buff[index - size]].bottom) && (boxes[i].left == boxes[(int)buff[index - 1]].right)) {
                                 buff[index] = i;
-                                boxes[i].used = 1;
-                                if (dfs(buff, index + 1))
+                                boxes[i].num--;
+                                if (dfs(buff, total, index + 1))
                                         return 1;
                                 else {
                                         buff[index] = 0;
-                                        boxes[i].used = 0;
+                                        boxes[i].num++;
                                 }
                         }
                 }
@@ -96,7 +95,7 @@ char dfs(char *buff, int index) {
 }
 
 int main() {
-        int i, j, k = 0;
+        int i, j, total, k = 0;
         int t, r, b, l;
         char *buff;
         char repeat;
@@ -106,6 +105,7 @@ int main() {
                         break;
                 boxes = (box *)calloc(size * size, sizeof(box));
                 buff = (char *)calloc(size * size, sizeof(char));
+                total = 0;
                 for (i = 0; i < size * size; i++) {
                         scanf("%d %d %d %d", &t, &r, &b, &l);
                         repeat = 0;
@@ -121,14 +121,11 @@ int main() {
                                 boxes[i].right = r;
                                 boxes[i].bottom = b;
                                 boxes[i].left = l;
-                                boxes[i].used = 0;
                                 boxes[i].num = 1;
+                                total++;
                         }
                 }
-                for (i = 0; i < size * size; i++)
-                        printf("%d %d %d %d: %d\n", boxes[i].top, boxes[i].right, boxes[i].bottom, boxes[i].left, boxes[i].num);
-
-                res[k++] = dfs(buff, 0);
+                res[k++] = dfs(buff, total, 0);
                 free(boxes);
                 free(buff);
         }
