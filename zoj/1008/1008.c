@@ -17,28 +17,29 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 5
+#define MAX 1000
 
 typedef struct _box {
         int top;
         int right;
         int bottom;
         int left;
+        char used;
 } box;
 
 int size;
 box *boxes;
 char *res;
 
-char in_buff(char *buff, int pos) {
-        int i;
-        i = 0;
-        while (buff[i]) {
-                if ((int)buff[i] == pos + 1)
-                        return 1;
-                i++;
+unsigned int js_hash(char *str, unsigned int len) {
+        unsigned int hash = 1315423911;
+        unsigned int i = 0;
+
+        for (i = 0; i < len; str++, i++) {
+                hash ^= ((hash << 5) + (*str) + (hash >> 2));
         }
-        return 0;
+
+        return hash;
 }
 
 char dfs(char *buff, int index) {
@@ -47,46 +48,58 @@ char dfs(char *buff, int index) {
                 return 1;
         else if (index == 0) {
                 for (i = 0; i < size * size; i++) {
-                        buff[0] = i + 1;
+                        buff[0] = i;
+                        boxes[i].used = 1;
                         if (dfs(buff, 1))
                                 return 1;
-                        else
+                        else {
                                 buff[0] = 0;
+                                boxes[i].used = 0;
+                        }
                 }
         } else if (index > 0 && index < size) {
                 for (i = 0; i < size * size; i++) {
-                        if (in_buff(buff, i))
+                        if (boxes[i].used)
                                 continue;
-                        if (boxes[i].left == boxes[(int)buff[index - 1] - 1].right) {
-                                buff[index] = i + 1;
+                        if (boxes[i].left == boxes[(int)buff[index - 1]].right) {
+                                buff[index] = i;
+                                boxes[i].used = 1;
                                 if (dfs(buff, index + 1))
                                         return 1;
-                                else
+                                else {
                                         buff[index] = 0;
+                                        boxes[i].used = 0;
+                                }
                         }
                 }
         } else if (index % size == 0) {
                 for (i = 0; i < size * size; i++) {
-                        if (in_buff(buff, i))
+                        if (boxes[i].used)
                                 continue;
-                        if (boxes[i].top == boxes[(int)buff[index - size] - 1].bottom) {
-                                buff[index] = i + 1;
+                        if (boxes[i].top == boxes[(int)buff[index - size]].bottom) {
+                                buff[index] = i;
+                                boxes[i].used = 1;
                                 if (dfs(buff, index + 1))
                                         return 1;
-                                else
+                                else {
+                                        boxes[i].used = 0;
                                         buff[index] = 0;
+                                }
                         }
                 }
         } else {
                 for (i = 0; i < size * size; i++) {
-                        if (in_buff(buff, i))
+                        if (boxes[i].used)
                                 continue;
-                        if ((boxes[i].top == boxes[(int)buff[index - size] - 1].bottom) && (boxes[i].left == boxes[(int)buff[index - 1] - 1].right)) {
-                                buff[index] = i + 1;
+                        if ((boxes[i].top == boxes[(int)buff[index - size]].bottom) && (boxes[i].left == boxes[(int)buff[index - 1]].right)) {
+                                buff[index] = i;
+                                boxes[i].used = 1;
                                 if (dfs(buff, index + 1))
                                         return 1;
-                                else
+                                else {
                                         buff[index] = 0;
+                                        boxes[i].used = 0;
+                                }
                         }
                 }
         }
@@ -109,7 +122,10 @@ int main() {
                         boxes[i].right = r;
                         boxes[i].bottom = b;
                         boxes[i].left = l;
+                        boxes[i].used = 0;
                 }
+                for (i = 0; i < MAX; i++)
+                        ;
                 res[j++] = dfs(buff, 0);
                 free(boxes);
                 free(buff);
