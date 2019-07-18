@@ -21,7 +21,7 @@
 #include <string.h>
 
 #define SIZE 1000
-#define MAX_CHAIN 20
+#define MAX_KEY_SIZE 20
 
 typedef struct _item {
         char *key;
@@ -36,14 +36,6 @@ typedef struct _dict {
 
 dict *Hash[SIZE];
 
-void init() {
-        int i;
-        for (i = 0; i < SIZE; i++) {
-                Hash[i] = (dict *)calloc(1, sizeof(dict));
-                Hash[i]->used = 0;
-        }
-}
-
 unsigned int js_hash(char *str, unsigned int len) {
         unsigned int hash = 1315423911;
         unsigned int i = 0;
@@ -53,6 +45,31 @@ unsigned int js_hash(char *str, unsigned int len) {
         }
 
         return hash;
+}
+
+void init() {
+        int i;
+        for (i = 0; i < SIZE; i++) {
+                Hash[i] = (dict *)calloc(1, sizeof(dict));
+                Hash[i]->used = 0;
+        }
+}
+
+void clean() {
+        int i;
+        item *pt, *tmp;
+        for (i = 0; i < SIZE; i++) {
+                if (Hash[i]->used) {
+                        pt = Hash[i]->data;
+                        while (pt) {
+                                free(pt->key);
+                                tmp = pt;
+                                pt = pt->next;
+                                free(tmp);
+                        }
+                        free(Hash[i]);
+                }
+        }
 }
 
 void put(char *key, int value) {
@@ -75,7 +92,7 @@ void put(char *key, int value) {
                 }
                 if (!same) {
                         tmp = (item *)calloc(1, sizeof(item));
-                        tmp->key = (char *)calloc(10, sizeof(char));
+                        tmp->key = (char *)calloc(MAX_KEY_SIZE, sizeof(char));
                         strcpy(tmp->key, key);
                         tmp->value = value;
                         tmp->next = NULL;
@@ -83,7 +100,7 @@ void put(char *key, int value) {
                 }
         } else {
                 Hash[index]->data = (item *)calloc(1, sizeof(item));
-                Hash[index]->data->key = (char *)calloc(10, sizeof(char));
+                Hash[index]->data->key = (char *)calloc(MAX_KEY_SIZE, sizeof(char));
                 strcpy(Hash[index]->data->key, key);
                 Hash[index]->data->value = value;
                 Hash[index]->data->next = NULL;
@@ -115,11 +132,13 @@ bool get(char *key, int *val) {
 int main() {
         int value;
         char cmd[10];
-        char key[10];
+        char key[MAX_KEY_SIZE];
 
         init();
         while (scanf("%s", cmd) != EOF) {
-                if (!strcmp(cmd, "put")) {
+                if (!strcmp(cmd, "0")) {
+                        break;
+                } else if (!strcmp(cmd, "put")) {
                         scanf("%s %d", key, &value);
                         put(key, value);
                 } else if (!strcmp(cmd, "get")) {
@@ -130,5 +149,6 @@ int main() {
                                 printf("hash miss\n");
                 }
         }
+        clean();
         return 0;
 }
