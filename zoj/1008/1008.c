@@ -27,23 +27,25 @@ typedef struct _box {
 } box;
 
 int size;
+char flag;
 box *boxes;
-char *res;
 
-char dfs(char *buff, int total, int index) {
+void dfs(char *buff, int total, int index) {
         int i;
-        if (index == size * size)
-                return 1;
+        if (index == size * size) {
+                flag = 1;
+                return;
+        }
+        if (flag)
+                return;
+
         else if (index == 0) {
                 for (i = 0; i < total; i++) {
                         buff[0] = i;
                         boxes[i].num--;
-                        if (dfs(buff, total, 1))
-                                return 1;
-                        else {
-                                buff[0] = 0;
-                                boxes[i].num++;
-                        }
+                        dfs(buff, total, 1);
+                        buff[0] = 0;
+                        boxes[i].num++;
                 }
         } else if (index > 0 && index < size) {
                 for (i = 0; i < total; i++) {
@@ -52,12 +54,9 @@ char dfs(char *buff, int total, int index) {
                         if (boxes[i].left == boxes[(int)buff[index - 1]].right) {
                                 buff[index] = i;
                                 boxes[i].num--;
-                                if (dfs(buff, total, index + 1))
-                                        return 1;
-                                else {
-                                        buff[index] = 0;
-                                        boxes[i].num++;
-                                }
+                                dfs(buff, total, index + 1);
+                                buff[index] = 0;
+                                boxes[i].num++;
                         }
                 }
         } else if (index % size == 0) {
@@ -67,12 +66,9 @@ char dfs(char *buff, int total, int index) {
                         if (boxes[i].top == boxes[(int)buff[index - size]].bottom) {
                                 buff[index] = i;
                                 boxes[i].num--;
-                                if (dfs(buff, total, index + 1))
-                                        return 1;
-                                else {
-                                        boxes[i].num++;
-                                        buff[index] = 0;
-                                }
+                                dfs(buff, total, index + 1);
+                                buff[index] = 0;
+                                boxes[i].num++;
                         }
                 }
         } else {
@@ -82,24 +78,19 @@ char dfs(char *buff, int total, int index) {
                         if ((boxes[i].top == boxes[(int)buff[index - size]].bottom) && (boxes[i].left == boxes[(int)buff[index - 1]].right)) {
                                 buff[index] = i;
                                 boxes[i].num--;
-                                if (dfs(buff, total, index + 1))
-                                        return 1;
-                                else {
-                                        buff[index] = 0;
-                                        boxes[i].num++;
-                                }
+                                dfs(buff, total, index + 1);
+                                buff[index] = 0;
+                                boxes[i].num++;
                         }
                 }
         }
-        return 0;
 }
 
 int main() {
-        int i, j, total, k = 0;
+        int i, j, total, k = 1;
         int t, r, b, l;
         char *buff;
         char repeat;
-        res = (char *)calloc(100, sizeof(char));
         while (scanf("%d", &size) != EOF) {
                 if (!size)
                         break;
@@ -125,17 +116,18 @@ int main() {
                                 total++;
                         }
                 }
-                res[k++] = dfs(buff, total, 0);
+                flag = 0;
+                dfs(buff, total, 0);
                 free(boxes);
                 free(buff);
+                if (k > 1)
+                        printf("\n");
+                printf("Game %d: ", k++);
+                if (flag)
+                        printf("Possible\n");
+                else
+                        printf("Impossible\n");
         }
 
-        for (i = 0; i < k; i++) {
-                if (res[i])
-                        printf("Game %d: Possible\n", i + 1);
-                else
-                        printf("Game %d: Impossible\n", i + 1);
-        }
-        free(res);
         return 0;
 }
