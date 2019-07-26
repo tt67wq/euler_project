@@ -18,41 +18,58 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-float vs[2000];
-float res;
+double vs[1000][2];
+double res;
 int num;
 
+double cross(int a, int b, int c) { return (vs[b][0] - vs[a][0]) * (vs[c][1] - vs[a][1]) - (vs[c][0] - vs[a][0]) * (vs[b][1] - vs[a][1]); }
+
 int solve() {
-        int i, j;
-        res = 0;
+        int i, j, tmp;
+        double p1, p2, p3, p4;
+        res = 0.0;
         if (num < 3)
                 return 0;
+
         for (i = 0; i < num; i++) {
-                j = i << 1;
-                res += vs[j] * vs[j + 3] - vs[j + 1] * vs[j + 2];
+                for (j = (i + 1) / num; j < i - 1; j++) {
+                        tmp = (i + 1) % num;
+                        p1 = cross(i, j, tmp);
+                        p2 = cross(i, j + 1, tmp);
+                        p3 = cross(j, i, j + 1);
+                        p4 = cross(j, tmp, j + 1);
+                        if (p1 * p2 <= 0 && p3 * p4 <= 0)
+                                return 0;
+                }
         }
+
+        /* area */
+        for (i = 0; i < num; i++) {
+                tmp = (i + 1) % num;
+                res += vs[i][0] * vs[tmp][1] - vs[i][1] * vs[tmp][0];
+        }
+
+        res = res > 0 ? res : -res;
         res /= 2;
         return 1;
 }
 
 int main() {
-        int count = 1;
+        int count = 0;
         int i;
-        float x, y;
         while (scanf("%d", &num) != EOF) {
                 if (!num)
                         break;
-                for (i = 0; i < num; i++) {
-                        scanf("%f %f", &x, &y);
-                        vs[i * 2] = x;
-                        vs[i * 2 + 1] = y;
-                }
+                ++count;
+                if (count > 1)
+                        printf("\n");
+                for (i = 0; i < num; i++)
+                        scanf("%lf %lf", &vs[i][0], &vs[i][1]);
+
                 if (solve())
-                        printf("Figure %d: %f\n", count, res);
+                        printf("Figure %d: %.2lf\n", count, res);
                 else
                         printf("Figure %d: Impossible\n", count);
-                ++count;
-                printf("\n");
         }
         return 0;
 }
