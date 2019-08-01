@@ -36,7 +36,10 @@ void init(queue *q) {
         q->buff = (int *)calloc(MAX, sizeof(int));
 }
 
-void drop(queue *q) { free(q->buff); }
+void drop(queue *q) {
+        free(q->buff);
+        free(q);
+}
 
 bool is_full(queue *q) { return q->size == MAX; }
 bool is_empty(queue *q) { return q->size == 0; }
@@ -62,7 +65,7 @@ bool dequeue(queue *q, int *elem) {
 void print_queue(queue *q) {
         int i;
         i = q->front;
-	printf("front -> ");
+        printf("front -> ");
         while (1) {
                 if (i == q->rear)
                         break;
