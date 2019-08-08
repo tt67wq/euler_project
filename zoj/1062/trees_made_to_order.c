@@ -18,30 +18,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-long clt[30];
-long dlt[30];
+long ctl[30];
+long dtl[30];
 
 void init() {
         int i, j;
-        clt[0] = clt[1] = 1;
-        dlt[0] = 1;
-        dlt[1] = 2;
+        ctl[0] = ctl[1] = 1;
+        dtl[0] = 1;
+        dtl[1] = 2;
         for (i = 2; i < 30; i++) {
-                clt[i] = 0;
+                ctl[i] = 0;
                 for (j = 0; j < i; j++)
-                        clt[i] = clt[i] + clt[j] * clt[i - j - 1];
-                dlt[i] = dlt[i - 1] + clt[i];
+                        ctl[i] = ctl[i] + ctl[j] * ctl[i - j - 1];
+                dtl[i] = dtl[i - 1] + ctl[i];
         }
 }
 
 int nums(long n) {
         int i = 0;
-        while (n >= dlt[i])
+        while (n >= dtl[i])
                 i++;
         return i;
 }
 
-long min_by(int n) { return dlt[n - 1]; }
+long min_by(int n) { return dtl[n - 1]; }
 
 void print_tree(long n) {
         if (n == 1) {
@@ -61,17 +61,17 @@ void print_tree(long n) {
         x = 0;
         y = i - 1;
         while (d > 0) {
-                d -= clt[x] * clt[y];
+                d -= ctl[x] * ctl[y];
                 if (d < 0)
                         break;
                 x++;
                 y--;
         }
         if (d < 0) {
-                d += clt[x] * clt[y];
+                d += ctl[x] * ctl[y];
         }
-        nx = d / clt[y];
-        ny = d % clt[y];
+        nx = d / ctl[y];
+        ny = d % ctl[y];
 
         if (x > 0) {
                 printf("(");
