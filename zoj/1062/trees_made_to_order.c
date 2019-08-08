@@ -34,8 +34,6 @@ void init() {
         }
 }
 
-/* 1 2 4 9 23 65 197 626 2056 6918 23714 82500 290512 1033412 3707852 */
-
 int nums(long n) {
         int i = 0;
         while (n >= dlt[i])
@@ -55,42 +53,35 @@ void print_tree(long n) {
                 return;
         }
 
-        int i = 0;
-        int nx, ny;
+        int i, x, y, nx, ny;
         long d;
-        long x, y;
-        while (n >= dlt[i])
-                i++;
 
-        i--;
-
-        d = n - dlt[i];
+        i = nums(n);
+        d = n - min_by(i);
         x = 0;
-        y = dlt[i - 1];
-        ny = i;
-        nx = 0;
+        y = i - 1;
         while (d > 0) {
-                y++;
-                ny = nums(y);
-                if (ny + nx != i) {
-                        x += 1;
-                        nx = nums(x);
-                        y = min_by(i - nx);
-                        y--;
-                } else {
-                        d--;
-                }
+                d -= clt[x] * clt[y];
+                if (d < 0)
+                        break;
+                x++;
+                y--;
         }
+        if (d < 0) {
+                d += clt[x] * clt[y];
+        }
+        nx = d / clt[y];
+        ny = d % clt[y];
 
         if (x > 0) {
                 printf("(");
-                print_tree(x);
+                print_tree(min_by(x) + (long)nx);
                 printf(")");
         }
         printf("X");
         if (y > 0) {
                 printf("(");
-                print_tree(y);
+                print_tree(min_by(y) + (long)ny);
                 printf(")");
         }
 }
