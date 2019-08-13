@@ -34,7 +34,7 @@ void shift(char *r, int k) {
         if (k == 0)
                 return;
         int i, j;
-        char tmp[26];
+        char tmp[27];
         memset(tmp, 0, 26 * sizeof(char));
         for (i = 0; i < 26; i++) {
                 j = i + k;
@@ -42,6 +42,7 @@ void shift(char *r, int k) {
                         j %= 26;
                 tmp[i] = r[j];
         }
+        tmp[26] = '\0';
         strcpy(r, tmp);
 }
 
@@ -71,6 +72,7 @@ void solve() {
         state = (char *)calloc(l, sizeof(char));
 
         for (i = 0; i < l; i++) {
+                /* printf("%s\n", pi0); */
                 state[i] = ip[ciphertext[i] - 'a'];
                 state[i] = pi0[state[i] - 'a'];
                 state[i] = pi1[state[i] - 'a'];
