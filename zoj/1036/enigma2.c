@@ -15,6 +15,8 @@
  * =====================================================================================
  */
 
+/* 算了算了 题目都读不懂。。。。。。。。。。。 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +42,8 @@ void shift(char *r, int k) {
                 j = i + k;
                 if (j >= 26)
                         j %= 26;
+                if (j < 0)
+                        j += 25;
                 tmp[i] = r[j];
         }
         tmp[26] = '\0';
@@ -47,10 +51,10 @@ void shift(char *r, int k) {
 }
 
 void rotor_shift() {
-        shift(pi0, ks[0]);
-        shift(pi1, ks[1]);
-        shift(pi2, ks[2]);
-        shift(pir, ks[3]);
+        shift(pi0, -ks[0]);
+        shift(pi1, -ks[1]);
+        shift(pi2, -ks[2]);
+        shift(pir, -ks[3]);
 }
 
 char reverse(char *r, char s) {
@@ -72,7 +76,7 @@ void solve() {
         state = (char *)calloc(l, sizeof(char));
 
         for (i = 0; i < l; i++) {
-                /* printf("%s\n", pi0); */
+                printf("%s\n", pi0);
                 state[i] = ip[ciphertext[i] - 'a'];
                 state[i] = pi0[state[i] - 'a'];
                 state[i] = pi1[state[i] - 'a'];
@@ -99,6 +103,7 @@ void solve() {
 }
 
 int main() {
+
         int n, i;
         scanf("%d", &n);
         getchar();
