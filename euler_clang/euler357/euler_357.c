@@ -42,14 +42,29 @@ void prime_sieve() {
         }
 }
 
+/* real shit */
+bool filter(int n) {
+        int i, tmp;
+        bool flag = true;
+        for (i = 1; i * i <= n; i++) {
+                if (n % i == 0) {
+                        tmp = n / i + i;
+                        if (!(is_in_sieve((uint64_t)tmp) && tmp % 2 == 1)) {
+                                flag = false;
+                                break;
+                        }
+                }
+        }
+        return flag;
+}
+
 int main() {
         int i;
         init();
         prime_sieve();
         printf("2 ");
         for (i = 3; i < MAX; i++) {
-
-                if (is_in_sieve((uint64_t)i) && i % 2 == 1) {
+                if (filter(i)) {
                         printf("%d ", i);
                 }
         }
