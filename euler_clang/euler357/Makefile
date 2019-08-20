@@ -1,6 +1,6 @@
 CC = gcc
-INFILE = prime_sieve.c
-OUTFILE = prime_sieve.o
+INFILE = euler_357.c
+OUTFILE = euler_357.o
 FLAGS = -Wall -lm
 
 build: $(INFILE)
