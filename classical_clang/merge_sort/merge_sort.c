@@ -50,11 +50,11 @@ int main() {
         int a[N] = {32, 12, 56, 78, 76, 45, 36};
         printf("排序前 \n");
         for (i = 0; i < N; i++)
-                printf("%d\t", a[i]);
-        merge_sort(a, 0, N - 1); // 排序printf("\n 排序后 \n");
+                printf("%d ", a[i]);
+        merge_sort(a, 0, N - 1);
+        printf("\n排序后 \n");
         for (i = 0; i < N; i++)
-                printf("%d\t", a[i]);
+                printf("%d ", a[i]);
         printf("\n");
-        system("pause");
         return 0;
 }
