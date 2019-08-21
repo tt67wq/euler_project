@@ -14,85 +14,25 @@
  *
  * =====================================================================================
  */
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
-#define MAX_FAC_NUM 100
+typedef unsigned long long ull;
 
-// 质因数分解
-void factorize(int num, int (*facs)[2], int *index) {
-        int i;
-        for (i = 2; i <= num; i++) {
-                if (num % i == 0) {
-                        num /= i;
-                        int exists = 0;
-                        for (int j = 0; j < *index; j++) {
-                                if (facs[j][0] == i) {
-                                        facs[j][1]++;
-                                        exists = 1;
-                                        break;
-                                }
-                        }
-                        if (!exists) {
-                                facs[*index][0] = i;
-                                facs[*index][1] = 1;
-                                (*index)++;
-                        }
-                        i--;
-                }
-        }
-}
+int main(int argc, char *argv[]) {
+        ull isum = 1;
+        int m, n, k;
 
-void factorize_map(int m, int n, int (*facs)[2], int *index) {
-        for (int i = n; i > 0; i--)
-                factorize(m--, facs, index);
-}
+        printf("input m=");
+        scanf("%d", &m);
+        printf("input n=");
+        scanf("%d", &n);
 
-
-// 乘方
-int recursive_power(int m, int n) {
-        int temp;
-
-        if (n == 0) /* m^0 = 1                  */
-                return 1;
-        else if ((n & 0x01) == 0) { /* if power is even then */
-                temp = recursive_power(m, n >> 1);
-                return temp * temp; /* m^(2k) = (m^k)^2         */
-        } else                      /* otherwise, m^n=m*m^(n-1) */
-                return m * recursive_power(m, n - 1);
-}
-
-int main() {
-        int facs1[MAX_FAC_NUM][2] = {{0}};
-        int index1 = 0;
-
-        int facs2[MAX_FAC_NUM][2] = {{0}};
-        int index2 = 0;
-
-        int m = 4;
-        int n = 2;
-
-        factorize_map(m, n, facs1, &index1);
-        factorize_map(n, n, facs2, &index2);
-
-        // minus
-        for (int i = 0; i < index1; i++) {
-                for (int j = 0; j < index2; j++) {
-                        if (facs1[i][0] == facs2[j][0])
-                                facs1[i][1] -= facs2[j][1];
-                }
+        for (k = 1; k <= n; k++) {
+                isum = (isum * (m - n + k)) / k; //先算乘法，避免先算（m-n+k）/k除不尽带来误差
         }
 
-        //
-        int res = 1;
-        for (int i = 0; i < index1; i++) {
-                if (facs1[i][1] > 0) {
-                        res *= recursive_power(facs1[i][0], facs1[i][1]);
-                }
-        }
-        printf("%d\n", res);
+        printf("C(%d, %d) = %llu\n", n, m, isum);
 
         return 0;
 }
