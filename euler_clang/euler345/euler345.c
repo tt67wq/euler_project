@@ -23,55 +23,72 @@
 #define N 15
 
 int matrix[N][N];
+int matrix_copy[N][N];
+int visc[N];
 
-int diagonal_sum() {
-        int i, s = 0;
-        for (i = 0; i < N; i++) {
-                s += matrix[i][i];
-        }
-        return s;
-}
+/*   7  53 183 439 863 497 383 563  79 (973) 287  63 343 169 583 */
+/* 627 343 773 959 943 767 473 103 699 303 (957) 703 583 639 913 */
+/* 447 283 463  29  23 487 463 (993) 119 883 327 493 423 159 743 */
+/* 217 623   3 399 (853) 407 103 983  89 463 290 516 212 462 350 */
+/* 960 376 682 (962) 300 780 486 502 912 800 250 346 172 812 350 */
+/* (870) 456 192 162 593 473 915  45 989 873 823 965 425 329 803 */
+/* 973 965 905 919 133 673 665 235 509 613 673 815 165 (992) 326 */
+/* 322 148 (972) 962 286 255 941 541 265 323 925 281 601  95 973 */
+/* 445 721  11 525 473  65 511 164 138 672  18 428 154 448 (848) */
+/* 414 456 310 312 798 104 566 520 302 248 694 (976) 430 392 198 */
+/* 184 829 373 181 631 101 (969) 613 840 740 778 458 284 760 390 */
+/* 821 461 843 513  17 (901) 711 993 293 157 274  94 192 156 574 */
+/*  34 124   4 878 450 476 712 914 838 669 875 299 (823) 329 699 */
+/* 815 559 813 459 522 788 168 586 (966) 232 308 833 251 631 107 */
+/* 813 (883) 451 509 615  77 281 613 459 205 380 274 302  35 805 */
 
-void swap(int r1, int r2) {
-        int tmp[N];
-        memcpy(tmp, matrix[r1], sizeof(int) * N);
-        memcpy(matrix[r1], matrix[r2], sizeof(int) * N);
-        memcpy(matrix[r2], tmp, sizeof(int) * N);
-}
-void bubble() {
+/* 参考资料：https://zh.wikipedia.org/wiki/%E5%8C%88%E7%89%99%E5%88%A9%E7%AE%97%E6%B3%95 */
+
+void pre() {
         int i, j;
-        int sum, tmp, maxs = 0;
-        while (1) {
-                for (i = 0; i < N; i++) {
-                        sum = diagonal_sum();
-                        for (j = 0; j < N; j++) {
-                                if (i == j)
-                                        continue;
-                                swap(i, j);
-                                tmp = diagonal_sum();
-                                if (tmp > sum) {
-                                        break;
-                                } else {
-                                        swap(i, j);
-                                }
+        for (i = 0; i < N; i++) {
+                for (j = 0; j < N; j++) {
+                        if (matrix[i][j] > 700) {
+                                matrix[i][j] = 0;
                         }
                 }
-                if (sum > maxs) {
-                        maxs = sum;
-                } else {
-                        break;
+        }
+}
+
+void dfs(int row, int *sum, int *max) {
+
+        /* bzero(visr, sizeof(int) * N); */
+        if (row >= N) {
+                if (*sum > *max) {
+                        *max = *sum;
+                        printf("%d\n", *sum);
+                }
+
+                return;
+        }
+
+        int c;
+        for (c = 0; c < N; c++) {
+                if (visc[c] == 0 && matrix[row][c] == 0) {
+                        visc[c] = 1;
+                        (*sum) += matrix_copy[row][c];
+                        dfs(row + 1, sum, max);
+                        visc[c] = 0;
+                        (*sum) -= matrix_copy[row][c];
                 }
         }
 }
 
 int main() {
-        int r;
-        for (r = 0; r < N; r++) {
-                scanf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &matrix[r][0], &matrix[r][1], &matrix[r][2], &matrix[r][3], &matrix[r][4], &matrix[r][5], &matrix[r][6], &matrix[r][7],
-                      &matrix[r][8], &matrix[r][9], &matrix[r][10], &matrix[r][11], &matrix[r][12], &matrix[r][13], &matrix[r][14]);
-                /* scanf("%d %d %d %d %d", &matrix[r][0], &matrix[r][1], &matrix[r][2], &matrix[r][3], &matrix[r][4]); */
+        int i;
+        int sum = 0, max = 0;
+        for (i = 0; i < N; i++) {
+                scanf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &matrix[i][0], &matrix[i][1], &matrix[i][2], &matrix[i][3], &matrix[i][4], &matrix[i][5], &matrix[i][6], &matrix[i][7],
+                      &matrix[i][8], &matrix[i][9], &matrix[i][10], &matrix[i][11], &matrix[i][12], &matrix[i][13], &matrix[i][14]);
         }
-        bubble();
-        printf("%d\n", diagonal_sum());
+        memcpy(matrix_copy, matrix, sizeof(int) * N * N);
+        pre();
+        bzero(visc, sizeof(int) * N);
+        dfs(0, &sum, &max);
         return 0;
 }
