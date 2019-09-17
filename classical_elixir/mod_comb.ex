@@ -34,6 +34,7 @@ defmodule ModComb do
   defp eg(a, 0, {_, lx}, {_, ly}), do: {lx, ly, a}
 
   defp eg(a, b, {x, lx}, {y, ly}) do
+    Logger.info("{#{a}, #{b}}, {#{x}, #{lx}}, {#{y}, #{ly}}")
     quotient = div(a, b)
     eg(b, rem(a, b), {lx - quotient * x, x}, {ly - quotient * y, y})
   end
