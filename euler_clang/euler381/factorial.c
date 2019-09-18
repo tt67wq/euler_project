@@ -15,8 +15,32 @@
  * =====================================================================================
  */
 
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define MAX 100000000L
+
+typedef unsigned long long uint64_t;
+
+char sieve[MAX / 16 + 1];
+
+static inline bool is_in_sieve(uint64_t idx) { return !(sieve[idx / 16] & (1 << (idx % 16 / 2))); }
+static inline void remove_from_sieve(uint64_t idx) { sieve[idx / 16] |= (1 << (idx % 16 / 2)); }
+
+void init() { memset(sieve, 256, MAX / 16 + 1); }
+void prime_sieve() {
+        uint64_t i, j, max_sqrt;
+        max_sqrt = sqrt(MAX);
+        for (i = 3; i <= max_sqrt; i += 2) {
+                if (is_in_sieve(i)) {
+                        for (j = i * i; j <= MAX; j += 2 * i)
+                                remove_from_sieve(j);
+                }
+        }
+}
 
 long extend_gcd(long a, long b) {
         long a1 = 0;
@@ -67,7 +91,6 @@ long S2(long p) {
         long t, s = (p - 1) / 2;
         for (i = 4; i < 6; i++) {
                 t = factorial_mod(p - i, p);
-                /* printf("(%ld - %d)! mod %ld = %ld\n", p, i, p, t); */
                 s += t;
                 if (s >= p)
                         s %= p;
@@ -79,18 +102,23 @@ long S(long p) {
         long t, s;
         s = (p - 1) / 2;
         t = (niyuan(p - 3, p) * s) % p;
-        /* printf("(%ld - %d)! mod %ld = %ld\n", p, 3, p, */
-        /* printf("(%ld - %d)! mod %ld = %ld\n", p, 4, p, t); */
         s += t;
         s += (niyuan(p - 4, p) * t) % p;
         return s % p;
 }
 
 int main() {
-        long p;
-        while (1) {
-                scanf("%ld", &p);
-                printf("%ld %ld\n", S(p), S2(p));
+        long i, c = 1;
+        long s = 0;
+        init();
+        prime_sieve();
+        for (i = 5; i < MAX; i += 2) {
+                if (is_in_sieve((uint64_t)i)) {
+			printf("%ld ", c);
+                        s += S(i);
+                        c += 1;
+                }
         }
+        printf("%ld\n", s);
         return 0;
 }
