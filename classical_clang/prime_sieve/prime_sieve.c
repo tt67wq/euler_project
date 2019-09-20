@@ -15,37 +15,24 @@
  * =====================================================================================
  */
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 20LL
+#define MAX 1000L
 
-typedef unsigned long long uint64_t;
 char sieve[MAX / 16 + 1];
 
-static inline bool is_in_sieve(uint64_t idx) { return !(sieve[idx / 16] & (1 << (idx % 16 / 2))); }
-static inline void remove_from_sieve(uint64_t idx) { sieve[idx / 16] |= (1 << (idx % 16 / 2)); }
-
-void f(int n) {
-        if (n)
-                f(n / 2);
-        else
-                return;
-        printf("%d", n % 2);
-}
+static inline bool is_in_sieve(long idx) { return !(sieve[idx / 16] & (1 << (idx % 16 / 2))); }
+static inline void remove_from_sieve(long idx) { sieve[idx / 16] |= (1 << (idx % 16 / 2)); }
 
 void init() { memset(sieve, 256, MAX / 16 + 1); }
 void prime_sieve() {
-        uint64_t i, j, max_sqrt;
-        max_sqrt = sqrt(MAX);
-        for (i = 3; i <= max_sqrt; i += 2) {
+        long i, j;
+        for (i = 3; i * i <= MAX; i += 2) {
                 if (is_in_sieve(i)) {
-                        printf("%lld is in sieve\n", i);
                         for (j = i * i; j <= MAX; j += 2 * i) {
-                                printf("removing %lld\n", j);
                                 remove_from_sieve(j);
                         }
                 }
@@ -53,16 +40,15 @@ void prime_sieve() {
 }
 
 int main() {
-        int i;
+        long i;
         init();
-
         prime_sieve();
         printf("2 ");
         for (i = 3; i < MAX; i += 2) {
-                if (is_in_sieve((uint64_t)i)) {
-                        printf("%d ", i);
+                if (is_in_sieve(i)) {
+                        printf("%ld ", i);
                 } else {
-                        printf("(%d) ", i);
+                        printf("(%ld) ", i);
                 }
         }
         printf("\n");
