@@ -1,6 +1,6 @@
 CC = gcc
-INFILE = euler504.c
-OUTFILE = euler504.o
+INFILE = nums_inline.c
+OUTFILE = nums_inline.o
 FLAGS = -Wall
 
 build: $(INFILE)
