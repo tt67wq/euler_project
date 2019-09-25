@@ -42,7 +42,7 @@ def cache_for(p, a):
     n = pow(p, a)
     if n > MAX:
         return 0
-    i = 3
+    i = 2
     while 1:
         if factorial(p*i) % n == 0:
             break
@@ -53,6 +53,16 @@ def cache_for(p, a):
     else:
         cache[p] = {a: p*i}
     return 1
+
+
+def cache_all(ps):
+    for p in ps:
+        a = 3
+        while 1:
+            if cache_for(p, a):
+                a += 1
+            else:
+                break
 
 
 def S(n):
@@ -80,20 +90,11 @@ def S(n):
     return max(vs)
 
 
-def cache_all(ps):
-    for p in ps:
-        a = 3
-        while 1:
-            if cache_for(p, a):
-                a += 1
-            else:
-                break
-
-
 def main():
     ps = list(sieve(MAX))
     cache_all(ps)
-    # global
+    # global cache
+    # print(cache)
     s = 0
     for i in range(2, MAX+1):
         s += S(i)
