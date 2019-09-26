@@ -6,8 +6,8 @@
 import copy
 import math
 
-# MAX = 100000000
-MAX = 100
+MAX = 100000000
+# MAX = 100
 cache = {}
 
 
@@ -74,6 +74,7 @@ def main():
             pp *= p
             e += 1
     print("cache finished!")
+    print(cache)
 
     s = 0
     for i in range(2, MAX+1):
