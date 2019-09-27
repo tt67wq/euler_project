@@ -6,9 +6,9 @@
 import copy
 import math
 
-MAX = 100000000
-# MAX = 100
+MAX = 10**8
 cache = {}
+ncache = {}
 
 
 def sieve(n):
@@ -40,9 +40,10 @@ def naive(n):
 
 
 def S(n, ps):
-    if n in ps:
-        return n
     global cache
+    global ncache
+    if cache.get(n):
+        return n
     best = 0
     for p in ps:
         if p > n:
@@ -54,17 +55,22 @@ def S(n, ps):
         while n % p == 0:
             n //= p
             e += 1
+
+        if ncache.get(n):
+            return max(ncache[n], cache[p][e])
         best = max(best, cache[p][e])
         if n == 1:
             return best
-        if n in ps:
-            return max(best, n)
+        # if cache.get(n):
+        #     return max(best, n)
+    return best
 
 
 def main():
     ps = list(sieve(MAX))
 
     global cache
+    global ncache
     for p in ps:
         cache[p] = {1: p}
         pp = p*p
@@ -74,11 +80,13 @@ def main():
             pp *= p
             e += 1
     print("cache finished!")
-    print(cache)
 
     s = 0
     for i in range(2, MAX+1):
-        s += S(i, ps)
+        a = S(i, ps)
+        print(i, a)
+        ncache[i] = a
+        s += a
     print(s)
 
 
