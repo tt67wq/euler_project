@@ -10,7 +10,7 @@ def factorize(n):
     i = 2
     while i <= n:
         if n % i == 0:
-            n /= i
+            n //= i
             if fac.get(i):
                 fac[i] += 1
             else:
@@ -21,7 +21,9 @@ def factorize(n):
 
 
 def main():
-    pass
+    while 1:
+        n = int(input())
+        factorize(n)
 
 
 if __name__ == '__main__':
