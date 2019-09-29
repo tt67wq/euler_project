@@ -3,9 +3,7 @@
 #
 # author: wq
 # description: ""
-import time
-
-LIGHTS_MAP = {0: 119, 1: 36, 2: 93, 3: 109, 4: 46, 5: 107, 6: 123, 7: 37, 8: 127, 9: 111}
+LIGHTS_MAP = {0: 119, 1: 36, 2: 93, 3: 109, 4: 46, 5: 107, 6: 123, 7: 39, 8: 127, 9: 111}
 trans_map = {}
 
 
@@ -75,15 +73,16 @@ def diff(a, b):
 
 def main():
     trans()
-    print(trans_map)
+    # print(trans_map)
     s = 0
     for p in sieve_between(10**7, 2*10**7):
         chain = digital_root_chain(p)
-        print(p, chain)
+        ts = 0
         for i in range(len(chain)-1):
-            s += diff(chain[i], chain[i+1])
-        # time.sleep(1)
-    print(s << 1)
+            ts += diff(chain[i], chain[i+1])
+
+        s += ts
+    print(s * 2)
 
 
 if __name__ == '__main__':
