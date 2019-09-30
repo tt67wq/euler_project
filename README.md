@@ -6,7 +6,7 @@
 解的题有 欧拉计划，ZOJ(这破网站最近登不上了)
 
 
-### [科学算命](https://github.com/tt67wq/euler_project/xuanxue)
+### [科学算命](https://github.com/tt67wq/euler_project/tree/master/xuanxue)
 
 ### Classical Algorithm In C
 * [avl树(avl tree)](https://github.com/tt67wq/euler_project/tree/master/classical_clang/avl)
