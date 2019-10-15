@@ -15,6 +15,8 @@
  * =====================================================================================
  */
 
+/* https://leetcode-cn.com/problems/integer-replacement/ */
+
 #include <stdio.h>
 #include <stdlib.h>
 

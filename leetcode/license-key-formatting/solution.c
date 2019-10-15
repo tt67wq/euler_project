@@ -15,6 +15,8 @@
  * =====================================================================================
  */
 
+/* https://leetcode-cn.com/problems/license-key-formatting/ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

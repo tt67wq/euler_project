@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # author: wq
-# description: ""
+# description: "https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/"
 
 MP = {
     "2": "abc",

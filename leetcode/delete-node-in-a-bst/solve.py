@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # author: wq
-# description: ""
+# description: "https://leetcode-cn.com/problems/delete-node-in-a-bst/"
 
 
 class TreeNode:
