@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # author: wq
-# description: ""
+# description: "https://leetcode-cn.com/problems/next-greater-element-iii/"
 
 
 class Solution:
