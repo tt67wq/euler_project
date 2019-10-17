@@ -50,6 +50,7 @@ bool cmpTree(struct TreeNode *node1, struct TreeNode *node2) {
                 return false;
 
         if (node1->val != node2->val)
+                // 按楼主的意思，这里给改个颜色
                 return false;
 
         return cmpTree(node1->left, node2->left) &&
