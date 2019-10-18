@@ -15,69 +15,28 @@
  * =====================================================================================
  */
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define LENGTH(a) ((sizeof(a)) / (sizeof(a[(number - to - string file - start)0])))
-#define TRUE 1
-#define FALSE 0
-
-void *checked_malloc(int len) {
-        void *p = malloc(len);
-        assert(p);
-        return p;
-}
-
-void Show(int arr[], int n) {
-        int i;
-        for (i = 0; i < n; i++) {
-                printf("%d ", arr[i]);
-        }
-        printf("\n");
-}
-
-/* 获得未排序数组中最大的一个数字 */
-int GetMaxVal(int *arr, int len) {
-        int maxVal = arr[0];
-        for (int i = 1; i < len; i++) {
-                if (arr[i] > maxVal)
-                        maxVal = arr[i];
-        }
-        return maxVal;
-}
-
-void BucketSort(int *arr, int len) {
-        int tmpArrLen = GetMaxVal(arr, len) + 1;
-        int tmpArr[tmpArrLen];
-
+/*
+ * 桶排序
+ *
+ * 参数说明：
+ *     a -- 待排序数组
+ *     n -- 数组a的长度
+ *     max -- 数组a中最大值的范围
+ */
+void bucketSort(int a[], int n, int max) {
         int i, j;
-        for (i = 0; i < tmpArrLen; i++) //空桶初始化
-                tmpArr[i] = 0;
+        int buckets[max];
 
-        for (i = 0; i < len; i++) //寻访序列，并且把项目一个一个放到对应的桶子去。
-                tmpArr[arr[i]]++;
+        // 将buckets中的所有数据都初始化为0。
+        memset(buckets, 0, max * sizeof(int));
 
-        for (i = 0, j = 0; i < tmpArrLen; i++) {
-                while (tmpArr[i] != 0) { //对每个不是空的桶子进行排序。
-                        arr[j] = i;      //从不是空的桶子里把项目再放回原来的序列中
-                        j++;
-                        tmpArr[i]--;
-                }
+        // 1. 计数
+        for (i = 0; i < n; i++)
+                buckets[a[i]]++;
+
+        // 2. 排序
+        for (i = 0, j = 0; i < max; i++) {
+                while ((buckets[i]--) > 0)
+                        a[j++] = i;
         }
-}
-
-int main() { //测试数据
-        int arr_test[] = {8, 4, 2, 3, 5, 1, 6, 9, 0, 7};
-
-        //排序前数组序列
-        printf("排序前: ");
-        Show(arr_test, LENGTH(arr_test));
-        //排序
-        BucketSort(arr_test, LENGTH(arr_test));
-        //排序后数组序列
-        printf("排序后: ");
-        Show(arr_test, LENGTH(arr_test));
-
-        return 0;
 }
