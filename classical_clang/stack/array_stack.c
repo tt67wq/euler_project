@@ -1,52 +1,53 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  array_stack.c
+ *
+ *    Description:
+ *
+ *        Version:  1.0
+ *        Created:  2019-10-21
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:
+ *
+ * =====================================================================================
+ */
+
 /* 栈的数组实现 */
 
-#include "array_stack.h"
-#include "apue.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-Stack CreateStack(int MaxElements) {
-        Stack S;
-        if (MaxElements < MinStackSize)
-                err_sys("Stack size is too small");
-        S = malloc(sizeof(struct StackRecord));
-        if (S == NULL)
-                err_sys("Out of space");
-        S->Array = malloc(sizeof(ElementType) * MaxElements);
-        if (S->Array == NULL)
-                err_sys("Out of space");
-        S->Capacity = MaxElements;
-        MakeEmpty(S);
-        return S;
+typedef struct _elem {
+        char val;
+        int pos;
+} elem;
+
+typedef struct _Stack {
+        elem data[1000];
+        int top;
+} Stack;
+
+Stack *NewStack() {
+        Stack *stack;
+        stack = (Stack *)malloc(sizeof(Stack));
+        stack->top = -1;
+        return stack;
 }
 
-/* 栈的释放 */
-void DisposeStack(Stack *S) {
+void ReleaseStack(Stack *S) {
         if (S != NULL) {
-                free(S->Array);
-                free(S);
+                free(S->data);
+                /* free(S); */
         }
 }
 
-int IsEmpty(Stack S) { return S->TopOfStack == EmptyTOS; }
+void Push(Stack *stack, elem item) { stack->data[++stack->top] = item; }
 
-void MakeEmpty(Stack S) { S->TopOfStack = EmptyTOS; }
+elem Pop(Stack *stack) { return stack->data[stack->top--]; }
 
-void Push(ElementType X, Stack S) {
-        if (IsFull(S))
-                err_sys("Stack is full");
-        else
-                S->Array[++S->TopOfStack] = X;
-}
+elem Top(Stack *stack) { return stack->data[stack->top]; }
 
-ElementType Top(Stack S) {
-        if (!IsEmpty(S))
-                return S->Array[S->TopOfStack];
-        err_sys("Empty stack");
-        return 0;
-}
-
-void Pop(Stack S) {
-        if (IsEmpty(S))
-                err_sys("Empty Stack");
-        else
-                S->TopOfStack--;
-}
+int main() { return 0; }
