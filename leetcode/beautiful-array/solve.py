@@ -24,14 +24,11 @@ class Solution(object):
             return CACHE[N]
 
         if N % 2 == 1:
-            # odd
-            odds = self.beautifulArray((N+1)//2)
-            # even
-            evens = self.beautifulArray(N//2)
-            res = [2*x-1 for x in odds] + [2*x for x in evens if 2*x < N]
+            res = [2*x-1 for x in self.beautifulArray((N+1)//2)] + \
+                [2*x for x in self.beautifulArray(N//2) if 2*x < N]
         else:
-            bs = self.beautifulArray(N//2)
-            res = [2*x-1 for x in bs] + [N] + [2*x for x in bs if 2*x < N]
+            ts = self.beautifulArray(N//2)
+            res = [2*x-1 for x in ts] + [2*x for x in ts]
 
         CACHE[N] = res
         return res
