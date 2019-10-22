@@ -1,6 +1,6 @@
-CC = gcc
-INFILE = heap_sort.c
-OUTFILE = heap_sort.o
+CC = clang
+INFILE = solve.c
+OUTFILE = solve.o
 FLAGS = -Wall
 
 build: $(INFILE)
