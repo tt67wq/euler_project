@@ -29,7 +29,7 @@ int minSwap(int *A, int ASize, int *B, int BSize) {
                 if (A[i] > A[i - 1] && B[i] > B[i - 1]) {
                         if (A[i] > B[i - 1] && B[i] > A[i - 1]) {
                                 cost[0] = cost[0] > cost[1] ? cost[1] : cost[0];
-                                cost[1] = 1 + (cost[0] > cost[1] ? cost[1] : cost[0]);
+                                cost[1] = 1 + cost[0];
                         } else {
                                 cost[1] += 1;
                         }
