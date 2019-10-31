@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
                 isum = (isum * (m - n + k)) / k; //先算乘法，避免先算（m-n+k）/k除不尽带来误差
         }
 
-        printf("C(%d, %d) = %llu\n", n, m, isum);
+        printf("C(%d, %d) = %llu\n", m, n, isum);
 
         return 0;
 }
