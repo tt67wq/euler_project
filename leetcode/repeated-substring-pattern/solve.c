@@ -34,7 +34,6 @@ bool repeatedSubstringPattern(char *s) {
                                 j++;
                                 k++;
                         }
-                        /* printf("%d %d\n", j, k); */
                         if (j == l)
                                 return l % (j - k) == 0;
                 }
@@ -43,7 +42,7 @@ bool repeatedSubstringPattern(char *s) {
 }
 
 int main() {
-        char s[] = "abcabcabcabc";
+        char s[] = "abab";
         printf("%d\n", repeatedSubstringPattern(s));
         return 0;
 }
