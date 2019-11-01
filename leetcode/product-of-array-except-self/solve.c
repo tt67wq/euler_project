@@ -40,7 +40,7 @@ int *productExceptSelf(int *nums, int numsSize, int *returnSize) {
 }
 
 int main() {
-        int nums[4] = {1, 2, 3, 4};
+        int nums[4] = {1, 2, 3, 0};
         int *res;
         int i, returnSize;
         res = productExceptSelf(nums, 4, &returnSize);
