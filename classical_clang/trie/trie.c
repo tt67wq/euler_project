@@ -20,7 +20,7 @@
 #include <string.h>
 
 #define MAX 26   // 26个字母
-#define SLEN 100 // 节点中存储的字符串长度
+#define SLEN 1024 // 节点中存储的字符串长度
 
 typedef struct _Trie {
         struct _Trie *next[MAX];
@@ -42,7 +42,7 @@ Trie *init() {
 }
 
 // 按照指定路径path 插入字符串 s
-void insert(char path[], char s[]) {
+void insert(Trie *root; char path[], char s[]) {
         Trie *t, *p = root;
         int i, j, n = strlen(path);
 
@@ -63,7 +63,7 @@ void insert(char path[], char s[]) {
 }
 
 // 按照指定路径 path 查找
-char *find(char path[], int delflag) {
+char *find(Trie *root; char path[], int delflag) {
         Trie *p = root;
         int i = 0, n = strlen(path);
         while (p && path[i]) {
