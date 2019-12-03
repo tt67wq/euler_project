@@ -25,6 +25,9 @@ func (q *Queue) Pop() interface{} {
 
 	q.head = q.head.next
 	q.size--
+	if q.head == nil {
+		q.tail = nil
+	}
 
 	return ans.value
 }
@@ -44,10 +47,25 @@ func (q *Queue) Push(value interface{}) {
 }
 
 func main() {
-	var q *Queue = new(Queue)
 
-	q.Push(1)
-	q.Push(2)
-	fmt.Println(q.Pop())
+	type val struct {
+		x int
+		y int
+	}
+
+	var q *Queue = new(Queue)
+	var t *val = new(val)
+
+	t.x = 1
+	t.y = 2
+	q.Push(*t)
+
+	t.x = 3
+	t.y = 4
+
+	q.Push(*t)
+
+	*t = q.Pop().(val)
+	fmt.Println(*t)
 	fmt.Println(q.Pop())
 }
