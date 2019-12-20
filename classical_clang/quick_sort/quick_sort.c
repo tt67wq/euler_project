@@ -28,6 +28,15 @@ void swap(int *a, int *b) {
         return;
 }
 
+void display(int *array) {
+        int i;
+        for (i = 0; i < BUFSIZ; i++)
+                if (array[i])
+                        printf("%-3d", array[i]);
+
+        printf("\n");
+}
+
 void quick_sort(int *array, int begin, int end) {
         int i, j;
         if (begin < end) {
@@ -51,19 +60,9 @@ void quick_sort(int *array, int begin, int end) {
         }
 }
 
-void display(int *array) {
-        int i;
-        for (i = 0; i < BUFSIZ; i++)
-                if (array[i])
-                        printf("%-3d", array[i]);
-
-        printf("\n");
-}
-
 int main() {
-        int n;
-        int array[BUFSIZ] = {12, 85, 25, 16, 34, 23, 49, 95, 17, 61};
-        quick_sort(array, 0, 9);
+        int array[BUFSIZ] = {5, 2, 3, 1};
+        quick_sort(array, 0, 3);
         display(array);
 
         return 0;
