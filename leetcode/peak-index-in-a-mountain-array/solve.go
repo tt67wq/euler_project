@@ -19,7 +19,6 @@ func peakIndexInMountainArray(A []int) int {
 		}
 	}
 	return i - 1
-
 }
 
 func main() {
