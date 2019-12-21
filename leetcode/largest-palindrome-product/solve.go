@@ -27,7 +27,7 @@ func largestPalindrome(n int) int {
 		tg, _ = strconv.Atoi(tmp + Reverse(tmp))
 
 		fmt.Println(tg)
-		// assume i>j
+		// assume j is bigger factor
 		for j = upper; j*j >= tg; j-- {
 			if tg%j == 0 {
 				return tg % 1337
