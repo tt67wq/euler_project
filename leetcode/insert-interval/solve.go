@@ -6,6 +6,9 @@ import (
 
 // 二分查看落在那个区间中
 func bin_search(intervals [][]int, num int) (int, bool) {
+	if len(intervals) == 0 {
+		return 0, false
+	}
 	var i, j, m int
 
 	i = 0
@@ -29,7 +32,7 @@ func bin_search(intervals [][]int, num int) (int, bool) {
 	if i == j {
 		// 1 block
 		if num < intervals[i][0] {
-			return i - 1, false
+			return i, false
 		} else if num > intervals[i][1] {
 			return i + 1, false
 		} else {
@@ -60,8 +63,8 @@ func insert(intervals [][]int, newInterval []int) [][]int {
 	a, ha = bin_search(intervals, newInterval[0])
 	b, hb = bin_search(intervals, newInterval[1])
 
-	fmt.Println(a, ha)
-	fmt.Println(b, hb)
+	// fmt.Println(a, ha)
+	// fmt.Println(b, hb)
 
 	if ha && hb {
 		ans = append(intervals[:a], []int{intervals[a][0], intervals[b][1]})
@@ -73,24 +76,24 @@ func insert(intervals [][]int, newInterval []int) [][]int {
 		ans = append(intervals[:a], []int{intervals[a][0], newInterval[1]})
 		ans = append(ans, intervals[b:]...)
 	} else {
-		// !ha && !hb
-		if a == b {
-
+		for _, elem := range intervals[:a] {
+			ans = append(ans, elem)
 		}
-		ans = append(intervals[:a], []int{newInterval[0], newInterval[1]})
+		ans = append(ans, []int{newInterval[0], newInterval[1]})
 		ans = append(ans, intervals[b:]...)
-
 	}
 
 	return ans
 }
 
 func main() {
-	// fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{2, 6}))
-	// fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{0, 6}))
-	// fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{4, 6}))
-	// fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{3, 5}))
-	// fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{3, 10}))
+	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{2, 6}))
+	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{0, 6}))
+	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{4, 6}))
+	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{3, 5}))
+	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{3, 10}))
 	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{4, 5}))
+	fmt.Println(insert([][]int{{1, 3}, {6, 9}}, []int{0, 5}))
+	fmt.Println(insert([][]int{{1, 5}}, []int{0, 3}))
 
 }
