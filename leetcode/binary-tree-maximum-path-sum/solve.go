@@ -28,6 +28,11 @@ func maxPathSum(root *TreeNode) int {
 	return ans
 }
 
+//   b         a
+//  /         / \
+// a         b   c
+//  \
+//   c
 func find_max(root *TreeNode, ans *int) int {
 	if root == nil {
 		return 0
@@ -46,7 +51,7 @@ func find_max(root *TreeNode, ans *int) int {
 func max(nums ...int) int {
 	var m int
 
-	m = 0
+	m = MinInt
 	for _, num := range nums {
 		if num > m {
 			m = num
