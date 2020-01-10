@@ -136,8 +136,7 @@ int maxheap_insert(int data) {
  *     0，表示成功
  *    -1，表示失败
  */
-void maxheap_print()
-{
+void maxheap_print(){
     int i;
     for (i=0; i<m_size; i++)
         printf("%d ", m_heap[i]);
