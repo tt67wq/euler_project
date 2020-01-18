@@ -60,70 +60,70 @@
 │   ├── trie trie树
 │   └── zuhe
 ├── classical_elixir
-│   ├── analytic_geometry
-│   ├── btree_bfs
-│   ├── bucket.ex
-│   ├── cache.exs
-│   ├── cocktail_sort
-│   ├── coin-change.ex
-│   ├── combination.ex
+│   ├── analytic_geometry 解析几何
+│   ├── btree_bfs bfs
+│   ├── bucket.ex 桶排序
+│   ├── cache.exs 缓存
+│   ├── cocktail_sort 鸡尾酒排序
+│   ├── coin-change.ex 换硬币问题
+│   ├── combination.ex 组合
 │   ├── date_tool.ex
-│   ├── dijkstra.ex
-│   ├── disjoin_set.ex
-│   ├── einstein_problem
-│   ├── elixir_queue
-│   ├── factorize.ex
-│   ├── farey_series.ex
-│   ├── gcd.exs
+│   ├── dijkstra.ex 图论dijkstra
+│   ├── disjoin_set.ex 并查集
+│   ├── einstein_problem 爱因斯坦思考题
+│   ├── elixir_queue 队列
+│   ├── factorize.ex 因数分解
+│   ├── farey_series.ex 法力序列
+│   ├── gcd.exs 欧几里得算法
 │   ├── generator.exs
-│   ├── insert_sort.exs
-│   ├── kruskal.ex
+│   ├── insert_sort.exs 插入排序
+│   ├── kruskal.ex 最小生成树算法
 │   ├── lcm.ex
-│   ├── libgraph
-│   ├── line_hash.ex
+│   ├── libgraph 图论部分
+│   ├── line_hash.ex 线性哈希
 │   ├── max_sub_sum.ex
-│   ├── merge_sort.ex
-│   ├── miller_rabin_prime.ex
+│   ├── merge_sort.ex 合并排
+│   ├── miller_rabin_prime.ex 素数校验
 │   ├── mod_comb.ex
 │   ├── monk_and_monster.ex
 │   ├── patricia
-│   ├── permutation.ex
+│   ├── permutation.ex 排列组合
 │   ├── pow_mod.ex
-│   ├── prime_sieve.ex
-│   ├── red_black_tree
+│   ├── prime_sieve.ex 素数筛子
+│   ├── red_black_tree 红黑树
 │   ├── rle
 │   ├── root_convergent.exs
-│   ├── shell_sort
-│   ├── skip_list
+│   ├── shell_sort 希尔排
+│   ├── skip_list 跳表
 │   ├── skip_list.ex
-│   ├── stable_match.ex
+│   ├── stable_match.ex 稳定匹配
 │   ├── step_in_primes.ex
 │   ├── string_patricia
 │   ├── string_trie
-│   ├── suffix_trie
+│   ├── suffix_trie 前缀树
 │   ├── test_port.ex
-│   ├── top_sort
+│   ├── top_sort 拓扑排序
 │   ├── totient_function.ex
 │   ├── triangles.exs
 │   ├── union_find
 │   ├── water_split.ex
 │   └── zuheshu.ex
 ├── classical_golang
-│   ├── chinese_remainder
-│   ├── heap
+│   ├── chinese_remainder 中国剩余定理
+│   ├── heap 堆
 │   ├── max_min_int.go
-│   ├── queue
-│   ├── quick_sort
+│   ├── queue 队列
+│   ├── quick_sort 快排
 │   ├── reverse_string.go
-│   └── union_set
+│   └── union_set 并查集
 ├── classical_python
-│   ├── avl.py
-│   ├── bst.py
-│   ├── crt.py
-│   ├── factor.py
-│   ├── manacher
-│   └── sieve.py
-├── euler
+│   ├── avl.py avl树
+│   ├── bst.py 二叉搜索树
+│   ├── crt.py 中国剩余定理
+│   ├── factor.py 因数分解
+│   ├── manacher 马拉车算法
+│   └── sieve.py 素数筛子
+├── euler 欧拉计划部分
 ├── leetcode
 │   ├── 4sum-ii
 │   ├── add-and-search-word-data-structure-design
