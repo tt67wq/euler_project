@@ -1,14 +1,22 @@
-/**
- * 二叉堆(最大堆)
+/*
+ * =====================================================================================
  *
- * @author skywang
- * @date 2014/03/07
+ *       Filename:  solve.c
+ *
+ *    Description:
+ *
+ *        Version:  1.0
+ *        Created:  2020-03-06
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:
+ *
+ * =====================================================================================
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
 
 static int m_heap[30];      // 数据
 static int m_capacity = 30; // 总的容量
@@ -78,9 +86,8 @@ int maxheap_remove(int data) {
         if (index == -1)
                 return -1;
 
-        m_heap[index] = m_heap[--m_size]; // 用最后元素填补
-        maxheap_filterdown(index,
-                           m_size - 1); // 从index位置开始自上向下调整为最大堆
+        m_heap[index] = m_heap[--m_size];      // 用最后元素填补
+        maxheap_filterdown(index, m_size - 1); // 从index位置开始自上向下调整为最大堆
 
         return 0;
 }
@@ -92,12 +99,11 @@ int maxheap_pop() {
         int data;
         // 如果"堆"已空，则返回-1
         if (m_size == 0)
-                panic();
+                return -1;
 
         data = m_heap[0];
         m_heap[0] = m_heap[--m_size];
-        maxheap_filterdown(index,
-                           m_size - 1); // 从index位置开始自上向下调整为最大堆
+        maxheap_filterdown(0, m_size - 1); // 从index位置开始自上向下调整为最大堆
 
         return data;
 }
@@ -146,43 +152,25 @@ int maxheap_insert(int data) {
         return 0;
 }
 
-/*
- * 打印二叉堆
- *
- * 返回值：
- *     0，表示成功
- *    -1，表示失败
- */
-void maxheap_print() {
-        int i;
-        for (i = 0; i < m_size; i++)
-                printf("%d ", m_heap[i]);
-}
+int lastStoneWeight(int *stones, int stonesSize) {
+        int i, x, y;
 
-int main() {
-        int a[] = {10, 40, 30, 60, 90, 70, 20, 50, 80};
-        int i, len = LENGTH(a);
-
-        printf("== 依次添加: ");
-        for (i = 0; i < len; i++) {
-                printf("%d ", a[i]);
-                maxheap_insert(a[i]);
+        for (i = 0; i < stonesSize; i++) {
+                maxheap_insert(stones[i]);
         }
 
-        printf("\n== 最 大 堆: ");
-        maxheap_print();
-
-        i = 85;
-        maxheap_insert(i);
-        printf("\n== 添加元素: %d", i);
-        printf("\n== 最 大 堆: ");
-        maxheap_print();
-
-        i = 90;
-        maxheap_remove(i);
-        printf("\n== 删除元素: %d", i);
-        printf("\n== 最 大 堆: ");
-        maxheap_print();
-        printf("\n");
-	return 0;
+        while (m_size > 1) {
+                y = maxheap_pop();
+                x = maxheap_pop();
+                if (x == y) {
+                        // pass
+                } else {
+                        maxheap_insert(y - x);
+                }
+        }
+        if (m_size == 1)
+                return maxheap_pop();
+        return 0;
 }
+
+int main() {}
