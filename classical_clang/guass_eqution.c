@@ -58,7 +58,7 @@ int main(void) {
         for (i = 0; i < size; i++) {
                 for (j = 0; j < size; j++)
                         printf("%lf\t", A[i][j]);
-		printf("%lf", b[i]);
+                printf("%lf", b[i]);
                 printf("\n\v");
         }
 
@@ -83,7 +83,7 @@ int main(void) {
         for (i = 0; i < size; i++) {
                 for (j = 0; j < size; j++)
                         printf("%lf\t", A[i][j]);
-		printf("%lf", b[i]);
+                printf("%lf", b[i]);
                 printf("\n\n");
         }
 

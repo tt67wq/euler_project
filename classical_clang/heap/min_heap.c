@@ -129,45 +129,42 @@ int minheap_insert(int data) {
         return 0;
 }
 
-/* 
+/*
  * 打印二叉堆
  *
  * 返回值：
  *     0，表示成功
  *    -1，表示失败
  */
-void minheap_print()
-{
-    int i;
-    for (i=0; i<m_size; i++)
-        printf("%d ", m_heap[i]);
+void minheap_print() {
+        int i;
+        for (i = 0; i < m_size; i++)
+                printf("%d ", m_heap[i]);
 }
 
-void main()
-{
-    int a[] = {80, 40, 30, 60, 90, 70, 10, 50, 20};
-    int i, len=LENGTH(a);
+void main() {
+        int a[] = {80, 40, 30, 60, 90, 70, 10, 50, 20};
+        int i, len = LENGTH(a);
 
-    printf("== 依次添加: ");
-    for(i=0; i<len; i++)
-    {
-        printf("%d ", a[i]);
-        minheap_insert(a[i]);
-    }
+        printf("== 依次添加: ");
+        for (i = 0; i < len; i++) {
+                printf("%d ", a[i]);
+                minheap_insert(a[i]);
+        }
 
-    printf("\n== 最 小 堆: ");
-    minheap_print();
+        printf("\n== 最 小 堆: ");
+        minheap_print();
 
-    i=15;
-    minheap_insert(i);
-    printf("\n== 添加元素: %d", i);
-    printf("\n== 最 小 堆: ");
-    minheap_print();
+        i = 15;
+        minheap_insert(i);
+        printf("\n== 添加元素: %d", i);
+        printf("\n== 最 小 堆: ");
+        minheap_print();
 
-    i=10;
-    minheap_remove(i);
-    printf("\n== 删除元素: %d", i);
-    printf("\n== 最 小 堆: ");
-    minheap_print();
-    printf("\n");
+        i = 10;
+        minheap_remove(i);
+        printf("\n== 删除元素: %d", i);
+        printf("\n== 最 小 堆: ");
+        minheap_print();
+        printf("\n");
 }

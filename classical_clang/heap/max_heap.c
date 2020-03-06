@@ -129,44 +129,42 @@ int maxheap_insert(int data) {
         return 0;
 }
 
-/* 
+/*
  * 打印二叉堆
  *
  * 返回值：
  *     0，表示成功
  *    -1，表示失败
  */
-void maxheap_print(){
-    int i;
-    for (i=0; i<m_size; i++)
-        printf("%d ", m_heap[i]);
+void maxheap_print() {
+        int i;
+        for (i = 0; i < m_size; i++)
+                printf("%d ", m_heap[i]);
 }
-    
-void main()
-{
-    int a[] = {10, 40, 30, 60, 90, 70, 20, 50, 80};
-    int i, len=LENGTH(a);
 
-    printf("== 依次添加: ");
-    for(i=0; i<len; i++)
-    {
-        printf("%d ", a[i]);
-        maxheap_insert(a[i]);
-    }
+void main() {
+        int a[] = {10, 40, 30, 60, 90, 70, 20, 50, 80};
+        int i, len = LENGTH(a);
 
-    printf("\n== 最 大 堆: ");
-    maxheap_print();
+        printf("== 依次添加: ");
+        for (i = 0; i < len; i++) {
+                printf("%d ", a[i]);
+                maxheap_insert(a[i]);
+        }
 
-    i=85;
-    maxheap_insert(i);
-    printf("\n== 添加元素: %d", i);
-    printf("\n== 最 大 堆: ");
-    maxheap_print();
+        printf("\n== 最 大 堆: ");
+        maxheap_print();
 
-    i=90;
-    maxheap_remove(i);
-    printf("\n== 删除元素: %d", i);
-    printf("\n== 最 大 堆: ");
-    maxheap_print();
-    printf("\n");
+        i = 85;
+        maxheap_insert(i);
+        printf("\n== 添加元素: %d", i);
+        printf("\n== 最 大 堆: ");
+        maxheap_print();
+
+        i = 90;
+        maxheap_remove(i);
+        printf("\n== 删除元素: %d", i);
+        printf("\n== 最 大 堆: ");
+        maxheap_print();
+        printf("\n");
 }
