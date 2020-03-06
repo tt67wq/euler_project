@@ -72,7 +72,7 @@ void *product(void *arg) { // 函数的格式void *(*start_routine) (void *)，�
 }
 
 int main() {
-        pthread_t pid, cid;
+  pthread_t pid, cid;
         //设置随机数的种子
         srand(time(NULL));
         //创建两个线程，用于生产者和消费者
