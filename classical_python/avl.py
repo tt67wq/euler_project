@@ -23,7 +23,7 @@ class AvlTree(object):
         if node.height == 0:
             return 1
         else:
-            return 1+self.size(node.left)+self.size(node.right)
+            return 1 + self.size(node.left) + self.size(node.right)
 
     def find(self, key):
         if self.root is None:
@@ -75,16 +75,16 @@ class AvlTree(object):
         k1 = node.left
         node.left = k1.right
         k1.right = node
-        node.height = max(self.height(node.right), self.height(node.left))+1
-        k1.height = max(self.height(k1.left), node.height)+1
+        node.height = max(self.height(node.right), self.height(node.left)) + 1
+        k1.height = max(self.height(k1.left), node.height) + 1
         return k1
 
     def singleRightRotate(self, node):
         k1 = node.right
         node.right = k1.left
         k1.left = node
-        node.height = max(self.height(node.right), self.height(node.left))+1
-        k1.height = max(self.height(k1.right), node.height)+1
+        node.height = max(self.height(node.right), self.height(node.left)) + 1
+        k1.height = max(self.height(k1.right), node.height) + 1
         return k1
 
     def doubleLeftRotate(self, node):
@@ -106,7 +106,7 @@ class AvlTree(object):
             node = Node(key)
         elif key < node.key:
             node.left = self._put(key, node.left)
-            if (self.height(node.left)-self.height(node.right)) == 2:
+            if (self.height(node.left) - self.height(node.right)) == 2:
                 if key < node.left.key:
                     node = self.singleLeftRotate(node)
                 else:
@@ -114,13 +114,13 @@ class AvlTree(object):
 
         elif key > node.key:
             node.right = self._put(key, node.right)
-            if (self.height(node.right)-self.height(node.left)) == 2:
+            if (self.height(node.right) - self.height(node.left)) == 2:
                 if key < node.right.key:
                     node = self.doubleRightRotate(node)
                 else:
                     node = self.singleRightRotate(node)
 
-        node.height = max(self.height(node.right), self.height(node.left))+1
+        node.height = max(self.height(node.right), self.height(node.left)) + 1
         return node
 
     def delete(self, key):
@@ -128,24 +128,24 @@ class AvlTree(object):
 
     def remove(self, key, node):
         if node is None:
-            raise 'Error,key not in tree'
+            raise "Error,key not in tree"
         elif key < node.key:
             node.left = self.remove(key, node.left)
-            if (self.height(node.right)-self.height(node.left)) == 2:
+            if (self.height(node.right) - self.height(node.left)) == 2:
                 if self.height(node.right.right) >= self.height(node.right.left):
                     node = self.singleRightRotate(node)
                 else:
                     node = self.doubleRightRotate(node)
-            node.height = max(self.height(node.left), self.height(node.right))+1
+            node.height = max(self.height(node.left), self.height(node.right)) + 1
 
         elif key > node.key:
             node.right = self.remove(key, node.right)
-            if (self.height(node.left)-self.height(node.right)) == 2:
+            if (self.height(node.left) - self.height(node.right)) == 2:
                 if self.height(node.left.left) >= self.height(node.left.right):
                     node = self.singleLeftRotate(node)
                 else:
                     node = self.doubleLeftRotate(node)
-            node.height = max(self.height(node.left), self.height(node.right))+1
+            node.height = max(self.height(node.left), self.height(node.right)) + 1
 
         elif node.left and node.right:
             if node.left.height <= node.right.height:
@@ -156,7 +156,7 @@ class AvlTree(object):
                 maxNode = self._findMax(node.left)
                 node.key = maxNode.key
                 node.left = self.remove(node.key, node.left)
-            node.height = max(self.height(node.left), self.height(node.right))+1
+            node.height = max(self.height(node.left), self.height(node.right)) + 1
         else:
             if node.right:
                 node = node.right
@@ -170,5 +170,5 @@ def main():
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
