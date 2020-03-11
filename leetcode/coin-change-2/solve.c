@@ -28,8 +28,8 @@ int change(int amount, int *coins, int coinsSize) {
 
         for (int i = 0; i < coinsSize; i++) {
                 int x = coins[i];
-                for (int j = x; j < amount + 1; j++) {
-                        dp[j] += dp[j - x];
+                for (int y = x; y < amount + 1; y++) {
+                        dp[y] += dp[y - x];
                 }
         }
         int ans = dp[amount];
