@@ -145,6 +145,77 @@ void btr_list_tree(btr_node *root) {
                 while (lines[level][i] == ' ')
                         lines[level][i--] = '\0';
         }
+
+        // optimize
+        for (int level = 0; level < max_depth - 1; level++) {
+                for (int k = 0; k < n_nodes; k++) {
+                        btr_node *parent = &nodes[k];
+                        if (parent->value % 100 == level) {
+                                for (int k_dir = 0; k_dir < 2; k_dir++) {
+                                        btr_node *node = parent->child[k];
+                                        if (node) {
+                                                btr_node *child = node->child[1 - k_dir];
+                                                if (child && !node->child[k_dir]) {
+                                                        int incr = 1 - k_dir * 2;
+                                                        int new_col = parent->value / 100 -
+                                                                      min_col - incr * 2;
+                                                        int new_col_c =
+                                                            child->value / 100 - min_col - incr * 2;
+                                                        if (new_col_c * incr < new_col * incr)
+                                                                new_col = new_col_c;
+
+                                                        char *line_u = lines[level * 2 + 1];
+                                                        char *line = lines[level * 2 + 2];
+                                                        char *line_d = lines[level * 2 + 3];
+                                                        int col = node->value / 100 - min_col;
+                                                        if (col != new_col) {
+                                                                char num[3];
+                                                                for (int i = 0; i < 3; i++) {
+                                                                        num[i] = line[col + i];
+                                                                        line[col + i] = ' ';
+                                                                }
+                                                        }
+
+                                                        if (incr > 0) {
+                                                                int i = col + 1;
+                                                                while (i < new_col) {
+                                                                        line_u[i] = ' ';
+                                                                        line[i] = ' ';
+                                                                        line_d[i++] = ' ';
+                                                                }
+                                                                line[i] = num[0];
+                                                                line_u[i] = ' ';
+                                                                line_d[i] = ' ';
+                                                                line[++i] = num[1];
+                                                                line_u[i] = '.';
+                                                                line_d[i] = '\'';
+                                                                line[++i] = num[2];
+                                                        } else {
+                                                                int i = new_col;
+                                                                line[i] = num[0];
+                                                                line[++i] = num[1];
+                                                                line_u[i] = '.';
+                                                                line_d[i] = '\'';
+                                                                line[++i] = num[2];
+                                                                if (line[col + 3] == '\0') {
+                                                                        line_u[i] = '\0';
+                                                                        line_d[i++] = '\0';
+                                                                        line[i] = '\0';
+                                                                } else {
+                                                                        while (i <= col + 1) {
+                                                                                line_u[i] = ' ';
+                                                                                line_d[i++] = ' ';
+                                                                        }
+                                                                }
+                                                        }
+                                                        node->value =
+                                                            (new_col + min_col) * 100 + level + 1;
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
 }
 
 int main() { return 0; }
