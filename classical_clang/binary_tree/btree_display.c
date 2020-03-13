@@ -149,25 +149,30 @@ void btr_list_tree(btr_node *root) {
         // optimize
         for (int level = 0; level < max_depth - 1; level++) {
                 for (int k = 0; k < n_nodes; k++) {
-                        btr_node *parent = &nodes[k];
+                        btr_node *parent = &nodes[k]; // 父
                         if (parent->value % 100 == level) {
                                 for (int k_dir = 0; k_dir < 2; k_dir++) {
-                                        btr_node *node = parent->child[k];
+                                        btr_node *node = parent->child[k]; // 子
                                         if (node) {
-                                                btr_node *child = node->child[1 - k_dir];
-                                                if (child && !node->child[k_dir]) {
-                                                        int incr = 1 - k_dir * 2;
+                                                btr_node *child = node->child[1 - k_dir]; // 孙
+                                                if (child &&
+                                                    !node->child[k_dir]) { // 孙子节点没有兄弟
+                                                        int incr = 1 - k_dir * 2; // 反方向
                                                         int new_col = parent->value / 100 -
                                                                       min_col - incr * 2;
                                                         int new_col_c =
                                                             child->value / 100 - min_col - incr * 2;
+
+                                                        // 保证不跨过孙子节点
                                                         if (new_col_c * incr < new_col * incr)
                                                                 new_col = new_col_c;
 
                                                         char *line_u = lines[level * 2 + 1];
-                                                        char *line = lines[level * 2 + 2];
+                                                        char *line =
+                                                            lines[level * 2 + 2]; // 包含node的行
                                                         char *line_d = lines[level * 2 + 3];
-                                                        int col = node->value / 100 - min_col;
+                                                        int col = node->value / 100 -
+                                                                  min_col; // 包含node的列
                                                         if (col != new_col) {
                                                                 char num[3];
                                                                 for (int i = 0; i < 3; i++) {
@@ -176,6 +181,7 @@ void btr_list_tree(btr_node *root) {
                                                                 }
                                                         }
 
+                                                        // 移动上下两行
                                                         if (incr > 0) {
                                                                 int i = col + 1;
                                                                 while (i < new_col) {
