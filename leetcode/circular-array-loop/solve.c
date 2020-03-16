@@ -19,51 +19,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LENGTH(a) ((sizeof(a)) / (sizeof(a[0])))
-
 int get_next(int *nums, int i, int l) {
         int x = i + nums[i];
 
-        if (x > l) {
-                return x % l;
+        while (x >= l) {
+                x = x % l;
         }
-        if (x < 0) {
-                return l + x;
+        while (x < 0) {
+                x = l + x;
         }
         return x;
 }
 
 bool circularArrayLoop(int *nums, int numsSize) {
-        int l = LENGTH(nums);
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < numsSize; i++) {
                 int num = nums[i];
                 if (num == 0) {
                         continue;
                 }
-                int slow = i;                    // slow ptr
-                int fast = get_next(nums, i, l); // fast ptr
+                int slow = i;                           // slow ptr
+                int fast = get_next(nums, i, numsSize); // fast ptr
 
+                printf("slow: %d, fast: %d\n", slow, fast);
                 // make sure in same direction
-                while (nums[slow] * nums[fast] > 0 && nums[slow] * nums[get_next(nums, fast, l)]) {
+                while (nums[slow] * nums[fast] > 0 &&
+                       nums[slow] * nums[get_next(nums, fast, numsSize)] > 0) {
+                        printf("   slow: %d, fast: %d\n", slow, fast);
                         if (slow == fast) {
                                 // fast ptr meet slow ptr
-                                if (slow == get_next(nums, slow, l)) {
+                                if (slow == get_next(nums, slow, numsSize)) {
                                         // get ride of circle of 1
                                         break;
                                 } else {
                                         // has circle
+
                                         return true;
                                 }
                         }
-                        slow = get_next(nums, slow, l);
-                        fast = get_next(nums, get_next(nums, fast, l), l);
+                        slow = get_next(nums, slow, numsSize);
+                        fast = get_next(nums, get_next(nums, fast, numsSize), numsSize);
                 }
         }
         return false;
 }
 
 int main() {
-        int nums[] = {2, -1, 1, 2, 2};
-        printf("%d\n", circularArrayLoop(nums, 5));
+        int nums[] = {-2, -3, -9};
+        printf("%d\n", circularArrayLoop(nums, 3));
         return 0;
 }
