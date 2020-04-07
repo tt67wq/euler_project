@@ -18,8 +18,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void swap(int *a, int *b) {
-        int temp;
+int compare(void *a, void *b) {
+        printf("comparing %d and %d\n", *(int *)a, *(int *)b);
+        if (*(int *)a > *(int *)b) {
+                return 1;
+        } else if (*(int *)a < *(int *)b) {
+                return -1;
+        } else {
+                return 0;
+        }
+}
+
+void swap(void **a, void **b) {
+        void *temp;
 
         temp = *a;
         *a = *b;
@@ -28,22 +39,13 @@ void swap(int *a, int *b) {
         return;
 }
 
-void display(int *array) {
-        int i;
-        for (i = 0; i < BUFSIZ; i++)
-                if (array[i])
-                        printf("%-3d", array[i]);
-
-        printf("\n");
-}
-
-void quick_sort(int *array, int begin, int end) {
+void quick_sort(void **array, int begin, int end, int (*cmp)(void *, void *)) {
         int i, j;
         if (begin < end) {
                 i = begin + 1;
                 j = end;
                 while (i < j) {
-                        if (array[i] > array[begin]) {
+                        if (cmp(array[i], array[begin]) > 0) {
                                 swap(&array[i], &array[j]);
                                 j--;
                         } else {
@@ -51,19 +53,34 @@ void quick_sort(int *array, int begin, int end) {
                         }
                 }
 
-                if (array[i] >= array[begin])
+                if (cmp(array[i], array[begin]) >= 0)
                         i--;
 
                 swap(&array[begin], &array[i]);
-                quick_sort(array, begin, i);
-                quick_sort(array, j, end);
+                quick_sort(array, begin, i, cmp);
+                quick_sort(array, j, end, cmp);
         }
 }
 
 int main() {
-        int array[BUFSIZ] = {5, 2, 3, 1};
-        quick_sort(array, 0, 3);
-        display(array);
+        // 1, 5, 2, 3, 7
+        int a[] = {0, 2};
+        int b[] = {2, 3};
+        int c[] = {4, 4};
+        int d[] = {0, 1};
+        int e[] = {5, 7};
+        int f[] = {4, 5};
+        int g[] = {0, 0};
+
+        int *intervals[] = {a, b, c, d, e, f, g};
+        ;
+        int (*p)(void *, void *) = compare;
+        quick_sort((void **)intervals, 0, 6, p);
+
+        for (int i = 0; i < 7; i++) {
+                printf("[%d, %d] ", intervals[i][0], intervals[i][1]);
+        }
+        printf("\n");
 
         return 0;
 }
