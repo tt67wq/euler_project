@@ -23,22 +23,35 @@
 
 char *convert(char *s, int numRows) {
         int len = strlen(s);
+        char *ans = (char *)malloc(sizeof(char) * (len + 1));
+
+        if (numRows == 1) {
+                memcpy(ans, s, len * sizeof(char));
+                ans[len] = '\0';
+                return ans;
+        }
+
         int wide = 0, idx = 0;
         char **matrix = (char **)calloc(numRows, sizeof(char *));
         for (int i = 0; i < numRows; i++) {
                 matrix[i] = (char *)calloc(len, sizeof(char));
         }
-        char *ans = (char *)malloc(sizeof(char) * (len + 1));
 
         matrix[0][0] = s[0];
         idx++;
         while (idx < len) {
                 // down
-                for (int row = 1; row < numRows; row++) {
+#ifdef DEBUG
+                printf("idx = %d, wide = %d\n", idx, wide);
+#endif
+                for (int row = 1; row < numRows && idx < len; row++) {
                         matrix[row][wide] = s[idx++];
                 }
+#ifdef DEBUG
+                printf("  idx = %d, wide = %d\n", idx, wide);
+#endif
                 // up
-                for (int row = numRows - 2; row >= 0; row--) {
+                for (int row = numRows - 2; row >= 0 && idx < len; row--) {
                         matrix[row][++wide] = s[idx++];
                 }
         }
@@ -48,12 +61,16 @@ char *convert(char *s, int numRows) {
 #endif
         idx = 0;
         for (int row = 0; row < numRows; row++) {
-                for (int col = 0; col < wide; col++) {
-#ifdef DEBUG
-                        printf("%c", matrix[row][col]);
-#endif
+                for (int col = 0; col <= wide; col++) {
                         if (matrix[row][col] != '\0') {
+#ifdef DEBUG
+                                printf("%c", matrix[row][col]);
+#endif
                                 ans[idx++] = matrix[row][col];
+                        } else {
+#ifdef DEBUG
+                                printf(" ");
+#endif
                         }
                 }
 #ifdef DEBUG
@@ -72,8 +89,8 @@ char *convert(char *s, int numRows) {
 }
 
 int main() {
-        char *s = "PAYPALISHIRING";
-        char *ans = convert(s, 3);
+        char *s = "AB";
+        char *ans = convert(s, 1);
         printf("%s\n", ans);
         free(ans);
         return 0;
