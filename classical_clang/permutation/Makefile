@@ -1,5 +1,5 @@
 CC = gcc
-INFILE = permutation.c
+INFILE = permutation_with_repeat.c
 OUTFILE = permutation.o
 FLAGS = -Wall
 

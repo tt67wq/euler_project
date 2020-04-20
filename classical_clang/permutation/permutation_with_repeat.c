@@ -20,12 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct res res;
-struct res {
-        char *buff;
-        struct res *next;
-};
-
 void bucketSort(char a[], int n, int max) {
         int *buckets = (int *)calloc(max, sizeof(int));
 
@@ -44,19 +38,12 @@ void bucketSort(char a[], int n, int max) {
         free(buckets);
 }
 
-void backtrack(char *S, int idx, char *acc, res *ptr, int *size) {
+void backtrack(char *S, int idx, char *acc, int *size) {
 
         int len = strlen(S);
         if (len == 0) {
                 acc[idx] = '\0';
-                // printf("res: %s\n", acc);
-                char *bcc = (char *)calloc(idx + 1, sizeof(char));
-                memcpy(bcc, acc, sizeof(char) * (idx + 1));
-
-                if (ptr == NULL)
-                        ptr = (res *)calloc(1, sizeof(res));
-                ptr->buff = bcc;
-                ptr = ptr->next;
+                printf("res: %s\n", acc);
 
                 (*size)++;
                 return;
@@ -78,13 +65,13 @@ void backtrack(char *S, int idx, char *acc, res *ptr, int *size) {
                         }
                         S1[k] = '\0';
                 }
-                backtrack(S1, idx + 1, acc, ptr, size);
+                backtrack(S1, idx + 1, acc, size);
                 acc[idx] = 0;
                 free(S1);
         }
 }
 
-char **permutation(char *S, int *returnSize) {
+void permutation(char *S, int *returnSize) {
         int l = strlen(S);
 
         // sort
@@ -92,26 +79,17 @@ char **permutation(char *S, int *returnSize) {
 
         char *acc = (char *)calloc(l + 1, sizeof(char));
 
-        res *r = (res *)calloc(1, sizeof(res));
-        res *r0 = r;
-
-        backtrack(S, 0, acc, r0, returnSize);
+        backtrack(S, 0, acc, returnSize);
 
         free(acc);
 
-        int i = 0;
-        char **ans = (char **)calloc(*returnSize, sizeof(char *));
-        while (r != NULL) {
-                ans[i++] = r->buff;
-                r = r->next;
-        }
-
-        return ans;
+        return;
 }
 
 int main() {
         char s[] = "abb";
         int size = 0;
         permutation(s, &size);
+        printf("size = %d\n", size);
         return 0;
 }
