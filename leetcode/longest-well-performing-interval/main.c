@@ -103,6 +103,7 @@ int longestWPI(int *hours, int hoursSize) {
                 }
         }
 
+	// 计算最长坡
         int ans = 0;
         for (int i = hoursSize; i > ans && !IS_EMPTY(st); i--) {
                 while (!IS_EMPTY(st) && sums[STACK_TOP(st)] < sums[i]) {
