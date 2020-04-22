@@ -29,6 +29,9 @@ typedef struct _stack {
         int top;
 } stack;
 
+#define STACK_TOP(st) ((st)->data[(st)->top])
+#define IS_EMPTY(st) ((st)->top == -1)
+
 stack *new_stack() {
         stack *st;
         st = (stack *)calloc(1, sizeof(stack));
