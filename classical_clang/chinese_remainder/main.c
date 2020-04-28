@@ -95,6 +95,6 @@ int main() {
 
         int *pairs[] = {pair0, pair1, pair2};
 
-        printf("%d", crt(pairs, 3));
+        printf("%d\n", crt(pairs, 3));
         return 0;
 }
