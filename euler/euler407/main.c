@@ -37,9 +37,9 @@ uint32_t *findLargestPrimes(uint32_t limit) {
                 }
 
                 // and all exponents i^2, i^3, i^4 ...
-                uint32_t j = i * i;
+                uint64_t j = (uint64_t)i * i;
                 while (j <= limit) {
-                        vec[j] = j;
+                        vec[j] = (uint32_t)j;
                         j *= i;
                 }
         }
