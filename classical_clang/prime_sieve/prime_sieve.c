@@ -20,15 +20,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 1000L
+#define MAX 100L
 
 char sieve[MAX / 16 + 1];
 
 static inline bool is_in_sieve(long idx) { return !(sieve[idx / 16] & (1 << (idx % 16 / 2))); }
 static inline void remove_from_sieve(long idx) { sieve[idx / 16] |= (1 << (idx % 16 / 2)); }
 
-void init() { memset(sieve, 256, MAX / 16 + 1); }
-void prime_sieve() {
+bool isPrime(int x) { return is_in_sieve(x); }
+
+void primeSieve() {
+        memset(sieve, 256, MAX / 16 + 1);
         long i, j;
         for (i = 3; i * i <= MAX; i += 2) {
                 if (is_in_sieve(i)) {
@@ -40,15 +42,13 @@ void prime_sieve() {
 }
 
 int main() {
-        long i;
-        init();
-        prime_sieve();
+        primeSieve();
         printf("2 ");
-        for (i = 3; i < MAX; i += 2) {
-                if (is_in_sieve(i)) {
-                        printf("%ld ", i);
+        for (int i = 3; i < MAX; i += 2) {
+                if (isPrime(i)) {
+                        printf("%d ", i);
                 } else {
-                        printf("(%ld) ", i);
+		  // printf("(%d) ", i);
                 }
         }
         printf("\n");
