@@ -77,7 +77,7 @@ void put(char *key, int value) {
         int index;
         bool same;
         item *tmp, *pt;
-        index = js_hash(key, SIZE) % SIZE;
+        index = js_hash(key, strlen(key)) % SIZE;
 
         if (Hash[index]->used) {
                 pt = Hash[index]->data;
@@ -113,7 +113,7 @@ bool get(char *key, int *val) {
         bool hit;
         item *pt;
 
-        index = js_hash(key, SIZE) % SIZE;
+        index = js_hash(key, strlen(key)) % SIZE;
         hit = false;
         if (Hash[index]->used) {
                 pt = Hash[index]->data;

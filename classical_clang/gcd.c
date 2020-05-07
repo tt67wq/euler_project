@@ -1,5 +1,26 @@
-/* 求最大公约数, 欧几里得算法 */
+/*
+ * =====================================================================================
+ *
+ *       Filename:  gcd.c
+ *
+ *    Description:
+ *
+ *        Version:  1.0
+ *        Created:  2020-05-07
+ *       Revision:  none
+ *       Compiler:  clang
+ *
+ *         Author:
+ *
+ * =====================================================================================
+ */
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#define DEBUG
+
+/* 求最大公约数, 欧几里得算法 */
 int gcd(int m, int n) {
         int r;
         if (m <= 0 || n <= 0)
@@ -20,3 +41,5 @@ void extend_gcd(int a, int b, int *g, int *x, int *y) {
                 *y -= *x * (a / b);
         }
 }
+
+int main() { return 0; }
