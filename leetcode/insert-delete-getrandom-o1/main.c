@@ -1,16 +1,16 @@
 /*
  * =====================================================================================
  *
- *       Filename:  my_hash.c
+ *       Filename:  main.c
  *
- *    Description:  写题目用的简单hash表
+ *    Description:
  *
  *        Version:  1.0
- *        Created:  2019-07-17
+ *        Created:  2020-05-08
  *       Revision:  none
- *       Compiler:  gcc
+ *       Compiler:  clang
  *
- *         Author:  fangyuan
+ *         Author:
  *
  * =====================================================================================
  */
@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define DEBUG
 
 #define SIZE 1000
 #define MAX_KEY_SIZE 20
@@ -129,26 +131,37 @@ bool get(char *key, int *val) {
         return hit;
 }
 
-int main() {
-        int value;
-        char cmd[10];
-        char key[MAX_KEY_SIZE];
 
-        initHash();
-        while (scanf("%s", cmd) != EOF) {
-                if (!strcmp(cmd, "0")) {
-                        break;
-                } else if (!strcmp(cmd, "put")) {
-                        scanf("%s %d", key, &value);
-                        put(key, value);
-                } else if (!strcmp(cmd, "get")) {
-                        scanf("%s", key);
-                        if (get(key, &value))
-                                printf("value is %d\n", value);
-                        else
-                                printf("hash miss\n");
-                }
-        }
-        disposeHash();
-        return 0;
-}
+typedef struct {
+  
+} RandomizedSet;
+
+/** Initialize your data structure here. */
+
+RandomizedSet *randomizedSetCreate() {}
+
+/** Inserts a value to the set. Returns true if the set did not already contain the specified
+ * element. */
+bool randomizedSetInsert(RandomizedSet *obj, int val) {}
+
+/** Removes a value from the set. Returns true if the set contained the specified element. */
+bool randomizedSetRemove(RandomizedSet *obj, int val) {}
+
+/** Get a random element from the set. */
+int randomizedSetGetRandom(RandomizedSet *obj) {}
+
+void randomizedSetFree(RandomizedSet *obj) {}
+
+/**
+ * Your RandomizedSet struct will be instantiated and called as such:
+ * RandomizedSet* obj = randomizedSetCreate();
+ * bool param_1 = randomizedSetInsert(obj, val);
+
+ * bool param_2 = randomizedSetRemove(obj, val);
+
+ * int param_3 = randomizedSetGetRandom(obj);
+
+ * randomizedSetFree(obj);
+*/
+
+int main() { return 0; }
