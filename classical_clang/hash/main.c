@@ -28,6 +28,7 @@
 #define MAX_KEY_SIZE 20
 #define HASH_PUT(h, k, v) (put((h), (k), (v)))
 #define HASH_GET(h, k, v) (get((h), (k), (v)))
+#define HASH_DROP(h, k) (drop((h), (k)))
 
 typedef struct _item {
         char key[MAX_KEY_SIZE];
@@ -139,6 +140,34 @@ bool get(hash *hashTable, char *key, int *val) {
         return hit;
 }
 
+bool drop(hash *hashTable, char *key) {
+        int index = jsHash(key, strlen(key)) % hashTable->size;
+        bool hit = false;
+
+        if (hashTable->dicts[index].used) {
+                item *pt = hashTable->dicts[index].data;
+                item *pre = NULL;
+
+                while (pt) {
+                        if (strcmp(pt->key, key) == 0) {
+                                hit = true;
+                                if (pre) {
+                                        pre->next = pt->next;
+                                        pt->next = NULL;
+                                        free(pt);
+                                } else {
+                                        free(pt);
+                                        hashTable->dicts[index].used = 0;
+                                }
+                                break;
+                        }
+                        pre = pt;
+                        pt = pt->next;
+                }
+        }
+        return hit;
+}
+
 int main() {
         int value;
         char cmd[10] = "";
@@ -162,6 +191,13 @@ int main() {
                                 printf("value is %d\n", value);
                         } else {
                                 printf("hash miss\n");
+                        }
+                } else if (!strcmp(cmd, "drop")) {
+                        scanf("%s", key);
+                        if (HASH_DROP(hashTable, key)) {
+                                printf("drop %s success\n", key);
+                        } else {
+                                printf("%s not in hashTable\n", key);
                         }
                 }
         }

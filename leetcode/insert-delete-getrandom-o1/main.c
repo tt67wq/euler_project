@@ -15,6 +15,7 @@
  * =====================================================================================
  */
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,11 +23,15 @@
 
 #define DEBUG
 
-#define SIZE 1000
 #define MAX_KEY_SIZE 20
+#define DEL INT_MIN
+#define SIZE 2000
+#define HASH_PUT(h, k, v) (put((h), (k), (v)))
+#define HASH_GET(h, k, v) (get((h), (k), (v)))
+#define HASH_DROP(h, k) (drop((h), (k)))
 
 typedef struct _item {
-        char *key;
+        char key[MAX_KEY_SIZE];
         int value;
         struct _item *next;
 } item;
@@ -36,7 +41,10 @@ typedef struct _dict {
         item *data;
 } dict;
 
-dict *Hash[SIZE];
+typedef struct hash {
+        dict *dicts;
+        int size;
+} hash;
 
 unsigned int jsHash(char *str, unsigned int len) {
         unsigned int hash = 1315423911;
@@ -49,41 +57,42 @@ unsigned int jsHash(char *str, unsigned int len) {
         return hash;
 }
 
-void initHash() {
-        int i;
-        for (i = 0; i < SIZE; i++) {
-                Hash[i] = (dict *)calloc(1, sizeof(dict));
-                Hash[i]->used = 0;
+hash *createHash(int size) {
+
+        hash *hashTable = (hash *)malloc(sizeof(hash));
+        hashTable->size = size;
+        hashTable->dicts = (dict *)malloc(sizeof(dict) * size);
+
+        for (int i = 0; i < size; i++) {
+                hashTable->dicts[i].used = 0;
+                hashTable->dicts[i].data = NULL;
         }
+
+        return hashTable;
 }
 
-void disposeHash() {
-        int i;
-        item *pt, *tmp;
-        for (i = 0; i < SIZE; i++) {
-                if (Hash[i]->used) {
-                        pt = Hash[i]->data;
+void disposeHash(hash *hashTable) {
+        for (int i = 0; i < hashTable->size; i++) {
+                if (hashTable->dicts[i].used > 0) {
+                        item *pt = hashTable->dicts[i].data;
                         while (pt) {
-                                free(pt->key);
-                                tmp = pt;
+                                item *tmp = pt;
                                 pt = pt->next;
                                 free(tmp);
                         }
-                        free(Hash[i]);
                 }
         }
+        free(hashTable->dicts);
+        free(hashTable);
 }
 
-void put(char *key, int value) {
-        printf("put {%s, %d} to hash table\n", key, value);
-        int index;
-        bool same;
-        item *tmp, *pt;
-        index = jsHash(key, strlen(key)) % SIZE;
+bool put(hash *hashTable, char *key, int value) {
 
-        if (Hash[index]->used) {
-                pt = Hash[index]->data;
-                same = false;
+        int index = jsHash(key, strlen(key)) % hashTable->size;
+
+        if (hashTable->dicts[index].used) {
+                item *pt = hashTable->dicts[index].data;
+                bool same = false;
                 while (pt) {
                         if (!strcmp(pt->key, key)) {
                                 pt->value = value;
@@ -93,32 +102,32 @@ void put(char *key, int value) {
                         pt = pt->next;
                 }
                 if (!same) {
-                        tmp = (item *)calloc(1, sizeof(item));
-                        tmp->key = (char *)calloc(MAX_KEY_SIZE, sizeof(char));
+                        item *tmp = (item *)malloc(sizeof(item));
                         strcpy(tmp->key, key);
                         tmp->value = value;
                         tmp->next = NULL;
                         pt->next = tmp;
+
+                        return true;
+                } else {
+                        return false;
                 }
         } else {
-                Hash[index]->data = (item *)calloc(1, sizeof(item));
-                Hash[index]->data->key = (char *)calloc(MAX_KEY_SIZE, sizeof(char));
-                strcpy(Hash[index]->data->key, key);
-                Hash[index]->data->value = value;
-                Hash[index]->data->next = NULL;
-                Hash[index]->used = 1;
+                hashTable->dicts[index].data = (item *)malloc(sizeof(item));
+                strcpy(hashTable->dicts[index].data->key, key);
+                hashTable->dicts[index].data->value = value;
+                hashTable->dicts[index].data->next = NULL;
+                hashTable->dicts[index].used = 1;
+                return true;
         }
 }
 
-bool get(char *key, int *val) {
-        int index;
-        bool hit;
-        item *pt;
+bool get(hash *hashTable, char *key, int *val) {
 
-        index = jsHash(key, strlen(key)) % SIZE;
-        hit = false;
-        if (Hash[index]->used) {
-                pt = Hash[index]->data;
+        int index = jsHash(key, strlen(key)) % hashTable->size;
+        bool hit = false;
+        if (hashTable->dicts[index].used) {
+                item *pt = hashTable->dicts[index].data;
                 while (pt) {
                         if (strcmp(pt->key, key) == 0) {
                                 hit = true;
@@ -131,26 +140,121 @@ bool get(char *key, int *val) {
         return hit;
 }
 
+bool drop(hash *hashTable, char *key) {
+        int index = jsHash(key, strlen(key)) % hashTable->size;
+        bool hit = false;
+
+        if (hashTable->dicts[index].used) {
+                item *pt = hashTable->dicts[index].data;
+                item *pre = NULL;
+
+                while (pt) {
+                        if (strcmp(pt->key, key) == 0) {
+                                hit = true;
+                                if (pre) {
+                                        pre->next = pt->next;
+                                        pt->next = NULL;
+                                        free(pt);
+                                } else {
+                                        free(pt);
+                                        hashTable->dicts[index].used = 0;
+                                }
+                                break;
+                        }
+                        pre = pt;
+                        pt = pt->next;
+                }
+        }
+        return hit;
+}
 
 typedef struct {
-  
+        hash *hashTable;
+        int size;
+        int idx;
+        int *vals;
 } RandomizedSet;
 
 /** Initialize your data structure here. */
 
-RandomizedSet *randomizedSetCreate() {}
+RandomizedSet *randomizedSetCreate() {
+        srand(50);
+        RandomizedSet *rs = (RandomizedSet *)malloc(sizeof(RandomizedSet));
+        rs->hashTable = createHash(SIZE);
+        rs->idx = 0;
+        rs->size = 0;
+        rs->vals = (int *)calloc(SIZE, sizeof(int));
+
+        for (int i = 0; i < SIZE; i++) {
+                rs->vals[i] = DEL;
+        }
+
+        return rs;
+}
 
 /** Inserts a value to the set. Returns true if the set did not already contain the specified
  * element. */
-bool randomizedSetInsert(RandomizedSet *obj, int val) {}
+bool randomizedSetInsert(RandomizedSet *obj, int val) {
+        char key[MAX_KEY_SIZE] = "";
+        sprintf(key, "%d", val);
+
+        int idx;
+        if (HASH_GET(obj->hashTable, key, &idx)) {
+                return false;
+        }
+
+        while (obj->vals[obj->idx] != DEL) {
+                obj->idx++;
+                if (obj->idx == SIZE) {
+                        obj->idx = 0;
+                }
+        }
+        obj->vals[obj->idx] = val;
+        obj->size++;
+        return HASH_PUT(obj->hashTable, key, obj->idx);
+}
 
 /** Removes a value from the set. Returns true if the set contained the specified element. */
-bool randomizedSetRemove(RandomizedSet *obj, int val) {}
+bool randomizedSetRemove(RandomizedSet *obj, int val) {
+        char key[MAX_KEY_SIZE] = "";
+        sprintf(key, "%d", val);
+
+        int idx;
+        if (HASH_GET(obj->hashTable, key, &idx)) {
+                obj->vals[idx] = DEL;
+                obj->size--;
+                return HASH_DROP(obj->hashTable, key);
+        }
+        return false;
+}
+
+int myRandom(int m) { return rand() % m; }
 
 /** Get a random element from the set. */
-int randomizedSetGetRandom(RandomizedSet *obj) {}
+int randomizedSetGetRandom(RandomizedSet *obj) {
+        int *vals = (int *)malloc(sizeof(int) * obj->size);
+        int idx = 0;
+        for (int i = 0; i < SIZE; i++) {
+                if (obj->vals[i] != DEL) {
+                        vals[idx++] = obj->vals[i];
+                }
+        }
+#ifdef DEBUG
+        for (int i = 0; i < idx; i++) {
+                printf("%d ", vals[i]);
+        }
+        printf("\n");
+#endif
+        int ans = vals[myRandom(obj->size)];
+        free(vals);
+        return ans;
+}
 
-void randomizedSetFree(RandomizedSet *obj) {}
+void randomizedSetFree(RandomizedSet *obj) {
+        disposeHash(obj->hashTable);
+        free(obj->vals);
+        free(obj);
+}
 
 /**
  * Your RandomizedSet struct will be instantiated and called as such:
@@ -164,4 +268,15 @@ void randomizedSetFree(RandomizedSet *obj) {}
  * randomizedSetFree(obj);
 */
 
-int main() { return 0; }
+int main() {
+        RandomizedSet *rs = randomizedSetCreate();
+        printf("insert 0 -> %d\n", randomizedSetInsert(rs, 0));
+        printf("insert 1 -> %d\n", randomizedSetInsert(rs, 1));
+        printf("remove 0 -> %d\n", randomizedSetRemove(rs, 0));
+        printf("insert 2 -> %d\n", randomizedSetInsert(rs, 2));
+        printf("remove 1 -> %d\n", randomizedSetRemove(rs, 1));
+        printf("getrand -> %d\n", randomizedSetGetRandom(rs));
+
+        randomizedSetFree(rs);
+        return 0;
+}
