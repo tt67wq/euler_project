@@ -15,24 +15,23 @@
  * =====================================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#define DEBUG
-
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define DEBUG
 
 #define MAX_KEY_SIZE 20
 #define HASH_PUT(h, k, v) (put((h), (k), (v)))
 #define HASH_GET(h, k, v) (get((h), (k), (v)))
 #define HASH_DROP(h, k) (drop((h), (k)))
 
+typedef int vType;
+
 typedef struct _item {
         char key[MAX_KEY_SIZE];
-        int value;
+        vType value;
         struct _item *next;
 } item;
 
@@ -86,7 +85,7 @@ void disposeHash(hash *hashTable) {
         free(hashTable);
 }
 
-bool put(hash *hashTable, char *key, int value) {
+bool put(hash *hashTable, char *key, vType value) {
 
         int index = jsHash(key, strlen(key)) % hashTable->size;
 
@@ -122,7 +121,7 @@ bool put(hash *hashTable, char *key, int value) {
         }
 }
 
-bool get(hash *hashTable, char *key, int *val) {
+bool get(hash *hashTable, char *key, vType *val) {
 
         int index = jsHash(key, strlen(key)) % hashTable->size;
         bool hit = false;
@@ -169,7 +168,7 @@ bool drop(hash *hashTable, char *key) {
 }
 
 int main() {
-        int value;
+        vType value;
         char cmd[10] = "";
         char key[MAX_KEY_SIZE];
 
