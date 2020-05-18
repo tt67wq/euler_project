@@ -20,8 +20,6 @@
 
 /* #define DEBUG */
 
-int LENGTH;
-int RETURN_SIZE = 0;
 int MAX_SIZE = 20000;
 
 int cmpfunc(const void *a, const void *b) {
@@ -40,7 +38,7 @@ int **threeSum(int *nums, int numsSize, int *retSize, int **columnSizes) {
         }
         qsort(nums, numsSize, sizeof(nums[0]), cmpfunc);
         int **ans = malloc(sizeof(int *) * MAX_SIZE);
-        *columnSizes = malloc(sizeof(int *) * MAX_SIZE); // 问题出在这里！！
+        *columnSizes = malloc(sizeof(int *) * MAX_SIZE);
         *retSize = 0;
 
         int L = 0;
