@@ -1,5 +1,5 @@
 CC = clang
-INFILE = main.c
+INFILE = main1.c
 OUTFILE = main.o
 FLAGS = -Wall -fsanitize=address
 
