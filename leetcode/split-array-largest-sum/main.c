@@ -21,26 +21,27 @@
 #define DEBUG
 
 int splitArray(int *nums, int numsSize, int m) {
-        int mx = 0;
-        int sum = 0;
+        long mx = 0;
+        long sum = 0;
 
         for (int i = 0; i < numsSize; i++) {
                 if (nums[i] > mx) {
-                        mx = nums[i];
+                        mx = (long)nums[i];
                 }
-                sum += nums[i];
+                sum += (long)nums[i];
         }
 
         if (numsSize == m) {
-                return mx;
+                return (int)mx;
         }
 
-        int lo = mx;
-        int hi = sum;
+        long lo = mx;
+        long hi = sum;
 
         while (lo < hi) {
-                int mid = (lo + hi) >> 1;
-                int tmp = 0, cnt = 1;
+                long mid = (lo + hi) >> 1;
+                long tmp = 0;
+                int cnt = 1;
 
                 for (int i = 0; i < numsSize; i++) {
                         tmp += nums[i];
@@ -55,7 +56,11 @@ int splitArray(int *nums, int numsSize, int m) {
                         hi = mid;
                 }
         }
-        return lo;
+        return (int)lo;
 }
 
-int main() { return 0; }
+int main() {
+        int nums[] = {1, 2147483647};
+        printf("%d\n", splitArray(nums, 2, 2));
+        return 0;
+}
