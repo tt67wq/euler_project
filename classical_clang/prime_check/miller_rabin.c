@@ -16,6 +16,7 @@
  */
 
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,9 +24,8 @@
 uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
         if (n == 1)
                 return m % k;
-        if (n == 2) 
+        if (n == 2)
                 return (m * m) % k;
-        
 
         if (m % k == 0)
                 return 0;

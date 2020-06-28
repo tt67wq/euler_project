@@ -1,6 +1,6 @@
 CC = gcc
-INFILE = miller_rabin.c
-OUTFILE = miller_rabin.o
+INFILE = wheel_base.c
+OUTFILE = main.o
 FLAGS = -Wall
 
 build: $(INFILE)

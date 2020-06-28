@@ -1,7 +1,7 @@
 /*
  * =====================================================================================
  *
- *       Filename:  main.c
+ *       Filename:  wheel_base.c
  *
  *    Description:
  *
@@ -20,8 +20,6 @@
 #include <stdlib.h>
 
 #define DEBUG
-
-// https://pe-cn.github.io/516/
 
 // wheel-based prime test
 bool isPrime(unsigned long long x) {
@@ -54,4 +52,11 @@ bool isPrime(unsigned long long x) {
         return x > 1;
 }
 
-int main() { return 0; }
+int main() {
+        int n;
+        while (1) {
+                scanf("%d", &n);
+                printf("%d\n", isPrime(n));
+        }
+        return 0;
+}
