@@ -20,6 +20,7 @@
 #include "kvec.h"
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,9 +31,13 @@ typedef kvec_t(int) array;
 typedef kvec_t(uint64_t) big_array;
 
 //////////// prime tools //////////////
-static inline bool is_in_sieve(char *sieve, uint64_t idx) { return !(sieve[idx / 16] & (1 << (idx % 16 / 2))); }
+static inline bool is_in_sieve(char *sieve, uint64_t idx) {
+        return !(sieve[idx / 16] & (1 << (idx % 16 / 2)));
+}
 /* remove the odd number idx from the sieve */
-static inline void remove_from_sieve(char *sieve, uint64_t idx) { sieve[idx / 16] |= (1 << (idx % 16 / 2)); }
+static inline void remove_from_sieve(char *sieve, uint64_t idx) {
+        sieve[idx / 16] |= (1 << (idx % 16 / 2));
+}
 
 void prime_sieve(uint64_t max, big_array *primes) {
         char *sieve = calloc(max / 16 + 1, 1);
