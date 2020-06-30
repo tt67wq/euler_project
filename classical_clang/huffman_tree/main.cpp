@@ -53,7 +53,8 @@ int main(int argc, char *argv[]) {
         }
 
         ptr = forest.front(); // ptr是一個指向根的指針
-        system("PAUSE");
+
+        // system("PAUSE");
         return EXIT_SUCCESS;
 }
 
