@@ -36,6 +36,7 @@ func main() {
 	for {
 		fmt.Scanf("%d", &n)
 		fmt.Println(n & (-n))
+		fmt.Println(n & (n - 1))
 	}
 	return
 }
