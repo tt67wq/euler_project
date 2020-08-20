@@ -6,7 +6,7 @@
  *    Description:
  *
  *        Version:  1.0
- *        Created:  2020-05-08
+ *        Created:  2020-08-20
  *       Revision:  none
  *       Compiler:  clang
  *
@@ -15,18 +15,20 @@
  * =====================================================================================
  */
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define DEBUG
-
-#define MAX_KEY_SIZE 20
+#define MAX_KEY_SIZE 1000
 #define HASH_PUT(h, k, v) (put((h), (k), (v)))
 #define HASH_GET(h, k, v) (get((h), (k), (v)))
 #define HASH_DROP(h, k) (drop((h), (k)))
 #define HASH_FREE(h) (disposeHash((h)))
+
+#define RENDER_FINGERPRINT(fp, a) (sprintf((fp), "%d,%d", (a)[0], (a)[1]))
 
 typedef int vType;
 
@@ -174,41 +176,67 @@ bool drop(hash *hashTable, char *key) {
         return hit;
 }
 
-int main() {
-        vType value;
-        char cmd[10] = "";
-        char key[MAX_KEY_SIZE];
+int cmpfunc(const void *a, const void *b) {
+        int fa = (*(int **)a)[0];
+        int fb = (*(int **)b)[0];
 
-        hash *hashTable = createHash(1000);
-        while (scanf("%s", cmd) != EOF) {
-                if (!strcmp(cmd, "0")) {
-                        break;
-                }
-                if (!strcmp(cmd, "put")) {
-                        scanf("%s %d", key, &value);
-                        if (HASH_PUT(hashTable, key, value)) {
-                                printf("insert {%s, %d} to hash table\n", key, value);
-                        } else {
-                                printf("update {%s, %d} to hash table\n", key, value);
-                        }
-                } else if (!strcmp(cmd, "get")) {
-                        scanf("%s", key);
-                        if (HASH_GET(hashTable, key, &value)) {
-                                printf("value is %d\n", value);
-                        } else {
-                                printf("hash miss\n");
-                        }
-                } else if (!strcmp(cmd, "drop")) {
-                        scanf("%s", key);
-                        if (HASH_DROP(hashTable, key)) {
-                                printf("drop %s success\n", key);
-                        } else {
-                                printf("%s not in hashTable\n", key);
-                        }
-                }
+        if (fa > fb) {
+                return 1;
+        } else if (fa < fb) {
+                return -1;
         }
+        return 0;
+}
 
-        disposeHash(hashTable);
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int *findRightInterval(int **intervals, int intervalsSize, int *intervalsColSize, int *returnSize) {
+        hash *table = createHash(MAX_KEY_SIZE);
+        int *res = (int *)malloc(sizeof(int) * intervalsSize);
+        char fp[10];
+        for (int i = 0; i < intervalsSize; i++) {
+                RENDER_FINGERPRINT(fp, intervals[i]);
+                HASH_PUT(table, fp, i);
+        }
+        qsort(intervals, intervalsSize, sizeof(intervals[0]), cmpfunc);
+
+        for (int i = 0; i < intervalsSize; i++) {
+                int min = INT_MAX;
+                int minIndex = -1;
+                for (int j = i + 1; j < intervalsSize; j++) {
+                        if (intervals[j][0] >= intervals[i][1] && intervals[j][0] < min) {
+                                min = intervals[j][0];
+                                RENDER_FINGERPRINT(fp, intervals[j]);
+                                HASH_GET(table, fp, &minIndex);
+                        }
+                }
+                // int idx = FINGER_PRINT(intervals[i]);
+                // res[table[idx]] = minIndex;
+                int idx;
+                RENDER_FINGERPRINT(fp, intervals[i]);
+                HASH_GET(table, fp, &idx);
+                res[idx] = minIndex;
+        }
+        (*returnSize) = intervalsSize;
+        HASH_FREE(table);
+        return res;
+}
+
+int main() {
+        // [ [3,4], [2,3], [1,2] ]
+        int interval0[] = {3, 4};
+        int interval1[] = {2, 3};
+        int interval2[] = {1, 2};
+
+        int *intervals[] = {interval0, interval1, interval2};
+        int returnSize;
+        int *res = findRightInterval(intervals, 3, NULL, &returnSize);
+        for (int i = 0; i < returnSize; i++) {
+                printf("%d ", res[i]);
+        }
+        printf("\n");
+        free(res);
 
         return 0;
 }
