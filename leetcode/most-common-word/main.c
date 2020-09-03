@@ -6,7 +6,7 @@
  *    Description:
  *
  *        Version:  1.0
- *        Created:  2020-05-08
+ *        Created:  2020-09-03
  *       Revision:  none
  *       Compiler:  clang
  *
@@ -175,41 +175,62 @@ bool drop(hash *hashTable, char *key) {
         return hit;
 }
 
-int main() {
-        vType value;
-        char cmd[10] = "";
-        char key[MAX_KEY_SIZE];
+// #################### real shit ####################
 
-        hash *hashTable = createHash(1000);
-        while (scanf("%s", cmd) != EOF) {
-                if (!strcmp(cmd, "0")) {
-                        break;
+char *mostCommonWord(char *paragraph, char **banned, int bannedSize) {
+
+        hash *word_table = HASH_NEW(1000);
+        char **words = (char **)calloc(sizeof(char *), 1000);
+        int index = 0;
+        char delim[] = " !?',;.";
+        char *ans = (char *)calloc(sizeof(char), 11);
+        int maxCnt = 0;
+
+        for (char *word = strtok(paragraph, delim); word != NULL; word = strtok(NULL, delim)) {
+                // printf("word : %s\n", word);
+                for (int i = 0; i < strlen(word); i++) {
+                        if (word[i] >= 'A' && word[i] <= 'Z') {
+                                word[i] += 'a' - 'A';
+                        }
                 }
-                if (!strcmp(cmd, "put")) {
-                        scanf("%s %d", key, &value);
-                        if (HASH_PUT(hashTable, key, value)) {
-                                printf("insert {%s, %d} to hash table\n", key, value);
-                        } else {
-                                printf("update {%s, %d} to hash table\n", key, value);
+                bool isBanned = false;
+                for (int i = 0; i < bannedSize; i++) {
+                        if (strcmp(word, banned[i]) == 0) {
+                                isBanned = true;
+                                break;
                         }
-                } else if (!strcmp(cmd, "get")) {
-                        scanf("%s", key);
-                        if (HASH_GET(hashTable, key, &value)) {
-                                printf("value is %d\n", value);
-                        } else {
-                                printf("hash miss\n");
-                        }
-                } else if (!strcmp(cmd, "drop")) {
-                        scanf("%s", key);
-                        if (HASH_DROP(hashTable, key)) {
-                                printf("drop %s success\n", key);
-                        } else {
-                                printf("%s not in hashTable\n", key);
-                        }
+                }
+                if (!isBanned) {
+                        int cnt = 0;
+                        HASH_GET(word_table, word, &cnt);
+                        HASH_PUT(word_table, word, cnt + 1);
+                        words[index] = (char *)calloc(sizeof(char), 11);
+                        strcpy(words[index], word);
+                        index++;
                 }
         }
 
-        disposeHash(hashTable);
+        for (int i = 0; i < index; i++) {
+                int cnt = 0;
+                HASH_GET(word_table, words[i], &cnt);
+                if (cnt > maxCnt) {
+                        maxCnt = cnt;
+                        strcpy(ans, words[i]);
+                }
+                free(words[i]);
+        }
 
+        free(words);
+        HASH_FREE(word_table);
+
+        return ans;
+}
+
+int main() {
+        char paragraph[] = "Bob hit a ball, the hit BALL flew far after it was hit.";
+        char ban0[] = "hit";
+        char *banned[] = {ban0};
+        char *ans = mostCommonWord(paragraph, banned, 1);
+        printf("%s\n", ans);
         return 0;
 }
