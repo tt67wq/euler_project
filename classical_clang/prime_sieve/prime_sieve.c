@@ -43,7 +43,7 @@ void primeSieve() {
 
 int main() {
         primeSieve();
-        printf("2 ");
+        // printf("2 ");
         for (int i = 3; i < MAX; i += 2) {
                 if (isPrime(i)) {
                         printf("%d ", i);
