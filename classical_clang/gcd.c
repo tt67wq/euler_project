@@ -20,6 +20,8 @@
 
 #define DEBUG
 
+int lcm(int m, int n) { return m * (n / gcd(m, n)); }
+
 /* 求最大公约数, 欧几里得算法 */
 int gcd(int m, int n) {
         int r;
