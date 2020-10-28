@@ -1,10 +1,3 @@
-/**
- * 二叉堆(最大堆)
- *
- * @author skywang
- * @date 2014/03/07
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -95,6 +88,7 @@ int maxheap_pop() {
                 panic();
 
         data = m_heap[0];
+        int index = get_index(data);
         m_heap[0] = m_heap[--m_size];
         maxheap_filterdown(index,
                            m_size - 1); // 从index位置开始自上向下调整为最大堆
