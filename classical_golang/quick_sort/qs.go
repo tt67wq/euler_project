@@ -3,11 +3,11 @@ package main
 import "fmt"
 
 func sortArray(nums []int) []int {
-	quick_sort(nums, 0, len(nums)-1)
+	quickSort(nums, 0, len(nums)-1)
 	return nums
 }
 
-func quick_sort(nums []int, begin, end int) {
+func quickSort(nums []int, begin, end int) {
 	var i, j, t int
 
 	if begin < end {
@@ -33,8 +33,8 @@ func quick_sort(nums []int, begin, end int) {
 		nums[i] = nums[begin]
 		nums[begin] = t
 
-		quick_sort(nums, begin, i)
-		quick_sort(nums, j, end)
+		quickSort(nums, begin, i)
+		quickSort(nums, j, end)
 	}
 }
 
