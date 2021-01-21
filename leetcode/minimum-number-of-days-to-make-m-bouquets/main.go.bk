@@ -1,0 +1,84 @@
+package main
+
+import "fmt"
+
+const MaxUint = ^uint(0)
+const MinUint = 0
+const MaxInt = int(MaxUint >> 1)
+const MinInt = -MaxInt - 1
+
+func filterMin(bloomDay []int) int {
+	var m int = MaxInt
+	for i := 0; i < len(bloomDay); i++ {
+		if bloomDay[i] > 0 && bloomDay[i] < m {
+			m = bloomDay[i]
+		}
+	}
+	for i := 0; i < len(bloomDay); i++ {
+		if bloomDay[i] > 0 {
+			bloomDay[i] -= m
+		}
+
+	}
+	if m == MaxInt {
+		return 0
+	}
+	return m
+}
+
+func minDays(bloomDay []int, m int, k int) int {
+	var l int = len(bloomDay)
+
+	if m*k > l {
+		return -1
+	}
+	if m*k == 0 {
+		return 0
+	}
+
+	var ans int = 0
+	for {
+
+		m1 := m
+
+		n := filterMin(bloomDay)
+		if n == 0 {
+			break
+		}
+		ans += n
+
+		fmt.Println(bloomDay, ans, m)
+
+		// slide window
+		f, e := 0, k
+		for e <= l {
+			c := 0
+			for i := f; i < e; i++ {
+				if bloomDay[i] != 0 {
+					c = 1
+					break
+				}
+			}
+			if c == 0 {
+				f += k
+				e += k
+				m1 -= 1
+			} else {
+				f += 1
+				e += 1
+			}
+		}
+		if m1 == 0 {
+			break
+		}
+	}
+
+	return ans
+}
+
+func main() {
+	var bloomDays []int = []int{62, 75, 98, 63, 47, 65, 51, 87, 22, 27, 73, 92, 76, 44, 13, 90, 100, 85}
+	var ans int = minDays(bloomDays, 2, 7)
+	fmt.Println(ans)
+	return
+}
