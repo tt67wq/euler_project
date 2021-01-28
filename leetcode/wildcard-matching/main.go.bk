@@ -1,0 +1,68 @@
+package main
+
+import "fmt"
+
+func dfs(s, p []byte, sp, pp int, res *bool) {
+	if *res {
+		return
+	}
+
+	if sp == len(s) && pp == len(p) {
+		(*res) = true
+		return
+	}
+
+	if sp > len(s) {
+		return
+	}
+
+	if pp == len(p) {
+		return
+	}
+
+	switch p[pp] {
+	case '?':
+		dfs(s, p, sp+1, pp+1, res)
+	case '*':
+		// 贪心
+		for pp < len(p) && p[pp] == '*' {
+			pp++
+		}
+		if pp == len(p) {
+			(*res) = true
+			return
+		}
+		if p[pp] == '?' {
+			for i := sp; i < len(s); i++ {
+				dfs(s, p, i, pp, res)
+			}
+		} else {
+			for i := sp; i < len(s); i++ {
+				if s[i] == p[pp] {
+					dfs(s, p, i+1, pp+1, res)
+				}
+			}
+		}
+
+	default:
+		if sp < len(s) && p[pp] == s[sp] {
+			dfs(s, p, sp+1, pp+1, res)
+		}
+	}
+}
+
+func isMatch(s string, p string) bool {
+	var res bool = false
+
+	dfs([]byte(s), []byte(p), 0, 0, &res)
+	return res
+}
+
+func main() {
+	fmt.Println(isMatch("abc", "*abc?*"))
+	fmt.Println(isMatch("aa", "a"))
+	fmt.Println(isMatch("aa", "*"))
+	fmt.Println(isMatch("cb", "?a"))
+	fmt.Println(isMatch("adceb", "*a*b"))
+	fmt.Println(isMatch("acdcb", "a*c?b"))
+}
