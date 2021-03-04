@@ -23,8 +23,7 @@
 int lengthOfLIS(int *nums, int numsSize) {
         int ans = 0;
 
-        // dp[i] -> 长度为i+1的序列arrays, min(array[-1])
-        // dp为递增序列
+        // dp[i] -> nums[:i]的最长递增子序列
         int *dp = (int *)calloc(numsSize + 1, sizeof(int));
 
         for (int i = 0; i < numsSize; i++) {
@@ -55,6 +54,14 @@ int lengthOfLIS(int *nums, int numsSize) {
 
 int main() {
         int nums[] = {10, 9, 2, 5, 3, 7, 101, 18};
+	/* 0 0 0 0 0 0 0 0 0  */
+	/* 10 0 0 0 0 0 0 0 0  */
+	/* 9 0 0 0 0 0 0 0 0  */
+	/* 2 0 0 0 0 0 0 0 0  */
+	/* 2 5 0 0 0 0 0 0 0  */
+	/* 2 3 0 0 0 0 0 0 0  */
+	/* 2 3 7 0 0 0 0 0 0  */
+	/* 2 3 7 101 0 0 0 0 0 */
         printf("%d\n", lengthOfLIS(nums, 8));
         return 0;
 }
