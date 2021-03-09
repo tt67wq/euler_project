@@ -54,7 +54,6 @@ void dfs(char *s, int l, int i, bool **dp, char ***ret, int *retSize, int *retCo
                         int ansColSize = strlen(ans[j]);
                         tmp[j] = malloc(sizeof(char) * (ansColSize + 1));
                         strcpy(tmp[j], ans[j]);
-                        free(ans[j]);
                 }
                 ret[*retSize] = tmp;
                 retColSize[*retSize] = (*ansSize);
@@ -114,7 +113,7 @@ char ***partition(char *s, int *returnSize, int **returnColumnSizes) {
 }
 
 int main() {
-        char s[] = "aab";
+        char s[] = "abb";
         int returnSize;
         int *returnColSizes;
 
