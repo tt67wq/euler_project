@@ -1,8 +1,8 @@
 CC = gcc
 INFILE = main.c
 OUTFILE = main.o
-# FLAGS = -g -Wall -fsanitize=address
-FLAGS = -g -Wall
+FLAGS = -g -Wall -fsanitize=address
+# FLAGS = -g -Wall
 
 build: $(INFILE)
 	$(CC) $(FLAGS) $(INFILE) -o $(OUTFILE)

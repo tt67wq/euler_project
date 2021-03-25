@@ -16,10 +16,10 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/queue.h>
-#include <stdint.h>
 
 // 给你一个整数数组 nums ，数组中共有 n 个整数。
 // 132 模式的子序列 由三个整数 nums[i]、nums[j] 和 nums[k] 组成，
@@ -68,6 +68,7 @@ struct head *lhead = NULL;
 
 bool find132pattern(int *nums, int numsSize) {
         bool ans = false;
+        struct node *top;
         lhead = (struct head *)malloc(sizeof(struct head));
         SLIST_INIT(lhead);
 
@@ -79,7 +80,7 @@ bool find132pattern(int *nums, int numsSize) {
                 }
                 while (!SLIST_EMPTY(lhead) && SLIST_FIRST(lhead)->val < nums[i]) {
                         /* code */
-                        struct node *top = SLIST_FIRST(lhead);
+                        top = SLIST_FIRST(lhead);
                         med = top->val;
                         SLIST_REMOVE_HEAD(lhead, ptr);
                         free(top);
@@ -87,6 +88,11 @@ bool find132pattern(int *nums, int numsSize) {
                 struct node *tmp = (struct node *)malloc(sizeof(struct node));
                 tmp->val = nums[i];
                 SLIST_INSERT_HEAD(lhead, tmp, ptr);
+        }
+        while (!SLIST_EMPTY(lhead)) {
+                top = SLIST_FIRST(lhead);
+                SLIST_REMOVE_HEAD(lhead, ptr);
+                free(top);
         }
 
         return ans;
