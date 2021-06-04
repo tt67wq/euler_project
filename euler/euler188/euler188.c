@@ -15,12 +15,16 @@
  * =====================================================================================
  */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 // 计算 m^n % k
 uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
+        if (n == 0) {
+                return 1;
+        }
         if (n == 1)
                 return m % k;
         if (n == 2)
@@ -45,9 +49,9 @@ uint64_t tet_mod(uint64_t m, uint64_t n, uint64_t k) {
 }
 
 int main() {
-	double dtime = clock();
+        double dtime = clock();
         printf("%llu\n", tet_mod(1777, 1855, 100000000));
-	dtime = (double)(clock() - dtime) / CLOCKS_PER_SEC;
+        dtime = (double)(clock() - dtime) / CLOCKS_PER_SEC;
         printf("time=%.3lf sec.\n", dtime);
         return 0;
 }
