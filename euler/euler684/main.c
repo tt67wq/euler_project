@@ -24,7 +24,7 @@
 
 // https://projecteuler.net/problem=684
 
-void fibnacci(uint64_t *fib) {
+void fibnacci(intmax_t *fib) {
         fib[0] = 0;
         fib[1] = 1;
         int i = 2;
@@ -34,43 +34,36 @@ void fibnacci(uint64_t *fib) {
         }
 }
 
-uint64_t pow_mod(uint64_t m, uint64_t n, uint64_t k) {
-        if (n == 0) {
-                return 1;
+intmax_t pow_modulo(int a, intmax_t b, int n) {
+        intmax_t x = 1, y = a;
+        while (b > 0) {
+                if (b % 2 == 1) {
+                        x = (x * y) % n; // multiplying with base
+                }
+                y = (y * y) % n; // squaring the base
+                b /= 2;
         }
-        if (n == 1)
-                return m % k;
-        if (n == 2)
-                return (m * m) % k;
-
-        if (m % k == 0)
-                return 0;
-
-        uint64_t b = pow_mod(m, 2, k);
-        if (n & 1) {
-                return pow_mod(b, n / 2, k);
-        } else {
-                return (m * pow_mod(b, (n - 1) / 2, k)) % k;
-        }
+        return x % n;
 }
 
-uint64_t getS(uint64_t k) {
-        uint64_t n = (uint64_t)floor(k / 9);
-        int r = n % 9 + 2;
+intmax_t S(intmax_t k) {
 
-        return (((r - 1) * r + 10) * pow_mod(10, n, MOD) - (r + 9 * n + 4)) % MOD;
+        int r = k % 9;
+
+        return (pow_modulo(10, floor(k / 9), MOD) * ((r * r + 3 * r + 12) >> 1) - 6 - k) % MOD;
 }
 
 int main() {
 
-        uint64_t *fib = (uint64_t *)calloc(91, sizeof(uint64_t));
+        intmax_t *fib = (intmax_t *)calloc(91, sizeof(intmax_t));
         fibnacci(fib);
 
-        uint64_t ans = 0;
+        intmax_t ans = 0;
         for (int i = 2; i <= 90; i++) {
-                uint64_t k = fib[i];
-                ans += getS(k);
-                printf("%lu\n", k);
+                intmax_t k = fib[i];
+                intmax_t _t = S(k);
+                ans += _t;
+                printf("%ld, %ld\n", k, _t);
                 ans %= MOD;
         }
         puts("");
