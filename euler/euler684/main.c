@@ -34,23 +34,41 @@ void fibnacci(intmax_t *fib) {
         }
 }
 
-intmax_t pow_modulo(int a, intmax_t b, int n) {
+intmax_t pow_modulo(int a, intmax_t b, const int n) {
         intmax_t x = 1, y = a;
         while (b > 0) {
-                if (b % 2 == 1) {
+                if (b & 1) {
                         x = (x * y) % n; // multiplying with base
                 }
                 y = (y * y) % n; // squaring the base
-                b /= 2;
+                b = b >> 1;
         }
         return x % n;
 }
 
-intmax_t S(intmax_t k) {
+intmax_t divFloor(intmax_t a, int b) {
+        intmax_t _t = a / b;
+        if (_t * b > a) {
+                return _t - 1;
+        }
+        return _t;
+}
+
+intmax_t S(const intmax_t k) {
 
         int r = k % 9;
+        intmax_t p1 = pow_modulo(10, divFloor(k, 9), MOD);
+        int p2 = (r * r + 3 * r + 12) >> 1;
 
-        return (pow_modulo(10, floor(k / 9), MOD) * ((r * r + 3 * r + 12) >> 1) - 6 - k) % MOD;
+        // printf("%ld, %d\n", p1, p2);
+
+        intmax_t _tmp = p1 * p2 - 6 - k;
+
+        _tmp %= MOD;
+        if (_tmp < 0) {
+                return MOD + _tmp;
+        }
+        return _tmp;
 }
 
 int main() {

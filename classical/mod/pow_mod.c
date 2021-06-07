@@ -17,24 +17,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 // 计算 m^n % k
-int pow_mod(int m, int n, int k) {
-        if (n == 1)
-                return m % k;
-        if (n == 2)
-                return (m * m) % k;
-
-        if (m % k == 0)
-                return 0;
-
-        int b = pow_mod(m, 2, k);
-        if (n % 2 == 0) {
-                return pow_mod(b, n / 2, k);
-        } else {
-                return (m * pow_mod(b, (n - 1) / 2, k)) % k;
+intmax_t pow_modulo(intmax_t a, intmax_t b, const int n) {
+        intmax_t x = 1, y = a;
+        while (b > 0) {
+                if (b & 1) {
+                        x = (x * y) % n; // multiplying with base
+                }
+                y = (y * y) % n; // squaring the base
+                b = b >> 1;
         }
+        return x % n;
 }
+
 
 int main() {
         int m, n, k, r;
@@ -45,7 +42,7 @@ int main() {
         printf("输入 m^n %% k 中的k\n");
         scanf("%d", &k);
 
-        r = pow_mod(m, n, k);
+        r = pow_modulo(m, n, k);
         printf("结果为: %d\n", r);
         return 0;
 }
