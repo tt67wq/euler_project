@@ -94,42 +94,14 @@ TimeMap *timeMapCreate() {
         return tm;
 }
 
-int cmpfunc(const void *a, const void *b) {
-        return (*(struct entry **)a)->timestmap - (*(struct entry **)b)->timestmap;
-}
-
-char *bin_search(struct table *s, int timestamp) {
-
-        struct entry **entries = (struct entry **)calloc(s->entriesSize, sizeof(struct entry *));
-        int i = 0;
-        struct entry *_en;
-        LIST_FOREACH(_en, s->h, next) { entries[i++] = _en; }
-        qsort(entries, s->entriesSize, sizeof(struct entry *), cmpfunc);
-
-        // bin search
-        int left = 0, right = s->entriesSize;
-        while (left < right) {
-                int mid = left + ((right - left) >> 1);
-                if (timestamp > entries[mid]->timestmap) {
-                        left = mid + 1;
-                } else if (timestamp < entries[mid]->timestmap) {
-                        right = mid;
-                } else {
-                        return entries[mid]->value;
-                }
-        }
-        if (left == 0) {
-                return "";
-        }
-        return entries[left - 1]->value;
-}
-
 void timeMapSet(TimeMap *obj, char *key, char *value, int timestamp) {
         struct table *s = NULL;
         HASH_FIND_STR(obj->tsTable, key, s);
         if (!s) {
                 s = (struct table *)malloc(sizeof(struct table));
                 s->key = (char *)calloc(MAX, sizeof(char));
+                s->h = (struct lhead *)malloc(sizeof(struct lhead));
+                LIST_INIT(s->h);
                 s->entriesSize = 0;
                 strcpy(s->key, key);
                 HASH_ADD_STR(obj->tsTable, key, s);
@@ -146,7 +118,12 @@ char *timeMapGet(TimeMap *obj, char *key, int timestamp) {
         struct table *s = NULL;
         HASH_FIND_STR(obj->tsTable, key, s);
         if (s) {
-                return bin_search(s, timestamp);
+                struct entry *en;
+                LIST_FOREACH(en, s->h, next) {
+                        if (en->timestmap <= timestamp) {
+                                return en->value;
+                        }
+                }
         }
         return "";
 }
