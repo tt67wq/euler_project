@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/queue.h>
 #include <uthash.h>
 
 // 创建一个基于时间的键值存储类 TimeMap，它支持下面两个操作：
@@ -69,12 +70,14 @@
 struct entry {
         char *value;
         int timestmap;
+        LIST_ENTRY(entry) next;
 };
+
+LIST_HEAD(lhead, entry);
 
 struct table {
         char *key;
-        bool sorted;
-        struct entry *entries[MAX];
+        struct lhead *h;
         int entriesSize;
         UT_hash_handle hh;
 };
@@ -95,27 +98,30 @@ int cmpfunc(const void *a, const void *b) {
         return (*(struct entry **)a)->timestmap - (*(struct entry **)b)->timestmap;
 }
 
-int bin_search(struct table *s, int timestamp, bool search_left) {
-        if (!s->sorted) {
-                qsort(s->entries, s->entriesSize, sizeof(struct entry *), cmpfunc);
-                s->sorted = true;
-        }
+char *bin_search(struct table *s, int timestamp) {
+
+        struct entry **entries = (struct entry **)calloc(s->entriesSize, sizeof(struct entry *));
+        int i = 0;
+        struct entry *_en;
+        LIST_FOREACH(_en, s->h, next) { entries[i++] = _en; }
+        qsort(entries, s->entriesSize, sizeof(struct entry *), cmpfunc);
+
         // bin search
         int left = 0, right = s->entriesSize;
         while (left < right) {
                 int mid = left + ((right - left) >> 1);
-                if (timestamp > s->entries[mid]->timestmap) {
+                if (timestamp > entries[mid]->timestmap) {
                         left = mid + 1;
-                } else if (timestamp < s->entries[mid]->timestmap) {
+                } else if (timestamp < entries[mid]->timestmap) {
                         right = mid;
                 } else {
-                        return mid;
+                        return entries[mid]->value;
                 }
         }
-        if (!search_left) {
-                return -1;
+        if (left == 0) {
+                return "";
         }
-        return left - 1;
+        return entries[left - 1]->value;
 }
 
 void timeMapSet(TimeMap *obj, char *key, char *value, int timestamp) {
@@ -124,56 +130,36 @@ void timeMapSet(TimeMap *obj, char *key, char *value, int timestamp) {
         if (!s) {
                 s = (struct table *)malloc(sizeof(struct table));
                 s->key = (char *)calloc(MAX, sizeof(char));
-                strcpy(s->key, key);
-                s->sorted = true;
                 s->entriesSize = 0;
+                strcpy(s->key, key);
                 HASH_ADD_STR(obj->tsTable, key, s);
-
-                struct entry *_en = (struct entry *)malloc(sizeof(struct entry));
-                _en->timestmap = timestamp;
-                _en->value = (char *)calloc(MAX, sizeof(char));
-                strcpy(_en->value, value);
-                s->entries[s->entriesSize++] = _en;
-        } else {
-                // 测试timestamp碰撞
-                int _idx = bin_search(s, timestamp, false);
-                if (_idx > -1) {
-                        // ts 碰撞
-                        if (strcmp(s->entries[_idx]->value, value) == 0) {
-                                return;
-                        } else {
-                                // 覆盖
-                                strcpy(s->entries[_idx]->value, value);
-                                return;
-                        }
-
-                } else {
-                        struct entry *_en = (struct entry *)malloc(sizeof(struct entry));
-                        _en->timestmap = timestamp;
-                        _en->value = (char *)calloc(MAX, sizeof(char));
-                        strcpy(_en->value, value);
-                        s->entries[s->entriesSize++] = _en;
-                        s->sorted = false;
-                }
         }
+        struct entry *_en = (struct entry *)malloc(sizeof(struct entry));
+        _en->timestmap = timestamp;
+        _en->value = (char *)calloc(MAX, sizeof(char));
+        strcpy(_en->value, value);
+        LIST_INSERT_HEAD(s->h, _en, next);
+        s->entriesSize++;
 }
 
 char *timeMapGet(TimeMap *obj, char *key, int timestamp) {
         struct table *s = NULL;
         HASH_FIND_STR(obj->tsTable, key, s);
         if (s) {
-                int idx = bin_search(s, timestamp, true);
-                return idx > -1 ? s->entries[idx]->value : "";
+                return bin_search(s, timestamp);
         }
         return "";
 }
 
 void timeMapFree(TimeMap *obj) {
         struct table *iter, *tmp;
+        struct entry *s;
         HASH_ITER(hh, obj->tsTable, iter, tmp) {
-                for (int i = 0; i < iter->entriesSize; i++) {
-                        free(iter->entries[i]->value);
-                        free(iter->entries[i]);
+                while (!LIST_EMPTY(iter->h)) {
+                        s = LIST_FIRST(iter->h);
+                        LIST_REMOVE(s, next);
+                        free(s->value);
+                        free(s);
                 }
                 free(iter->key);
                 free(iter);
