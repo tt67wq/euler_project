@@ -1,9 +1,12 @@
 // Priority Queue implementation in C
 
 #include <stdio.h>
+#include <stdlib.h>
 
-
-int size = 0;
+struct heap {
+        int size;
+        int *array;
+};
 
 void swap(int *a, int *b) {
         int temp = *b;
@@ -12,79 +15,78 @@ void swap(int *a, int *b) {
 }
 
 // Function to heapify the tree
-void heapify(int array[], int size, int i) {
-        if (size == 1) {
+void heapify(struct heap *hp, int i) {
+        if (hp->size == 1) {
                 printf("Single element in the heap");
         } else {
                 // Find the largest among root, left child and right child
                 int largest = i;
                 int l = 2 * i + 1;
                 int r = 2 * i + 2;
-                if (l < size && array[l] > array[largest])
+                if (l < hp->size && hp->array[l] > hp->array[largest])
                         largest = l;
-                if (r < size && array[r] > array[largest])
+                if (r < hp->size && hp->array[r] > hp->array[largest])
                         largest = r;
 
                 // Swap and continue heapifying if root is not largest
                 if (largest != i) {
-                        swap(&array[i], &array[largest]);
-                        heapify(array, size, largest);
+                        swap(&(hp->array[i]), &(hp->array[largest]));
+                        heapify(hp, largest);
                 }
         }
 }
 
 // Function to insert an element into the tree
-void insert(int array[], int newNum) {
-        if (size == 0) {
-                array[0] = newNum;
-                size += 1;
+void insert(struct heap *hp, int newNum) {
+        if (hp->size == 0) {
+                hp->array[hp->size++] = newNum;
         } else {
-                array[size] = newNum;
-                size += 1;
-                for (int i = size / 2 - 1; i >= 0; i--) {
-                        heapify(array, size, i);
+                hp->array[hp->size++] = newNum;
+                for (int i = hp->size / 2 - 1; i >= 0; i--) {
+                        heapify(hp, i);
                 }
         }
 }
 
 // Function to delete an element from the tree
-void deleteRoot(int array[], int num) {
+void deleteRoot(struct heap *hp, int num) {
         int i;
-        for (i = 0; i < size; i++) {
-                if (num == array[i])
+        for (i = 0; i < hp->size; i++) {
+                if (num == hp->array[i])
                         break;
         }
 
-        swap(&array[i], &array[size - 1]);
-        size -= 1;
-        for (int i = size / 2 - 1; i >= 0; i--) {
-                heapify(array, size, i);
+        swap(&(hp->array[i]), &(hp->array[hp->size - 1]));
+        hp->size--;
+        for (int i = hp->size / 2 - 1; i >= 0; i--) {
+                heapify(hp, i);
         }
 }
 
 // Print the array
-void printArray(int array[], int size) {
-        for (int i = 0; i < size; ++i)
-                printf("%d ", array[i]);
+void printArray(struct heap *hp) {
+        for (int i = 0; i < hp->size; ++i)
+                printf("%d ", hp->array[i]);
         printf("\n");
 }
 
 // Driver code
 int main() {
-        int array[10];
+        struct heap *hp = (struct heap *)malloc(sizeof(struct heap));
+        hp->array = (int *)calloc(100, sizeof(int));
 
-        insert(array, 3);
-        insert(array, 4);
-        insert(array, 9);
-        insert(array, 5);
-        insert(array, 2);
+        insert(hp, 3);
+        insert(hp, 4);
+        insert(hp, 9);
+        insert(hp, 5);
+        insert(hp, 2);
 
         printf("Max-Heap array: ");
-        printArray(array, size);
+        printArray(hp);
 
-        deleteRoot(array, 4);
+        deleteRoot(hp, 4);
 
         printf("After deleting an element: ");
 
-        printArray(array, size);
+        printArray(hp);
 }
