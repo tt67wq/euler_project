@@ -38,10 +38,8 @@ void heapify(struct heap *hp, int i) {
 
 // Function to insert an element into the tree
 void insert(struct heap *hp, int newNum) {
-        if (hp->size == 0) {
-                hp->array[hp->size++] = newNum;
-        } else {
-                hp->array[hp->size++] = newNum;
+        hp->array[hp->size++] = newNum;
+        if (hp->size > 1) {
                 for (int i = hp->size / 2 - 1; i >= 0; i--) {
                         heapify(hp, i);
                 }
