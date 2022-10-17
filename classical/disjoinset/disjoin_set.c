@@ -19,42 +19,50 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define N 500
+#define N 4005
 
 typedef struct {
         int root;
-        int size;
+        int rank;
 } dset;
 
 dset s[N] = {{0, 0}};
+
+void init() {
+        for (int i = 0; i < N; i++) {
+                s[i].root = 0;
+                s[i].rank = 0;
+        }
+}
 
 dset find(dset *s, int k) {
         if (s[k].root == 0) {
                 // new member
                 s[k].root = k;
-                s[k].size = 1;
+                s[k].rank = 1;
                 return s[k];
         }
-        dset tmp = s[k];
-        while (tmp.root != k) {
-                k = tmp.root;
-                tmp = s[k];
+
+        if (s[k].root == k) {
+                return s[k];
         }
-        s[k].root = tmp.root;
+        s[k] = find(s, s[k].root);
+
         return s[k];
 }
 
-void set_union(dset *s, int m, int n) {
-        dset mr = find(s, m);
-        dset nr = find(s, n);
+void merge(dset *s, int m, int n) {
+        dset ms = find(s, m);
+        dset ns = find(s, n);
 
         // merge small one into big one
-        if (mr.size <= nr.size) {
-                s[mr.root].root = nr.root;
-                s[nr.root].size += mr.size;
+        if (ms.rank <= ns.rank) {
+                s[ms.root].root = ns.root;
         } else {
-                s[nr.root].root = mr.root;
-                s[mr.root].size += nr.size;
+                s[ns.root].root = ms.root;
+        }
+        if (s[ms.root].rank != s[ns.root].rank && s[ms.root].root != s[ns.root].root) {
+                s[ns.root].rank++;
         }
 }
 
