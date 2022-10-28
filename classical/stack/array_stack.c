@@ -31,8 +31,10 @@ typedef struct _stack {
 
 #define STACK_TOP(st) ((st)->data[(st)->top])
 #define IS_EMPTY(st) ((st)->top == -1)
+#define POP(st) (pop((st)))
+#define PUSH(st, item) (push((st), (item)))
 
-stack *new_stack() {
+stack *newStack() {
         stack *st;
         st = (stack *)calloc(1, sizeof(stack));
         st->top = -1;
@@ -41,7 +43,7 @@ stack *new_stack() {
         return st;
 }
 
-void release_stack(stack *st) {
+void releaseStack(stack *st) {
         if (st != NULL) {
                 free(st->data);
                 free(st);
