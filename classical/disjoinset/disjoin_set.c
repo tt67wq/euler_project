@@ -51,7 +51,7 @@ dset find(dset *s, int k) {
         return s[k];
 }
 
-void merge(dset *s, int m, int n) {
+void set_union(dset *s, int m, int n) {
         dset ms = find(s, m);
         dset ns = find(s, n);
 
