@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from optparse import Option
 from typing import Optional
 
 import unittest
