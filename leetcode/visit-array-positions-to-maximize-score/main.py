@@ -36,8 +36,8 @@ from typing import List
 class Solution:
     def maxScore(self, nums: List[int], x: int) -> int:
         # dp[i] => maxScore(nums[:i], x)
-        # dp[i][0] => maxScore(nums[:i], x) 且 nums[i] 为奇数
-        # dp[i][1] => maxScore(nums[:i], x) 且 nums[i] 为偶数
+        # dp[i][0] => maxScore(nums[:i], x) 且 上次访问的 为奇数
+        # dp[i][1] => maxScore(nums[:i], x) 且 上次访问的 为偶数
         dp = [[0, 0] for _ in range(len(nums))]
         for i, n in enumerate(nums):
             if i > 0:
