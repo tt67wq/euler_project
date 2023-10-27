@@ -4,3 +4,4 @@
 *.class
 .vscode
 .tag
+leetcode/*/target/*
